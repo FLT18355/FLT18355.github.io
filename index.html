@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>FLTERS · Termux 配置集</title>
+    <style>
+        /* Catppuccin Mocha 配色 */
+        :root {
+            --rosewater: #f5e0dc;
+            --flamingo: #f2cdcd;
+            --pink: #f5c2e7;
+            --mauve: #cba6f7;
+            --red: #f38ba8;
+            --maroon: #eba0ac;
+            --peach: #fab387;
+            --yellow: #f9e2af;
+            --green: #a6e3a1;
+            --teal: #94e2d5;
+            --sky: #89dceb;
+            --sapphire: #74c7ec;
+            --blue: #89b4fa;
+            --lavender: #b4befe;
+            --text: #cdd6f4;
+            --subtext1: #bac2de;
+            --subtext0: #a6adc8;
+            --overlay2: #9399b2;
+            --overlay1: #7f849c;
+            --overlay0: #6c7086;
+            --surface2: #585b70;
+            --surface1: #45475a;
+            --surface0: #313244;
+            --base: #1e1e2e;
+            --mantle: #181825;
+            --crust: #11111b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--base);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(ellipse at 20% 30%, rgba(203, 166, 247, 0.08), transparent 50%),
+                        radial-gradient(ellipse at 80% 70%, rgba(137, 180, 250, 0.08), transparent 50%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            padding: 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 1px solid var(--surface0);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--mauve), var(--blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            font-size: 0.9rem;
+            background: var(--surface0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: var(--subtext0);
+            font-weight: normal;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--subtext0);
+            text-decoration: none;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--mauve);
+        }
+
+        /* 按钮 */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--mauve), var(--blue));
+            color: var(--base);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--surface1);
+            color: var(--text);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--mauve);
+            color: var(--mauve);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 4rem 0 5rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text), var(--lavender));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .hero .tagline {
+            font-size: 1.2rem;
+            color: var(--subtext0);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* 特性卡片 */
+        .section-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--text);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            background: var(--mantle);
+            padding: 1.8rem;
+            border-radius: 20px;
+            border: 1px solid var(--surface0);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--mauve);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .feature-card p {
+            color: var(--subtext0);
+            font-size: 0.9rem;
+        }
+
+        /* 组件表格 */
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .component-item {
+            background: var(--surface0);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 500;
+            color: var(--text);
+            transition: background 0.2s;
+        }
+
+        .component-item:hover {
+            background: var(--surface1);
+        }
+
+        /* 配色展示 */
+        .color-section {
+            background: var(--mantle);
+            border-radius: 24px;
+            padding: 2rem;
+            margin: 3rem 0;
+            border: 1px solid var(--surface0);
+        }
+
+        .color-title {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--base);
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            border-left: 3px solid;
+        }
+
+        .color-block {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+        }
+
+        .color-info {
+            font-size: 0.75rem;
+        }
+
+        .color-name {
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .color-value {
+            color: var(--subtext0);
+            font-size: 0.7rem;
+        }
+
+        /* 页脚 */
+        .footer {
+            border-top: 1px solid var(--surface0);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--subtext0);
+            font-size: 0.85rem;
+            margin-top: 3rem;
+        }
+
+        .footer a {
+            color: var(--mauve);
+            text-decoration: none;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-links {
+                gap: 1.5rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="gradient-bg"></div>
+
+<div class="container">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">FLTERS <span>· Termux 配置集</span></div>
+        <div class="nav-links">
+            <a href="#features">特性</a>
+            <a href="#components">组件</a>
+            <a href="#colors">配色</a>
+            <a href="https://github.com/FLT18355/terminal" target="_blank">GitHub</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>让 Termux 更优雅</h1>
+        <p class="tagline">一套完整的 Termux 配置方案，整合 Zsh、Neovim、Yazi 等工具，采用 Catppuccin 主题，开箱即用。</p>
+        <div class="hero-buttons">
+            <a href="https://github.com/FLT18355/terminal" target="_blank" class="btn btn-primary">📦 访问 GitHub</a>
+            <a href="#colors" class="btn btn-outline">🎨 查看配色</a>
+        </div>
+    </section>
+
+    <!-- 特性 -->
+    <section id="features">
+        <h2 class="section-title">✨ 特性</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Catppuccin 主题</h3>
+                <p>采用 Catppuccin Mocha 配色，柔和护眼，支持真彩色和光标拖尾特效。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>高效工具链</h3>
+                <p>集成 LazyVim、Yazi、fzf、ripgrep、zsh-autocomplete 等热门工具。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📁</div>
+                <h3>开箱即用</h3>
+                <p>预置常用别名、Zsh 插件和 Neovim 快捷键，无需繁琐配置。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>轻量快速</h3>
+                <p>优化配置加载顺序，启动速度极快，资源占用低。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 组件列表 -->
+    <section id="components">
+        <h2 class="section-title">📦 包含组件</h2>
+        <div class="components-grid">
+            <div class="component-item">🐚 Zsh + Oh My Zsh</div>
+            <div class="component-item">✨ Starship / Oh My Posh</div>
+            <div class="component-item">📝 LazyVim (Neovim)</div>
+            <div class="component-item">🎨 Catppuccin 主题</div>
+            <div class="component-item">📂 Yazi 文件管理器</div>
+            <div class="component-item">🔍 fzf + ripgrep</div>
+            <div class="component-item">💡 zsh-autocomplete</div>
+            <div class="component-item">🎨 fast-syntax-highlighting</div>
+            <div class="component-item">🐙 Git 集成</div>
+            <div class="component-item">🖼️ 图片/视频预览</div>
+            <div class="component-item">🎵 cava 音频可视化</div>
+            <div class="component-item"> zellij 终端复用器</div>
+        </div>
+    </section>
+
+    <!-- 配色展示 -->
+    <section id="colors">
+        <div class="color-section">
+            <h2 class="color-title">🎨 Nimbus Dark 配色</h2>
+            <div class="color-grid">
+                <div class="color-item" style="border-left-color: var(--base)">
+                    <div class="color-block" style="background-color: var(--base); border: 1px solid var(--surface0);"></div>
+                    <div class="color-info"><div class="color-name">base</div><div class="color-value">#1a1b26</div></div>
+                </div>
+                <div class="color-item" style="border-left-color: var(--text)">
+                    <div class="color-block" style="background-color: var(--text);"></div>
+                    <div class="color-info"><div class="color-name">text</div><div class="color-value">#c0caf5</div></div>
+                </div>
+                <div class="color-item" style="border-left-color: var(--cursor)">
+                    <div class="color-block" style="background-color: #cba6f7;"></div>
+                    <div class="color-info"><div class="color-name">cursor</div><div class="color-value">#cba6f7</div></div>
+                </div>
+                <div class="color-item" style="border-left-color: var(--red)">
+                    <div class="color-block" style="background-color: var(--red);"></div>
+                    <div class="color-info"><div class="color-name">red</div><div class="color-value">#f38ba8</div></div>
+                </div>
+                <div class="color-item" style="border-left-color: var(--green)">
+                    <div class="color-block" style="background-color: var(--green);"></div>
+                    <div class="color-info"><div class="color-name">green</div><div class="color-value">#a6e3a1</div></div>
+                </div>
+                <div class="color-item" style="border-left-color: var(--yellow)">
+                    <div class="color-block" style="background-color: var(--yellow);"></div>
+                    <div class="color-info"><div class="color-name">yellow</div><div class="color-value">#f9e2af</div></div>
+                </div>
+                <div class="color-item" style="border-left-color: var(--blue)">
+                    <div class="color-block" style="background-color: var(--blue);"></div>
+                    <div class="color-info"><div class="color-name">blue</div><div class="color-value">#89b4fa</div></div>
+                </div>
+                <div class="color-item" style="border-left-color: var(--mauve)">
+                    <div class="color-block" style="background-color: var(--mauve);"></div>
+                    <div class="color-info"><div class="color-name">mauve</div><div class="color-value">#cba6f7</div></div>
+                </div>
+                <div class="color-item" style="border-left-color: var(--teal)">
+                    <div class="color-block" style="background-color: var(--teal);"></div>
+                    <div class="color-info"><div class="color-name">teal</div><div class="color-value">#94e2d5</div></div>
+                </div>
+                <div class="color-item" style="border-left-color: var(--surface0)">
+                    <div class="color-block" style="background-color: var(--surface0);"></div>
+                    <div class="color-info"><div class="color-name">surface0</div><div class="color-value">#313244</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>FLTERS · 让 Termux 更优雅</p>
+        <p style="margin-top: 0.5rem;">基于 <a href="https://github.com/catppuccin/catppuccin" target="_blank">Catppuccin Mocha</a> 配色 | 由 <a href="https://github.com/FLT18355" target="_blank">FLT18355</a> 维护</p>
+    </footer>
+</div>
+</body>
+</html>
