@@ -42,13 +42,69 @@
         }
 
         body {
-            background-color: var(--base);
+            background: linear-gradient(135deg, #2a1e3a, #1e1e2e, #181825, #0f0f1a);
+            background-size: 400% 400%;
+            animation: gradientFlow 12s ease infinite;
             color: var(--text);
             font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.5;
             padding: 2rem 1rem;
             min-height: 100vh;
         }
+        
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* 动态光晕/粒子背景 */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 40%, var(--mauve) 0%, transparent 35%),
+                        radial-gradient(circle at 80% 70%, var(--blue) 0%, transparent 40%),
+                        radial-gradient(circle at 40% 90%, var(--peach) 0%, transparent 30%);
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: -1;
+            animation: floatGlow 16s ease infinite;
+        }
+        
+        @keyframes floatGlow {
+            0% {
+                background-position: 0% 0%;
+                opacity: 0.2;
+            }
+            50% {
+                background-position: 100% 100%;
+                opacity: 0.35;
+            }
+            100% {
+                background-position: 0% 0%;
+                opacity: 0.2;
+            }
+        }
+        /* 星星背景 */
+        .star {
+            position: fixed;
+            background-color: var(--text);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            z-index: -1;
+            animation: twinkle 4s ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+
 
         /* 背景网格 */
         body::before {
@@ -74,7 +130,7 @@
 
         /* 玻璃卡片效果 */
         .card {
-            background: rgba(30, 30, 46, 0.7);
+            background: rgba(30, 30, 46, 0.5);
             backdrop-filter: blur(12px);
             border-radius: 28px;
             border: 1px solid var(--surface0);
@@ -293,6 +349,34 @@
             }
         }
     </style>
+    <script>
+        function createStars() {
+            const starContainer = document.body;
+            const starCount = 120;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机大小
+                const size = Math.random() * 2.5 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                // 随机位置
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                
+                // 随机动画延迟
+                star.style.animationDelay = Math.random() * 5 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                
+                starContainer.appendChild(star);
+            }
+        }
+        
+        window.addEventListener('load', createStars);
+    </script>
 </head>
 <body>
 <div class="container">
@@ -375,7 +459,7 @@
                 <div class="terminal-dot"></div>
                 <div class="terminal-dot"></div>
                 <div class="terminal-dot"></div>
-                <span style="margin-left: auto; font-size: 0.7rem; color: var(--overlay1);">bash — FLT18355@nyarch</span>
+                <span style="margin-left: auto; font-size: 0.7rem; color: var(--overlay1);">fish — FLT18355@nyarch</span>
             </div>
             <div class="terminal-line">
                 <span class="prompt">❯</span>
@@ -449,7 +533,7 @@
 
     <!-- 脚注 -->
     <div class="footer">
-        🌸 catppuccin-mocha · maple mono · 移动端友好 · built with 🖤 from termux · 雨爱循环中
+        🌸 catppuccin-mocha · maple mono · 移动端友好 · built with 🖤 from termux · 雨爱循环中 · FLT18355
     </div>
 </div>
 </body>
