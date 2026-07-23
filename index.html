@@ -2,8 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>FLT18355 · 终端风格名片</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLT18355</title>
+    <link rel="icon" href="logo.png">
     <style>
         * {
             margin: 0;
@@ -11,530 +12,450 @@
             box-sizing: border-box;
         }
 
-        /* ========== Catppuccin Mocha 配色变量 ========== */
         :root {
-            --rosewater: #f5e0dc;
-            --flamingo: #f2cdcd;
-            --pink: #f5c2e7;
-            --mauve: #cba6f7;
-            --red: #f38ba8;
-            --maroon: #eba0ac;
-            --peach: #fab387;
-            --yellow: #f9e2af;
-            --green: #a6e3a1;
-            --teal: #94e2d5;
-            --sky: #89dceb;
-            --sapphire: #74c7ec;
-            --blue: #89b4fa;
-            --lavender: #b4befe;
             --text: #cdd6f4;
             --subtext1: #bac2de;
             --subtext0: #a6adc8;
             --overlay2: #9399b2;
             --overlay1: #7f849c;
-            --overlay0: #6c7086;
             --surface2: #585b70;
             --surface1: #45475a;
             --surface0: #313244;
             --base: #1e1e2e;
             --mantle: #181825;
             --crust: #11111b;
+            --mauve: #cba6f7;
+            --blue: #89b4fa;
+            --peach: #fab387;
+            --green: #a6e3a1;
+            --pink: #f5c2e7;
+            --teal: #94e2d5;
+            --yellow: #f9e2af;
+            --red: #f38ba8;
         }
 
         body {
-            background: linear-gradient(135deg, #2a1e3a, #1e1e2e, #181825, #0f0f1a);
-            background-size: 400% 400%;
-            animation: gradientFlow 12s ease infinite;
+            background: var(--base);
             color: var(--text);
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.5;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
             padding: 2rem 1rem;
             min-height: 100vh;
         }
-        
-        @keyframes gradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        /* 动态光晕/粒子背景 */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 40%, var(--mauve) 0%, transparent 35%),
-                        radial-gradient(circle at 80% 70%, var(--blue) 0%, transparent 40%),
-                        radial-gradient(circle at 40% 90%, var(--peach) 0%, transparent 30%);
-            opacity: 0.25;
-            pointer-events: none;
-            z-index: -1;
-            animation: floatGlow 16s ease infinite;
-        }
-        
-        @keyframes floatGlow {
-            0% {
-                background-position: 0% 0%;
-                opacity: 0.2;
-            }
-            50% {
-                background-position: 100% 100%;
-                opacity: 0.35;
-            }
-            100% {
-                background-position: 0% 0%;
-                opacity: 0.2;
-            }
-        }
-        /* 星星背景 */
-        .star {
-            position: fixed;
-            background-color: var(--text);
-            border-radius: 50%;
-            opacity: 0;
-            pointer-events: none;
-            z-index: -1;
-            animation: twinkle 4s ease-in-out infinite;
-        }
-        
-        @keyframes twinkle {
-            0% { opacity: 0; transform: scale(0.8); }
-            50% { opacity: 0.7; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.8); }
-        }
-
-
-        /* 背景网格 */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(var(--surface0) 1px, transparent 1px),
-                linear-gradient(90deg, var(--surface0) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            opacity: 0.3;
-            z-index: -1;
-        }
 
         .container {
-            max-width: 1000px;
+            max-width: 720px;
             margin: 0 auto;
         }
 
-        /* 玻璃卡片效果 */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--surface1);
+        }
+
+        .tab {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            color: var(--overlay1);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: color 0.15s;
+            user-select: none;
+        }
+
+        .tab:hover {
+            color: var(--text);
+        }
+
+        .tab.active {
+            color: var(--text);
+            border-bottom-color: var(--mauve);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
         .card {
-            background: rgba(30, 30, 46, 0.5);
-            backdrop-filter: blur(12px);
-            border-radius: 28px;
-            border: 1px solid var(--surface0);
+            background: var(--mantle);
+            border-radius: 16px;
             padding: 2rem;
-            margin-bottom: 1.8rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .card:hover {
-            border-color: var(--mauve);
-            box-shadow: 0 12px 28px rgba(203, 166, 247, 0.1);
-        }
-
-        /* 头部区域 */
         .header {
             display: flex;
             align-items: center;
             gap: 1rem;
             flex-wrap: wrap;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .avatar-placeholder {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--mauve), var(--blue));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            font-weight: 600;
-            color: var(--crust);
-            box-shadow: 0 0 0 3px var(--surface0);
+        .avatar-wrap {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+
+        .avatar-wrap:hover {
+            transform: scale(1.05);
+        }
+
+        .avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .title h1 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            background: linear-gradient(120deg, var(--text), var(--lavender));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            letter-spacing: -0.3px;
         }
 
         .title .tagline {
-            color: var(--subtext0);
-            font-size: 0.9rem;
-            font-family: 'Maple Mono NF CN', 'Fira Code', monospace;
+            color: var(--overlay1);
+            font-size: 0.85rem;
         }
 
-        /* 标签云 */
-        .badge-list {
+        .tag-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.7rem;
-            margin-top: 1rem;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        .badge {
+        .tag {
             background: var(--surface0);
+            color: var(--subtext0);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            transition: color 0.15s;
+        }
+
+        .tag:hover {
             color: var(--text);
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            font-family: 'Maple Mono NF CN', monospace;
-            transition: all 0.2s;
-            border: 1px solid transparent;
         }
 
-        .badge:hover {
-            background: var(--surface1);
-            border-color: var(--mauve);
-            color: var(--mauve);
+        .quote {
+            color: var(--overlay2);
+            border-left: 2px solid var(--surface1);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
         }
 
-        /* 信息网格 */
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin: 1.5rem 0;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 560px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .info-item {
             background: var(--surface0);
-            border-radius: 20px;
-            padding: 1.2rem;
-            border-left: 4px solid var(--mauve);
+            border-radius: 10px;
+            padding: 1rem;
+            border-left: 3px solid transparent;
         }
+
+        .info-item:nth-child(1) { border-left-color: var(--mauve); }
+        .info-item:nth-child(2) { border-left-color: var(--blue); }
+        .info-item:nth-child(3) { border-left-color: var(--peach); }
+        .info-item:nth-child(4) { border-left-color: var(--green); }
 
         .info-item h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.6rem;
-            color: var(--mauve);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--subtext1);
+            margin-bottom: 0.5rem;
         }
 
-        .info-item p, .info-item a {
-            color: var(--subtext1);
-            word-break: break-all;
+        .info-item p {
+            font-size: 0.85rem;
+            color: var(--overlay1);
+        }
+
+        .info-item a {
+            color: var(--blue);
+        }
+
+        .info-item strong {
+            color: var(--text);
+            font-weight: 500;
         }
 
         a {
             color: var(--blue);
             text-decoration: none;
-            transition: color 0.2s;
         }
 
         a:hover {
-            color: var(--mauve);
             text-decoration: underline;
+        }
+
+        .music-bar {
+            background: var(--surface0);
+            border-radius: 8px;
+            padding: 0.5rem 0.8rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--overlay1);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .music-bar strong {
+            color: var(--peach);
+            font-weight: 500;
+        }
+
+        .equalizer {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            height: 16px;
+        }
+
+        .equalizer span {
+            display: block;
+            width: 3px;
+            background: var(--peach);
+            border-radius: 2px;
+            animation: eq 0.8s ease-in-out infinite alternate;
+        }
+
+        .equalizer span:nth-child(1) { height: 8px;  animation-delay: 0s; }
+        .equalizer span:nth-child(2) { height: 14px; animation-delay: 0.2s; }
+        .equalizer span:nth-child(3) { height: 6px;  animation-delay: 0.4s; }
+
+        @keyframes eq {
+            0% { height: 4px; }
+            100% { height: 16px; }
         }
 
         hr {
             border: none;
-            height: 1px;
-            background: var(--surface1);
-            margin: 1rem 0;
+            border-top: 1px solid var(--surface1);
+            margin-bottom: 1.5rem;
         }
 
-        .quote {
-            font-style: italic;
-            color: var(--subtext0);
-            border-left: 3px solid var(--peach);
-            padding-left: 1rem;
-            margin: 1.2rem 0;
-        }
-
-        /* ========== 新设计的终端区块 ========== */
-        .terminal-block {
-            background: var(--crust);
-            border-radius: 16px;
-            padding: 1rem;
-            margin: 1.5rem 0 0.5rem;
-            font-family: 'Maple Mono NF CN', monospace;
+        .section-title {
             font-size: 0.85rem;
-            border: 1px solid var(--surface1);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-        }
-
-        .terminal-header {
-            display: flex;
-            gap: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--surface1);
-            margin-bottom: 10px;
-        }
-
-        .terminal-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--red);
-        }
-        .terminal-dot:nth-child(2) { background-color: var(--peach); }
-        .terminal-dot:nth-child(3) { background-color: var(--green); }
-
-        .terminal-line {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 8px;
-            margin-bottom: 8px;
-            line-height: 1.5;
-        }
-        .prompt {
-            color: var(--green);
             font-weight: 600;
-            user-select: none;
+            color: var(--subtext1);
+            margin-bottom: 0.75rem;
         }
-        .command {
+
+        .project-list {
+            list-style: none;
+        }
+
+        .project-list li {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: var(--overlay1);
+        }
+
+        .project-list li a {
             color: var(--blue);
         }
-        .output {
-            color: var(--subtext1);
-            word-break: break-word;
-            white-space: pre-wrap;
+
+        .status-line {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--overlay2);
+            margin-bottom: 1.5rem;
         }
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 14px;
-            background-color: var(--mauve);
-            vertical-align: middle;
-            margin-left: 4px;
-            animation: blink 1s step-end infinite;
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            flex-shrink: 0;
+            animation: pulse-dot 2s ease-in-out infinite;
         }
-        @keyframes blink {
+
+        @keyframes pulse-dot {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+            50% { opacity: 0.3; }
+        }
+
+        .game-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .game-card {
+            background: var(--surface0);
+            border-radius: 10px;
+            padding: 1rem;
+            border-left: 3px solid var(--teal);
+            transition: background 0.15s;
+        }
+
+        .game-card:hover {
+            background: var(--surface1);
+        }
+
+        .game-card h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .game-card p {
+            font-size: 0.8rem;
+            color: var(--overlay1);
+        }
+
+        .game-card a {
+            color: var(--text);
         }
 
         .footer {
             text-align: center;
             font-size: 0.75rem;
-            color: var(--overlay1);
+            color: var(--surface2);
             margin-top: 2rem;
         }
 
-        @media (max-width: 620px) {
+        @media (max-width: 480px) {
             .card {
-                padding: 1.5rem;
+                padding: 1.25rem;
             }
-            .title h1 {
-                font-size: 1.4rem;
-            }
-            .terminal-line {
-                flex-direction: column;
-                gap: 4px;
+            .tabs {
+                overflow-x: auto;
             }
         }
     </style>
-    <script>
-        function createStars() {
-            const starContainer = document.body;
-            const starCount = 120;
-            
-            for (let i = 0; i < starCount; i++) {
-                const star = document.createElement('div');
-                star.classList.add('star');
-                
-                // 随机大小
-                const size = Math.random() * 2.5 + 1;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                
-                // 随机位置
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                
-                // 随机动画延迟
-                star.style.animationDelay = Math.random() * 5 + 's';
-                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                
-                starContainer.appendChild(star);
-            }
-        }
-        
-        window.addEventListener('load', createStars);
-    </script>
 </head>
 <body>
 <div class="container">
-    <!-- 主卡 -->
-    <div class="card">
-        <div class="header">
-            <div class="avatar-placeholder">
-                <span>🐧</span>
-            </div>
-            <div class="title">
-                <h1>FLT18355</h1>
-                <div class="tagline">Arch Linux · Termux · Obsidian | 挖矿式学习, 野蛮生长</div>
-            </div>
-        </div>
-        
-        <div class="badge-list">
-            <span class="badge">#archlinux</span>
-            <span class="badge">#termux</span>
-            <span class="badge">#obsidian</span>
-            <span class="badge">#Catppuccin</span>
-            <span class="badge">#Minecraft</span>
-            <span class="badge">#Maple Mono</span>
-            <span class="badge">#Proot</span>
-            <span class="badge">#Music</span>
-        </div>
+    <nav class="tabs">
+        <div class="tab active" data-page="home">首页</div>
+        <div class="tab" data-page="games">小游戏</div>
+    </nav>
 
-        <div class="quote">
-            “ 用 Catppuccin 染遍终端，在 Obsidian 搭建第二大脑，在 Minecraft 里构建世界。”
-        </div>
-
-        <div class="info-grid">
-            <div class="info-item">
-                <h3>🧑‍💻 联系方式 / 社交</h3>
-                <p>📧 QQ: <strong>1583951454</strong></p>
-                <p>🐙 GitHub: <a href="https://github.com/FLT18355" target="_blank">github.com/FLT18355</a></p>
-                <p>MinecraftID: <strong>FLT18355</strong></p>
+    <div class="page active" id="page-home">
+        <div class="card">
+            <div class="header">
+                <div class="avatar-wrap"><img src="logo.png" alt="avatar"></div>
+                <div class="title">
+                    <h1>FLT18355</h1>
+                    <div class="tagline">Arch Linux · Termux · Obsidian</div>
+                </div>
             </div>
 
-            <div class="info-item">
-                <h3>🖌️ 美学信条</h3>
-                <p>✦ 字体: <strong>Maple Mono NF CN</strong> (最爱等宽)<br>
-                ✦ 主题: <strong>Catppuccin Mocha</strong> —— 温暖又克制<br>
-                ✦ 理念: 好用 + 好看 = 持续生产力</p>
+            <div class="status-line">
+                <span class="status-dot"></span>
+                <span>最近在捣鼓 Arch 上的 Catppuccin 主题细节</span>
             </div>
 
-            <div class="info-item">
-                <h3>🧰 开发环境</h3>
-                <p>⚡ Arch Linux ARM (aarch64)<br>
-                📱 Termux + Proot 移动工作流<br>
-                📝 Obsidian 知识库 + Neovim 编辑器</p>
+            <div class="tag-list">
+                <span class="tag">archlinux</span>
+                <span class="tag">termux</span>
+                <span class="tag">obsidian</span>
+                <span class="tag">catppuccin</span>
+                <span class="tag">minecraft</span>
+                <span class="tag">maple mono</span>
             </div>
 
-            <div class="info-item">
-                <h3>⛏️ 兴趣外延</h3>
-                <p>🎮 Minecraft 红石 / 生电 &nbsp;&nbsp;| 🆔 <strong>FLT18355</strong><br>
-                🎨 界面美学 & 终端像素<br>
-                📦 自托管 & 开源工具链</p>
+            <div class="quote">
+                "用 Catppuccin 染遍终端，在 Obsidian 搭建第二大脑，在 Minecraft 里构建世界。"
             </div>
-        </div>
 
-        <!-- 新加入的 “正在听音乐” 插在中间，自然融入 -->
-        <div style="background: var(--surface0); border-radius: 16px; padding: 0.6rem 1rem; margin: 0.8rem 0; text-align: center;">
-            🎵 正在听的音乐 · <strong style="color: var(--peach);">《雨爱》</strong> — 杨丞琳
-        </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>联系方式</h3>
+                    <p>QQ: <strong>1583951454</strong></p>
+                    <p>GitHub: <a href="https://github.com/FLT18355">FLT18355</a></p>
+                    <p>Minecraft: <strong>FLT18355</strong></p>
+                </div>
+                <div class="info-item">
+                    <h3>美学信条</h3>
+                    <p>字体: <strong>Maple Mono NF CN</strong></p>
+                    <p>主题: <strong>Catppuccin Mocha</strong></p>
+                    <p>好用 + 好看 = 生产力</p>
+                </div>
+                <div class="info-item">
+                    <h3>开发环境</h3>
+                    <p>Arch Linux ARM (aarch64)</p>
+                    <p>Termux + Proot 移动工作流</p>
+                    <p>Obsidian + Neovim</p>
+                </div>
+                <div class="info-item">
+                    <h3>兴趣外延</h3>
+                    <p>Minecraft 红石 / 生电</p>
+                    <p>界面美学 &amp; 终端像素</p>
+                    <p>自托管 &amp; 开源工具链</p>
+                </div>
+            </div>
 
-        <hr>
-        
-        <div style="margin-top: 0.5rem;">
-            <h3 style="display: inline-flex; align-items: center; gap: 8px; color: var(--green);">📂 精选项目 / 仓库</h3>
-            <ul style="margin-top: 12px; list-style: none; padding-left: 0;">
-                <li style="margin-bottom: 10px;">🔗 <a href="https://github.com/FLT18355/terminal" target="_blank">FLT18355/terminal</a> — 终端配置文件 / 点文件仓库</li>
-                <li style="margin-bottom: 10px;">🖼️ <a href="https://github.com/FLT18355/mcskin" target="_blank">FLT18355/mcskin</a> — Minecraft 皮肤资源存档</li>
-                <li>🎮 更多有趣的小实验 -> GitHub 主页探索</li>
+            <div class="music-bar">
+                <div class="equalizer">
+                    <span></span><span></span><span></span>
+                </div>
+                <span>正在听 <strong>反乌托邦</strong></span>
+            </div>
+
+            <hr>
+
+            <div class="section-title">精选项目</div>
+            <ul class="project-list">
+                <li><a href="https://github.com/FLT18355/terminal">terminal</a> — 终端配置 / 点文件仓库</li>
+                <li><a href="https://github.com/FLT18355/mcskin">mcskin</a> — Minecraft 皮肤存档</li>
             </ul>
         </div>
+    </div>
 
-        <!-- 增强版终端区域 ———— 更加丰富、更像真实的命令行 -->
-        <div class="terminal-block">
-            <div class="terminal-header">
-                <div class="terminal-dot"></div>
-                <div class="terminal-dot"></div>
-                <div class="terminal-dot"></div>
-                <span style="margin-left: auto; font-size: 0.7rem; color: var(--overlay1);">fish — FLT18355@nyarch</span>
-            </div>
-            <div class="terminal-line">
-                <span class="prompt">❯</span>
-                <span class="command">whoami</span>
-            </div>
-            <div class="terminal-line">
-                <span class="output">“折腾型开发者 / 终身学习者 / 命令行信徒”</span>
-            </div>
-            <div class="terminal-line">
-                <span class="prompt">❯</span>
-                <span class="command">cat /etc/hobby</span>
-            </div>
-            <div class="terminal-line">
-                <span class="output">Minecraft · 终端美学 · 开源工具链 · 笔记狂魔</span>
-            </div>
-            <div class="terminal-line">
-                <span class="prompt">❯</span>
-                <span class="command">neofetch --music</span>
-            </div>
-            <div class="terminal-line">
-                <span class="output">🎵 雨爱 · 杨丞琳 | 单曲循环中</span>
-            </div>
-            <div class="terminal-line">
-                <span class="prompt">❯</span>
-                <span class="command">grep "current_status" ~/project/README.md</span>
-            </div>
-            <div class="terminal-line">
-                <span class="output">打磨 Arch + Catppuccin 美学 / 沉浸在 Obsidian 双向链接中 / 试图在代码与 Minecraft 间找到完美平衡。</span>
-            </div>
-            <div class="terminal-line">
-                <span class="prompt">❯</span>
-                <span class="command">echo $SHELL</span>
-            </div>
-            <div class="terminal-line">
-                <span class="output">/usr/bin/fish  +  Maple Mono 字体  +  Catppuccin 主题</span>
-            </div>
-            <div class="terminal-line">
-                <span class="prompt">❯</span>
-                <span class="command">ping future</span>
-            </div>
-            <div class="terminal-line">
-                <span class="output">从 Termux 到 Arch，从 Obsidian 到 GitHub，连接永不断开。</span>
-            </div>
-            <div>
-            <span class="prompt">❯</span>
-                <span class="command">cat config/flavour</span>
-            </div>
-            <div class="terminal-line">
-                <span class="output">Catppuccin Mocha — 温柔紫色 / 长期信赖 🌸</span>
-            </div>
-            <div class="terminal-line">
-                <span class="prompt">❯</span>
-                <span class="command">fc-match --font "Maple Mono"</span>
-            </div>
-            <div class="terminal-line">
-                <span class="output">Maple Mono NF CN — 代码 / 中文 / 完美对齐 ✨</span>
-            </div>
-            <div class="terminal-line">
-                <span class="prompt">❯</span>
-                <span class="command">obsidian --vault second-brain</span>
-            </div>
-            <div class="terminal-line">
-                <span class="output">📝 笔记节点 + 双链 + 知识网络 | 每日更新中</span>
-            </div>
-            <div class="terminal-line">
-                <span class="prompt">❯</span>
-                <span class="command">_</span><span class="cursor"></span>
+    <div class="page" id="page-games">
+        <div class="card">
+            <div class="section-title" style="margin-bottom: 1rem;">小游戏</div>
+            <div class="game-list">
+                <a href="game-number-bomb.html" class="game-card">
+                    <h3>数字炸弹</h3>
+                    <p>猜一个 1–100 之间的数字，看看几次能命中</p>
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- 脚注 -->
     <div class="footer">
-        🌸 catppuccin-mocha · maple mono · 移动端友好 · built with 🖤 from termux · 雨爱循环中 · FLT18355
+        catppuccin mocha · maple mono · built from termux
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('page-' + tab.dataset.page).classList.add('active');
+        });
+    });
+</script>
 </body>
 </html>
