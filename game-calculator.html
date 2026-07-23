@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算器 — FLT18355</title>
+    <link rel="icon" href="logo.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --text: #cdd6f4;
+            --subtext1: #bac2de;
+            --overlay2: #9399b2;
+            --overlay1: #7f849c;
+            --surface2: #585b70;
+            --surface1: #45475a;
+            --surface0: #313244;
+            --base: #1e1e2e;
+            --mantle: #181825;
+            --crust: #11111b;
+            --mauve: #cba6f7;
+            --blue: #89b4fa;
+            --peach: #fab387;
+            --green: #a6e3a1;
+            --red: #f38ba8;
+            --teal: #94e2d5;
+        }
+
+        body {
+            background: var(--base);
+            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 380px;
+            margin: 0 auto;
+        }
+
+        .back {
+            display: inline-block;
+            color: var(--overlay1);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .back:hover {
+            color: var(--text);
+        }
+
+        .card {
+            background: var(--mantle);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .card h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .display {
+            background: var(--crust);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            text-align: right;
+            margin-bottom: 1rem;
+            min-height: 76px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            word-break: break-all;
+            font-family: 'Inter', monospace;
+        }
+
+        .display .expr {
+            font-size: 0.85rem;
+            color: var(--overlay2);
+            min-height: 1.3rem;
+        }
+
+        .display .result {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text);
+            min-height: 2.2rem;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.45rem;
+        }
+
+        .buttons button {
+            background: var(--surface0);
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 0;
+            font-size: 1rem;
+            color: var(--text);
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.1s;
+        }
+
+        .buttons button:hover {
+            background: var(--surface1);
+        }
+
+        .buttons button:active {
+            background: var(--surface2);
+        }
+
+        .buttons button.fn {
+            color: var(--teal);
+            font-size: 0.85rem;
+        }
+
+        .buttons button.op {
+            color: var(--peach);
+        }
+
+        .buttons button.eq {
+            background: var(--mauve);
+            color: var(--crust);
+        }
+
+        .buttons button.eq:hover {
+            opacity: 0.85;
+        }
+
+        .buttons button.clr {
+            color: var(--red);
+        }
+
+        .buttons button.paren {
+            color: var(--subtext1);
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--surface2);
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 400px) {
+            .card {
+                padding: 1.25rem;
+            }
+            .buttons button {
+                padding: 0.7rem 0;
+                font-size: 0.9rem;
+            }
+            .display .result {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="index.html" class="back">← 返回首页</a>
+
+    <div class="card">
+        <h1>计算器</h1>
+
+        <div class="display">
+            <div class="expr" id="expr"></div>
+            <div class="result" id="result">0</div>
+        </div>
+
+        <div class="buttons">
+            <button class="paren" data-key="(">(</button>
+            <button class="paren" data-key=")">)</button>
+            <button class="clr" data-key="C">C</button>
+            <button class="clr" data-key="←">⌫</button>
+
+            <button class="fn" data-key="x²">x²</button>
+            <button class="fn" data-key="√">√</button>
+            <button class="fn" data-key="%">%</button>
+            <button class="op" data-key="÷">÷</button>
+
+            <button data-key="7">7</button>
+            <button data-key="8">8</button>
+            <button data-key="9">9</button>
+            <button class="op" data-key="×">×</button>
+
+            <button data-key="4">4</button>
+            <button data-key="5">5</button>
+            <button data-key="6">6</button>
+            <button class="op" data-key="−">−</button>
+
+            <button data-key="1">1</button>
+            <button data-key="2">2</button>
+            <button data-key="3">3</button>
+            <button class="op" data-key="+">+</button>
+
+            <button class="fn" data-key="+/−">+/−</button>
+            <button data-key="0">0</button>
+            <button data-key=".">.</button>
+            <button class="eq" data-key="=">=</button>
+
+            <button class="fn" data-key="xʸ">xʸ</button>
+            <button class="fn" data-key="1/x">1/x</button>
+            <button class="fn" data-key="|x|">|x|</button>
+        </div>
+    </div>
+
+    <div class="footer">catppuccin mocha · built from termux</div>
+</div>
+
+<script>
+    let expr = '';
+    let result = '0';
+    let hasResult = false;
+
+    const exprEl = document.getElementById('expr');
+    const resultEl = document.getElementById('result');
+
+    function render() {
+        exprEl.textContent = expr || '\u00A0';
+        resultEl.textContent = result;
+    }
+
+    function calc(s) {
+        try {
+            let cleaned = s
+                .replace(/×/g, '*')
+                .replace(/÷/g, '/')
+                .replace(/−/g, '-')
+                .replace(/\^/g, '**');
+            const val = Function('"use strict"; return (' + cleaned + ')')();
+            if (!isFinite(val)) return '出错';
+            return String(parseFloat(val.toFixed(10)));
+        } catch {
+            return '出错';
+        }
+    }
+
+    function getLastNumber(s) {
+        let m = s.match(/(\d+\.?\d*)$/);
+        return m ? m[1] : null;
+    }
+
+    function replaceLastNumber(s, replacement) {
+        return s.replace(/(\d+\.?\d*)$/, replacement);
+    }
+
+    function applyUnary(fn) {
+        if (!expr) {
+            if (result === '0' || result === '出错') return;
+            let n = parseFloat(result);
+            if (fn === 'x²') n = n ** 2;
+            else if (fn === '√') n = Math.sqrt(n);
+            else if (fn === '%') n = n / 100;
+            else if (fn === '1/x') n = 1 / n;
+            else if (fn === '|x|') n = Math.abs(n);
+            if (!isFinite(n)) { result = '出错'; render(); return; }
+            result = String(parseFloat(n.toFixed(10)));
+            render();
+            return;
+        }
+        let last = getLastNumber(expr);
+        if (!last) return;
+        let n = parseFloat(last);
+        if (fn === 'x²') n = n ** 2;
+        else if (fn === '√') n = Math.sqrt(n);
+        else if (fn === '%') n = n / 100;
+        else if (fn === '1/x') n = 1 / n;
+        else if (fn === '|x|') n = Math.abs(n);
+        if (!isFinite(n)) { result = '出错'; render(); return; }
+        expr = replaceLastNumber(expr, String(parseFloat(n.toFixed(10))));
+        result = calc(expr);
+        render();
+    }
+
+    function toggleSign() {
+        if (!expr) {
+            if (result === '0' || result === '出错') return;
+            result = String(parseFloat((-parseFloat(result)).toFixed(10)));
+            render();
+            return;
+        }
+        let last = getLastNumber(expr);
+        if (!last) return;
+        let n = -parseFloat(last);
+        expr = replaceLastNumber(expr, String(parseFloat(n.toFixed(10))));
+        result = calc(expr);
+        render();
+    }
+
+    let parenCount = 0;
+
+    function input(key) {
+        if (key === 'C') {
+            expr = '';
+            result = '0';
+            hasResult = false;
+            parenCount = 0;
+            render();
+            return;
+        }
+        if (key === 'CE') {
+            if (hasResult) {
+                expr = '';
+                result = '0';
+                hasResult = false;
+            } else {
+                expr = expr.replace(/(\d+\.?\d*)$/, '');
+                if (!expr) result = '0';
+                else result = calc(expr);
+            }
+            render();
+            return;
+        }
+        if (key === '←') {
+            if (hasResult) {
+                expr = '';
+                result = '0';
+                hasResult = false;
+            } else {
+                let lastChar = expr.slice(-1);
+                if (lastChar === '(') parenCount--;
+                if (lastChar === ')') parenCount++;
+                expr = expr.slice(0, -1);
+                if (!expr) result = '0';
+                else result = calc(expr);
+            }
+            render();
+            return;
+        }
+
+        if (['x²', '√', '%', '1/x', '|x|'].includes(key)) {
+            applyUnary(key);
+            return;
+        }
+
+        if (key === '+/−') {
+            toggleSign();
+            return;
+        }
+
+        if (key === '=') {
+            if (!expr) return;
+            result = calc(expr);
+            hasResult = true;
+            render();
+            return;
+        }
+
+        if (hasResult) {
+            if ('0123456789.('.includes(key)) {
+                expr = '';
+                result = '0';
+                parenCount = 0;
+            } else if (key === ')') {
+                expr = '';
+                result = '0';
+                parenCount = 0;
+            }
+            hasResult = false;
+        }
+
+        if (key === '(') {
+            if (expr && /[0-9.)]$/.test(expr)) {
+                expr += '×(';
+            } else {
+                expr += '(';
+            }
+            parenCount++;
+            result = calc(expr) || '0';
+            render();
+            return;
+        }
+
+        if (key === ')') {
+            if (parenCount <= 0) return;
+            if (!expr || /[+\-×÷^(]$/.test(expr.slice(-1))) return;
+            expr += ')';
+            parenCount--;
+            result = calc(expr);
+            render();
+            return;
+        }
+
+        if ('+−×÷'.includes(key)) {
+            if (!expr && key !== '−') return;
+            if ('+−×÷^'.includes(expr.slice(-1))) {
+                expr = expr.slice(0, -1);
+            }
+            if (key === '−') key = '-';
+            expr += key;
+            result = calc(expr) || '0';
+            render();
+            return;
+        }
+
+        if (key === 'xʸ') {
+            if (!expr || !/[0-9)]$/.test(expr.slice(-1))) return;
+            expr += '^';
+            result = calc(expr) || '0';
+            render();
+            return;
+        }
+
+        if (key === '.') {
+            let parts = expr.split(/[+\-×÷^]/);
+            let last = parts[parts.length - 1];
+            let numPart = last.replace(/[^0-9.]/g, '');
+            if (numPart.includes('.')) return;
+            if (!numPart) {
+                expr += '0.';
+            } else {
+                expr += '.';
+            }
+            result = calc(expr);
+            render();
+            return;
+        }
+
+        expr += key;
+        if (/[+\-×÷^]/.test(expr)) {
+            let parts = expr.split(/[+\-×÷^]/);
+            if (!parts[parts.length - 1].replace(/[^0-9.]/g, '').includes('.')) {
+                result = calc(expr);
+            } else {
+                render();
+                return;
+            }
+        }
+        render();
+    }
+
+    document.querySelectorAll('.buttons button').forEach(btn => {
+        btn.addEventListener('click', () => input(btn.dataset.key));
+    });
+
+    document.addEventListener('keydown', e => {
+        const map = {
+            'Enter': '=',
+            'Backspace': '←',
+            'Delete': 'C',
+            'Escape': 'C',
+            '*': '×',
+            '/': '÷',
+            '-': '-',
+            '+': '+',
+            '.': '.',
+            '^': 'xʸ',
+            '(': '(',
+            ')': ')',
+        };
+        const key = map[e.key] || e.key;
+        if (/^[0-9]$/.test(key) || ['=', '←', 'C', '×', '÷', '-', '+', '.', 'xʸ', '(', ')'].includes(key)) {
+            e.preventDefault();
+            input(key);
+        }
+        if (e.key === '%') { e.preventDefault(); input('%'); }
+    });
+
+    render();
+</script>
+</body>
+</html>
+CALCEOF

@@ -71,6 +71,58 @@
             margin-bottom: 1.5rem;
         }
 
+        .setup {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .setup label {
+            font-size: 0.85rem;
+            color: var(--overlay2);
+        }
+
+        .setup input {
+            width: 80px;
+            background: var(--surface0);
+            border: 1px solid var(--surface1);
+            border-radius: 8px;
+            padding: 0.5rem 0.6rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .setup input:focus {
+            border-color: var(--blue);
+        }
+
+        .setup button {
+            background: var(--surface0);
+            border: 1px solid var(--surface1);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text);
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .setup button:hover {
+            background: var(--surface1);
+        }
+
+        .game-area {
+            display: none;
+        }
+
+        .game-area.active {
+            display: block;
+        }
+
         .range-box {
             background: var(--surface0);
             border-radius: 10px;
@@ -193,6 +245,9 @@
             .card {
                 padding: 1.25rem;
             }
+            .setup input {
+                width: 70px;
+            }
         }
     </style>
 </head>
@@ -202,36 +257,57 @@
 
     <div class="card">
         <h1>数字炸弹</h1>
-        <div class="desc">猜一个 1–100 之间的整数，每次告诉你高了还是低了</div>
+        <div class="desc">选个范围，猜数字，每次告诉你高了还是低了</div>
 
-        <div class="range-box">
-            <div class="range" id="rangeDisplay">1 – 100</div>
-            <div class="hint" id="attemptsDisplay">第 0 次猜测</div>
+        <div class="setup" id="setupArea">
+            <label>最小值</label>
+            <input type="number" id="minInput" value="1">
+            <label>最大值</label>
+            <input type="number" id="maxInput" value="100">
+            <button id="startBtn">开始</button>
         </div>
 
-        <div class="input-row">
-            <input type="number" id="guessInput" min="1" max="100" placeholder="输入数字" autofocus>
-            <button id="guessBtn">猜</button>
-        </div>
+        <div class="game-area" id="gameArea">
+            <div class="range-box">
+                <div class="range" id="rangeDisplay">1 – 100</div>
+                <div class="hint" id="attemptsDisplay">第 0 次猜测</div>
+            </div>
 
-        <div class="msg" id="msg"></div>
-        <div class="history" id="history"></div>
-        <div class="new-game" id="newGameBtn">↻ 新一局</div>
+            <div class="input-row">
+                <input type="number" id="guessInput" placeholder="输入数字" autofocus>
+                <button id="guessBtn">猜</button>
+            </div>
+
+            <div class="msg" id="msg"></div>
+            <div class="history" id="history"></div>
+            <div class="new-game" id="newGameBtn">↻ 新一局</div>
+        </div>
     </div>
 
     <div class="footer">catppuccin mocha · built from termux</div>
 </div>
 
 <script>
-    let target, low, high, attempts, guesses, gameOver;
+    let target, low, high, attempts, gameOver;
 
-    function init() {
-        target = Math.floor(Math.random() * 100) + 1;
-        low = 1;
-        high = 100;
+    function startGame() {
+        const minVal = parseInt(document.getElementById('minInput').value);
+        const maxVal = parseInt(document.getElementById('maxInput').value);
+
+        if (isNaN(minVal) || isNaN(maxVal) || minVal >= maxVal) {
+            alert('请设置有效的范围（最小值必须小于最大值）');
+            return;
+        }
+
+        low = minVal;
+        high = maxVal;
+        target = Math.floor(Math.random() * (high - low + 1)) + low;
         attempts = 0;
-        guesses = [];
         gameOver = false;
+
+        document.getElementById('gameArea').classList.add('active');
+        document.getElementById('setupArea').style.display = 'none';
+
         document.getElementById('rangeDisplay').textContent = low + ' – ' + high;
         document.getElementById('attemptsDisplay').textContent = '第 0 次猜测';
         document.getElementById('msg').textContent = '';
@@ -247,17 +323,11 @@
         if (gameOver) return;
         const input = document.getElementById('guessInput');
         const val = parseInt(input.value);
-        if (isNaN(val) || val < 1 || val > 100) {
-            showMsg('请输入 1–100 之间的整数', 'err');
+        if (isNaN(val) || val < low || val > high) {
+            showMsg('请输入 ' + low + '–' + high + ' 之间的整数', 'err');
             return;
         }
         attempts++;
-        guesses.push(val);
-        document.getElementById('attemptsDisplay').textContent = '第 ' + attempts + ' 次猜测';
-        document.getElementById('rangeDisplay').textContent = low + ' – ' + high;
-
-        const msgEl = document.getElementById('msg');
-        const historyEl = document.getElementById('history');
 
         if (val === target) {
             gameOver = true;
@@ -279,6 +349,7 @@
         }
 
         document.getElementById('rangeDisplay').textContent = low + ' – ' + high;
+        document.getElementById('attemptsDisplay').textContent = '第 ' + attempts + ' 次猜测';
         input.value = '';
         input.focus();
     }
@@ -297,13 +368,27 @@
         el.appendChild(span);
     }
 
+    function backToSetup() {
+        document.getElementById('gameArea').classList.remove('active');
+        document.getElementById('setupArea').style.display = 'flex';
+    }
+
+    document.getElementById('startBtn').addEventListener('click', startGame);
     document.getElementById('guessBtn').addEventListener('click', guess);
     document.getElementById('guessInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') guess();
     });
-    document.getElementById('newGameBtn').addEventListener('click', init);
+    document.getElementById('newGameBtn').addEventListener('click', backToSetup);
 
-    init();
+    document.getElementById('minInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') startGame();
+    });
+    document.getElementById('maxInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') startGame();
+    });
+
+    document.getElementById('guessInput').disabled = true;
+    document.getElementById('guessBtn').disabled = true;
 </script>
 </body>
 </html>
