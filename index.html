@@ -1,642 +1,434 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FLT18355</title>
-    <link rel="icon" href="logo.png">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --text: #cdd6f4;
-            --subtext1: #bac2de;
-            --subtext0: #a6adc8;
-            --overlay2: #9399b2;
-            --overlay1: #7f849c;
-            --surface2: #585b70;
-            --surface1: #45475a;
-            --surface0: #313244;
-            --base: #1e1e2e;
-            --mantle: #181825;
-            --crust: #11111b;
-            --mauve: #cba6f7;
-            --blue: #89b4fa;
-            --peach: #fab387;
-            --green: #a6e3a1;
-            --pink: #f5c2e7;
-            --teal: #94e2d5;
-            --yellow: #f9e2af;
-            --red: #f38ba8;
-            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-            --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-        }
-
-        body[data-theme="latte"] {
-            --text: #4c4f69;
-            --subtext1: #5c5f77;
-            --subtext0: #6c6f85;
-            --overlay2: #7c7f93;
-            --overlay1: #8c8fa1;
-            --surface2: #acb0be;
-            --surface1: #bcc0cc;
-            --surface0: #ccd0da;
-            --base: #eff1f5;
-            --mantle: #e6e9ef;
-            --crust: #dce0e8;
-            --mauve: #8839ef;
-            --blue: #1e66f5;
-            --peach: #fe640b;
-            --green: #40a02b;
-            --pink: #ea76cb;
-            --teal: #179299;
-            --yellow: #df8e1d;
-            --red: #d20f39;
-        }
-
-        body {
-            background: var(--base);
-            color: var(--text);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            line-height: 1.6;
-            padding: 2rem 1rem;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            transition: background-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
-        }
-
-        .container {
-            max-width: 720px;
-            margin: 0 auto;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 0;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--surface1);
-        }
-
-        .tab {
-            padding: 0.6rem 1.2rem;
-            font-size: 0.9rem;
-            color: var(--overlay1);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px;
-            transition: color 160ms var(--ease-out), transform 160ms var(--ease-out);
-            user-select: none;
-        }
-
-        .tab:hover {
-            color: var(--text);
-        }
-
-        .tab.active {
-            color: var(--text);
-            border-bottom-color: var(--mauve);
-        }
-
-        .tab:active {
-            transform: scale(0.96);
-        }
-
-        .tab:focus-visible {
-            outline: 2px solid var(--mauve);
-            outline-offset: 2px;
-            border-radius: 6px;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-            animation: pageIn 220ms var(--ease-out);
-        }
-
-        @keyframes pageIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card {
-            background: var(--mantle);
-            border: 1px solid var(--surface0);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-
-        .avatar-wrap {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            overflow: hidden;
-            flex-shrink: 0;
-            transition: transform 200ms var(--ease-out);
-        }
-
-        .avatar-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .title h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .title .tagline {
-            color: var(--overlay1);
-            font-size: 0.85rem;
-        }
-
-        .tag-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .tag {
-            background: var(--surface0);
-            color: var(--subtext0);
-            padding: 0.25rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            transition: color 160ms var(--ease-out), background-color 0.4s var(--ease-out);
-        }
-
-        .tag:hover {
-            color: var(--text);
-        }
-
-        .quote {
-            color: var(--overlay2);
-            border-left: 2px solid var(--surface1);
-            padding-left: 1rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        @media (max-width: 560px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .info-item {
-            background: var(--surface0);
-            border-radius: 10px;
-            padding: 1rem;
-            border-left: 3px solid transparent;
-            animation: fadeUp 280ms var(--ease-out) both;
-            transition: background-color 0.4s var(--ease-out);
-        }
-
-        .info-item:nth-child(1) { border-left-color: var(--mauve); animation-delay: 0ms; }
-        .info-item:nth-child(2) { border-left-color: var(--blue); animation-delay: 60ms; }
-        .info-item:nth-child(3) { border-left-color: var(--peach); animation-delay: 120ms; }
-        .info-item:nth-child(4) { border-left-color: var(--green); animation-delay: 180ms; }
-
-        .info-item h3 {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--subtext1);
-            margin-bottom: 0.5rem;
-        }
-
-        .info-item p {
-            font-size: 0.85rem;
-            color: var(--overlay1);
-        }
-
-        .info-item a {
-            color: var(--blue);
-        }
-
-        .info-item strong {
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        a {
-            color: var(--blue);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        .music-bar {
-            background: var(--surface0);
-            border-radius: 8px;
-            padding: 0.5rem 0.8rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.85rem;
-            color: var(--overlay1);
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .music-bar strong {
-            color: var(--peach);
-            font-weight: 500;
-        }
-
-        .equalizer {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            height: 16px;
-        }
-
-        .equalizer span {
-            display: block;
-            width: 3px;
-            background: var(--peach);
-            border-radius: 2px;
-            animation: eq 0.8s ease-in-out infinite alternate;
-        }
-
-        .equalizer span:nth-child(1) { height: 8px;  animation-delay: 0s; }
-        .equalizer span:nth-child(2) { height: 14px; animation-delay: 0.2s; }
-        .equalizer span:nth-child(3) { height: 6px;  animation-delay: 0.4s; }
-
-        @keyframes eq {
-            0% { height: 4px; }
-            100% { height: 16px; }
-        }
-
-        hr {
-            border: none;
-            border-top: 1px solid var(--surface1);
-            margin-bottom: 1.5rem;
-        }
-
-        .section-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--subtext1);
-            margin-bottom: 0.75rem;
-        }
-
-        .project-list {
-            list-style: none;
-        }
-
-        .project-list li {
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-            color: var(--overlay1);
-        }
-
-        .project-list li a {
-            color: var(--blue);
-        }
-
-        .status-line {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.8rem;
-            color: var(--overlay2);
-            margin-bottom: 1.5rem;
-        }
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--green);
-            flex-shrink: 0;
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .game-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .game-card {
-            background: var(--surface0);
-            border-radius: 10px;
-            padding: 1rem;
-            border-left: 3px solid var(--teal);
-            transition: background 160ms var(--ease-out), transform 160ms var(--ease-out), background-color 0.4s var(--ease-out);
-        }
-
-        .game-card:hover {
-            background: var(--surface1);
-        }
-
-        .game-card:active {
-            transform: scale(0.99);
-        }
-
-        .game-card:focus-visible {
-            outline: 2px solid var(--teal);
-            outline-offset: 2px;
-        }
-
-        .game-card h3 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .game-card p {
-            font-size: 0.8rem;
-            color: var(--overlay1);
-        }
-
-        .game-card a {
-            color: var(--text);
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--surface2);
-            margin-top: 2rem;
-        }
-
-        /* ── Theme Toggle Button ── */
-        .theme-toggle {
-            margin-left: auto;
-            width: 36px;
-            height: 36px;
-            border: none;
-            border-radius: 10px;
-            background: var(--surface0);
-            color: var(--text);
-            font-size: 1.1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
-            transition: background 160ms var(--ease-out), transform 160ms var(--ease-out), background-color 0.4s var(--ease-out);
-        }
-
-        .theme-toggle:hover {
-            background: var(--surface1);
-        }
-
-        .theme-toggle:active {
-            transform: scale(0.9) rotate(180deg);
-        }
-
-        .theme-toggle:focus-visible {
-            outline: 2px solid var(--mauve);
-            outline-offset: 2px;
-        }
-
-        .theme-toggle .icon {
-            display: inline-block;
-            transition: transform 300ms var(--ease-out);
-            position: relative;
-            z-index: 1;
-        }
-
-        body[data-theme="latte"] .theme-toggle .icon {
-            transform: rotate(360deg);
-        }
-
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.35);
-            pointer-events: none;
-            transform: scale(0);
-            animation: ripple-expand 500ms var(--ease-out) forwards;
-        }
-
-        @keyframes ripple-expand {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (hover: hover) and (pointer: fine) {
-            .avatar-wrap:hover {
-                transform: scale(1.05);
-            }
-            .game-card:hover {
-                transform: translateY(-2px);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-            .page.active,
-            .info-item {
-                animation: none;
-            }
-            .tab:active,
-            .game-card:active {
-                transform: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .card {
-                padding: 1.25rem;
-            }
-            .tabs {
-                overflow-x: auto;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FLT18355 — Explore &amp; Discover</title>
+  <style>
+    :root {
+      --primary: #89b4fa;
+      --primary-hover: #b4befe;
+      --primary-dim: rgba(137, 180, 250, 0.15);
+      --primary-glow: rgba(137, 180, 250, 0.08);
+      --text: #cdd6f4;
+      --text-secondary: #bac2de;
+      --text-muted: #7f849c;
+      --bg: #1e1e2e;
+      --bg-card: #313244;
+      --bg-input: #45475a;
+      --border: #45475a;
+      --radius: 10px;
+      --shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: -30%;
+      left: -10%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, rgba(137,180,250,0.10) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: -20%;
+      right: -10%;
+      width: 50%;
+      height: 50%;
+      background: radial-gradient(circle, rgba(137,180,250,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      padding: 56px 0 36px;
+      text-align: center;
+    }
+
+    .avatar-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 16px;
+      padding: 6px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tagline .sep {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--primary);
+      opacity: 0.6;
+    }
+
+    /* Sections */
+    section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.15s;
+    }
+
+    section:hover { border-color: var(--primary); }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-bar {
+      width: 3px;
+      height: 16px;
+      background: var(--primary);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* Tech Stack */
+    .tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tech-tag {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      transition: all 0.12s;
+    }
+
+    .tech-tag.main {
+      background: var(--primary-dim);
+      color: var(--primary);
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    .tech-tag:hover {
+      border-color: var(--primary);
+      color: var(--text);
+    }
+
+    /* Contact Card */
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      transition: all 0.12s;
+      min-width: 0;
+    }
+
+    .contact-item:hover {
+      border-color: var(--primary);
+    }
+
+    .contact-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      min-width: 60px;
+      flex-shrink: 0;
+    }
+
+    .contact-link {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      word-break: break-all;
+      min-width: 0;
+    }
+
+    .contact-item:hover .contact-link {
+      color: var(--primary);
+    }
+
+    /* Project Card */
+    .project-card {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      text-decoration: none;
+      color: inherit;
+      padding: 16px;
+      border-radius: var(--radius);
+      background: var(--bg-input);
+      border: 1px solid transparent;
+      transition: all 0.12s;
+      overflow: hidden;
+    }
+
+    .project-card:hover {
+      background: var(--primary-glow);
+      border-color: var(--border);
+    }
+
+    .project-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius);
+      background: var(--primary-dim);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      border: 1px solid transparent;
+      transition: border-color 0.12s;
+    }
+
+    .project-card:hover .project-icon {
+      border-color: var(--primary);
+    }
+
+    .project-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .project-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .project-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .project-meta span {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 32px 0 24px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+
+    footer .sep {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin: 0 8px;
+      vertical-align: middle;
+      opacity: 0.5;
+    }
+
+    /* Scroll Reveal */
+    section {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadein 0.6s forwards;
+    }
+    section:nth-child(1) { animation-delay: 0.1s; }
+    section:nth-child(2) { animation-delay: 0.2s; }
+    section:nth-child(3) { animation-delay: 0.3s; }
+    section:nth-child(4) { animation-delay: 0.4s; }
+    @keyframes fadein {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      section { padding: 18px; }
+      .contact-item { flex-direction: column; gap: 2px; }
+      .contact-label { min-width: auto; }
+      .project-card { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    <nav class="tabs">
-        <div class="tab active" data-page="home">首页</div>
-        <div class="tab" data-page="games">小游戏</div>
-    </nav>
+  <div class="container">
+    <header>
+      <img class="avatar-logo" src="logo.png" alt="FLT18355" />
+    <h1>FLT18355</h1>
+      <p class="tagline">
+        Python
+        <span class="sep"></span>
+        Catppuccin
+        <span class="sep"></span>
+        Explore
+        <span class="sep"></span>
+        Discover
+      </p>
+    </header>
 
-    <div class="page active" id="page-home">
-        <div class="card">
-            <div class="header">
-                <div class="avatar-wrap"><img src="logo.png" alt="avatar"></div>
-                <div class="title">
-                    <h1>FLT18355</h1>
-                    <div class="tagline">Arch Linux · Termux · Obsidian</div>
-                </div>
-                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
-                    <span class="icon">☀️</span>
-                </button>
-            </div>
-
-            <div class="status-line">
-                <span class="status-dot"></span>
-                <span>最近在捣鼓 Arch 上的 Catppuccin 主题细节</span>
-            </div>
-
-            <div class="tag-list">
-                <span class="tag">archlinux</span>
-                <span class="tag">termux</span>
-                <span class="tag">obsidian</span>
-                <span class="tag">catppuccin</span>
-                <span class="tag">minecraft</span>
-                <span class="tag">maple mono</span>
-            </div>
-
-            <div class="quote">
-                "用 Catppuccin 染遍终端，在 Obsidian 搭建第二大脑，在 Minecraft 里构建世界。"
-            </div>
-
-            <div class="info-grid">
-                <div class="info-item">
-                    <h3>联系方式</h3>
-                    <p>QQ: <strong>1583951454</strong></p>
-                    <p>GitHub: <a href="https://github.com/FLT18355">FLT18355</a></p>
-                    <p>Minecraft: <strong>FLT18355</strong></p>
-                </div>
-                <div class="info-item">
-                    <h3>美学信条</h3>
-                    <p>字体: <strong>Maple Mono NF CN</strong></p>
-                    <p>主题: <strong>Catppuccin Mocha</strong></p>
-                    <p>好用 + 好看 = 生产力</p>
-                </div>
-                <div class="info-item">
-                    <h3>开发环境</h3>
-                    <p>Arch Linux ARM (aarch64)</p>
-                    <p>Termux + Proot 移动工作流</p>
-                    <p>Obsidian + Neovim</p>
-                </div>
-                <div class="info-item">
-                    <h3>兴趣外延</h3>
-                    <p>Minecraft 红石 / 生电</p>
-                    <p>界面美学 &amp; 终端像素</p>
-                    <p>自托管 &amp; 开源工具链</p>
-                </div>
-            </div>
-
-            <div class="music-bar">
-                <div class="equalizer">
-                    <span></span><span></span><span></span>
-                </div>
-                <span>正在听 <strong>反乌托邦</strong></span>
-            </div>
-
-            <hr>
-
-            <div class="section-title">精选项目</div>
-            <ul class="project-list">
-                <li><a href="https://github.com/FLT18355/terminal">terminal</a> — 终端配置 / 点文件仓库</li>
-                <li><a href="https://github.com/FLT18355/mcskin">mcskin</a> — Minecraft 皮肤存档</li>
-            </ul>
+    <main>
+      <section>
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h2>About Me</h2>
         </div>
-    </div>
+        <p>Passionate about exploration and discovery, embracing open source and ecosystem.</p>
+      </section>
 
-    <div class="page" id="page-games">
-        <div class="card">
-            <div class="section-title" style="margin-bottom: 1rem;">小游戏</div>
-            <div class="game-list">
-                <a href="game-number-bomb.html" class="game-card">
-                    <h3>数字炸弹</h3>
-                    <p>猜一个 1–100 之间的数字，看看几次能命中</p>
-                </a>
-                <a href="game-calculator.html" class="game-card" style="border-left-color: var(--peach);">
-                    <h3>计算器</h3>
-                    <p>四则运算 + 括号/幂/平方根/百分/倒数，键盘可用</p>
-                </a>
-            </div>
+      <section>
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h2>Tech Stack</h2>
         </div>
-    </div>
+          <span class="tech-tag main">Python</span>
+          <span class="tech-tag main">Node.js</span>
+          <span class="tech-tag">HTML</span>
+          <span class="tech-tag">Lua</span>
+      </section>
 
-    <div class="footer">
-        catppuccin mocha · maple mono · built from termux
-    </div>
-</div>
+      <section>
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h2>Contact</h2>
+        </div>
+        <div class="contact-list">
+          <a href="https://github.com/FLT18355" target="_blank" rel="noopener" class="contact-item">
+            <span class="contact-label">GitHub</span>
+            <span class="contact-link">FLT18355</span>
+          </a>
+          <a href="https://wpa.qq.com/msgrd?v=3&uin=1583951454&site=qq&menu=yes" target="_blank" rel="noopener" class="contact-item">
+            <span class="contact-label">QQ</span>
+            <span class="contact-link">1583951454</span>
+          </a>
+        </div>
+      </section>
 
-<script>
-    // ── Tab Switch ──
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById('page-' + tab.dataset.page).classList.add('active');
-        });
-    });
+      <section>
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h2>Featured Project</h2>
+        </div>
+        <a href="https://github.com/FLT18355/terminal" target="_blank" rel="noopener" class="project-card">
+          <div class="project-icon">&gt;_</div>
+          <div class="project-body">
+            <div class="project-title">terminal</div>
+            <div class="project-desc">
+              Personal dotfiles, Catppuccin theming, and terminal configuration.
+            </div>
+            <div class="project-meta">
+              <span>dotfiles</span>
+              <span>catppuccin</span>
+              <span>terminal</span>
+            </div>
+          </div>
+        </a>
+      </section>
+    </main>
 
-    // ── Theme Toggle (Mocha ↔ Latte) ──
-    (function() {
-        var btn = document.getElementById('themeToggle');
-        var icon = btn.querySelector('.icon');
-        var saved = localStorage.getItem('catppuccin-theme');
-
-        function apply(theme) {
-            document.body.setAttribute('data-theme', theme);
-            icon.textContent = theme === 'latte' ? '🌙' : '☀️';
-            localStorage.setItem('catppuccin-theme', theme);
-        }
-
-        if (saved) apply(saved);
-
-        btn.addEventListener('click', function(e) {
-            // Ripple
-            var r = document.createElement('span');
-            r.className = 'ripple';
-            var rect = btn.getBoundingClientRect();
-            var size = Math.max(rect.width, rect.height) * 2;
-            r.style.width = r.style.height = size + 'px';
-            r.style.left = (e.clientX - rect.left - size / 2) + 'px';
-            r.style.top = (e.clientY - rect.top - size / 2) + 'px';
-            btn.appendChild(r);
-            r.addEventListener('animationend', function() { r.remove(); });
-
-            // Theme switch
-            var current = document.body.getAttribute('data-theme');
-            apply(current === 'latte' ? 'mocha' : 'latte');
-        });
-    })();
-</script>
+    <footer>
+      Built with passion
+      <span class="sep"></span>
+      © 2025 FLT18355
+      <span class="sep"></span>
+      Explore &amp; Discover
+    </footer>
+  </div>
 </body>
 </html>
