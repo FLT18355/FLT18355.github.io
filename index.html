@@ -32,6 +32,8 @@
             --teal: #94e2d5;
             --yellow: #f9e2af;
             --red: #f38ba8;
+            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+            --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
         }
 
         body {
@@ -41,6 +43,7 @@
             line-height: 1.6;
             padding: 2rem 1rem;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
@@ -62,7 +65,7 @@
             cursor: pointer;
             border-bottom: 2px solid transparent;
             margin-bottom: -1px;
-            transition: color 0.15s;
+            transition: color 160ms var(--ease-out), transform 160ms var(--ease-out);
             user-select: none;
         }
 
@@ -75,18 +78,36 @@
             border-bottom-color: var(--mauve);
         }
 
+        .tab:active {
+            transform: scale(0.96);
+        }
+
+        .tab:focus-visible {
+            outline: 2px solid var(--mauve);
+            outline-offset: 2px;
+            border-radius: 6px;
+        }
+
         .page {
             display: none;
         }
 
         .page.active {
             display: block;
+            animation: pageIn 220ms var(--ease-out);
+        }
+
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .card {
             background: var(--mantle);
+            border: 1px solid var(--surface0);
             border-radius: 16px;
             padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
         }
 
         .header {
@@ -103,11 +124,7 @@
             border-radius: 12px;
             overflow: hidden;
             flex-shrink: 0;
-            transition: transform 0.2s;
-        }
-
-        .avatar-wrap:hover {
-            transform: scale(1.05);
+            transition: transform 200ms var(--ease-out);
         }
 
         .avatar-wrap img {
@@ -140,7 +157,7 @@
             padding: 0.25rem 0.75rem;
             border-radius: 6px;
             font-size: 0.8rem;
-            transition: color 0.15s;
+            transition: color 160ms var(--ease-out);
         }
 
         .tag:hover {
@@ -173,12 +190,13 @@
             border-radius: 10px;
             padding: 1rem;
             border-left: 3px solid transparent;
+            animation: fadeUp 280ms var(--ease-out) both;
         }
 
-        .info-item:nth-child(1) { border-left-color: var(--mauve); }
-        .info-item:nth-child(2) { border-left-color: var(--blue); }
-        .info-item:nth-child(3) { border-left-color: var(--peach); }
-        .info-item:nth-child(4) { border-left-color: var(--green); }
+        .info-item:nth-child(1) { border-left-color: var(--mauve); animation-delay: 0ms; }
+        .info-item:nth-child(2) { border-left-color: var(--blue); animation-delay: 60ms; }
+        .info-item:nth-child(3) { border-left-color: var(--peach); animation-delay: 120ms; }
+        .info-item:nth-child(4) { border-left-color: var(--green); animation-delay: 180ms; }
 
         .info-item h3 {
             font-size: 0.85rem;
@@ -312,11 +330,20 @@
             border-radius: 10px;
             padding: 1rem;
             border-left: 3px solid var(--teal);
-            transition: background 0.15s;
+            transition: background 160ms var(--ease-out), transform 160ms var(--ease-out);
         }
 
         .game-card:hover {
             background: var(--surface1);
+        }
+
+        .game-card:active {
+            transform: scale(0.99);
+        }
+
+        .game-card:focus-visible {
+            outline: 2px solid var(--teal);
+            outline-offset: 2px;
         }
 
         .game-card h3 {
@@ -339,6 +366,36 @@
             font-size: 0.75rem;
             color: var(--surface2);
             margin-top: 2rem;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .avatar-wrap:hover {
+                transform: scale(1.05);
+            }
+            .game-card:hover {
+                transform: translateY(-2px);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .page.active,
+            .info-item {
+                animation: none;
+            }
+            .tab:active,
+            .game-card:active {
+                transform: none;
+            }
         }
 
         @media (max-width: 480px) {

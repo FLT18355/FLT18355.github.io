@@ -26,6 +26,8 @@
             --peach: #fab387;
             --green: #a6e3a1;
             --red: #f38ba8;
+            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+            --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
         }
 
         body {
@@ -35,6 +37,7 @@
             line-height: 1.6;
             padding: 2rem 1rem;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
@@ -47,16 +50,30 @@
             color: var(--overlay1);
             font-size: 0.85rem;
             margin-bottom: 1rem;
+            transition: color 160ms var(--ease-out), transform 160ms var(--ease-out);
         }
 
         .back:hover {
             color: var(--text);
         }
 
+        .back:active {
+            transform: translateX(-2px);
+        }
+
+        .back:focus-visible {
+            outline: 2px solid var(--overlay1);
+            outline-offset: 2px;
+            border-radius: 6px;
+        }
+
         .card {
             background: var(--mantle);
+            border: 1px solid var(--surface0);
             border-radius: 16px;
             padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            animation: fadeUp 240ms var(--ease-out) both;
         }
 
         .card h1 {
@@ -94,10 +111,16 @@
             font-size: 0.9rem;
             font-family: inherit;
             outline: none;
+            transition: border-color 160ms var(--ease-out);
         }
 
         .setup input:focus {
             border-color: var(--blue);
+        }
+
+        .setup input:focus-visible {
+            outline: 2px solid var(--blue);
+            outline-offset: 1px;
         }
 
         .setup button {
@@ -109,10 +132,20 @@
             font-size: 0.9rem;
             cursor: pointer;
             font-family: inherit;
+            transition: background 160ms var(--ease-out), transform 120ms var(--ease-out);
         }
 
         .setup button:hover {
             background: var(--surface1);
+        }
+
+        .setup button:active {
+            transform: scale(0.97);
+        }
+
+        .setup button:focus-visible {
+            outline: 2px solid var(--blue);
+            outline-offset: 2px;
         }
 
         .game-area {
@@ -121,6 +154,12 @@
 
         .game-area.active {
             display: block;
+            animation: areaIn 200ms var(--ease-out);
+        }
+
+        @keyframes areaIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .range-box {
@@ -159,10 +198,16 @@
             font-size: 1rem;
             font-family: inherit;
             outline: none;
+            transition: border-color 160ms var(--ease-out);
         }
 
         .input-row input:focus {
             border-color: var(--blue);
+        }
+
+        .input-row input:focus-visible {
+            outline: 2px solid var(--blue);
+            outline-offset: 1px;
         }
 
         .input-row button {
@@ -174,11 +219,15 @@
             font-size: 0.9rem;
             cursor: pointer;
             font-family: inherit;
-            transition: background 0.15s;
+            transition: background 160ms var(--ease-out), transform 120ms var(--ease-out);
         }
 
         .input-row button:hover {
             background: var(--surface1);
+        }
+
+        .input-row button:active {
+            transform: scale(0.96);
         }
 
         .input-row button:disabled {
@@ -186,10 +235,16 @@
             cursor: not-allowed;
         }
 
+        .input-row button:focus-visible {
+            outline: 2px solid var(--blue);
+            outline-offset: 2px;
+        }
+
         .msg {
             font-size: 0.9rem;
             margin-bottom: 0.75rem;
             min-height: 1.5rem;
+            transition: color 160ms var(--ease-out);
         }
 
         .msg.high { color: var(--blue); }
@@ -222,10 +277,21 @@
             color: var(--overlay1);
             cursor: pointer;
             border-bottom: 1px dashed var(--surface1);
+            transition: color 160ms var(--ease-out), transform 120ms var(--ease-out);
         }
 
         .new-game:hover {
             color: var(--text);
+        }
+
+        .new-game:active {
+            transform: scale(0.97);
+        }
+
+        .new-game:focus-visible {
+            outline: 2px solid var(--overlay1);
+            outline-offset: 2px;
+            border-radius: 4px;
         }
 
         .attempts {
@@ -239,6 +305,30 @@
             font-size: 0.75rem;
             color: var(--surface1);
             margin-top: 2rem;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .back:hover {
+                transform: translateX(-3px);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .card, .game-area.active { animation: none; }
+            .setup button:active,
+            .input-row button:active,
+            .new-game:active,
+            .back:active { transform: none; }
         }
 
         @media (max-width: 480px) {

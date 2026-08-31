@@ -29,6 +29,8 @@
             --green: #a6e3a1;
             --red: #f38ba8;
             --teal: #94e2d5;
+            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+            --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
         }
 
         body {
@@ -38,6 +40,7 @@
             line-height: 1.6;
             padding: 2rem 1rem;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
@@ -50,16 +53,30 @@
             color: var(--overlay1);
             font-size: 0.85rem;
             margin-bottom: 1rem;
+            transition: color 160ms var(--ease-out), transform 160ms var(--ease-out);
         }
 
         .back:hover {
             color: var(--text);
         }
 
+        .back:active {
+            transform: translateX(-2px);
+        }
+
+        .back:focus-visible {
+            outline: 2px solid var(--overlay1);
+            outline-offset: 2px;
+            border-radius: 6px;
+        }
+
         .card {
             background: var(--mantle);
+            border: 1px solid var(--surface0);
             border-radius: 16px;
             padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            animation: fadeUp 240ms var(--ease-out) both;
         }
 
         .card h1 {
@@ -80,6 +97,7 @@
             justify-content: flex-end;
             word-break: break-all;
             font-family: 'Inter', monospace;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.35);
         }
 
         .display .expr {
@@ -110,7 +128,8 @@
             color: var(--text);
             cursor: pointer;
             font-family: inherit;
-            transition: background 0.1s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+            transition: background 160ms var(--ease-out), transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
         }
 
         .buttons button:hover {
@@ -119,6 +138,13 @@
 
         .buttons button:active {
             background: var(--surface2);
+            transform: scale(0.95);
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+        }
+
+        .buttons button:focus-visible {
+            outline: 2px solid var(--mauve);
+            outline-offset: 2px;
         }
 
         .buttons button.fn {
@@ -133,6 +159,7 @@
         .buttons button.eq {
             background: var(--mauve);
             color: var(--crust);
+            transition: background 160ms var(--ease-out), transform 120ms var(--ease-out), opacity 160ms var(--ease-out);
         }
 
         .buttons button.eq:hover {
@@ -152,6 +179,28 @@
             font-size: 0.75rem;
             color: var(--surface2);
             margin-top: 2rem;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .back:hover {
+                transform: translateX(-3px);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .card { animation: none; }
+            .buttons button:active { transform: none; }
+            .back:active { transform: none; }
         }
 
         @media (max-width: 400px) {
