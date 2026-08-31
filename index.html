@@ -36,6 +36,28 @@
             --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
         }
 
+        body[data-theme="latte"] {
+            --text: #4c4f69;
+            --subtext1: #5c5f77;
+            --subtext0: #6c6f85;
+            --overlay2: #7c7f93;
+            --overlay1: #8c8fa1;
+            --surface2: #acb0be;
+            --surface1: #bcc0cc;
+            --surface0: #ccd0da;
+            --base: #eff1f5;
+            --mantle: #e6e9ef;
+            --crust: #dce0e8;
+            --mauve: #8839ef;
+            --blue: #1e66f5;
+            --peach: #fe640b;
+            --green: #40a02b;
+            --pink: #ea76cb;
+            --teal: #179299;
+            --yellow: #df8e1d;
+            --red: #d20f39;
+        }
+
         body {
             background: var(--base);
             color: var(--text);
@@ -44,6 +66,7 @@
             padding: 2rem 1rem;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
+            transition: background-color 0.4s var(--ease-out), color 0.4s var(--ease-out);
         }
 
         .container {
@@ -157,7 +180,7 @@
             padding: 0.25rem 0.75rem;
             border-radius: 6px;
             font-size: 0.8rem;
-            transition: color 160ms var(--ease-out);
+            transition: color 160ms var(--ease-out), background-color 0.4s var(--ease-out);
         }
 
         .tag:hover {
@@ -191,6 +214,7 @@
             padding: 1rem;
             border-left: 3px solid transparent;
             animation: fadeUp 280ms var(--ease-out) both;
+            transition: background-color 0.4s var(--ease-out);
         }
 
         .info-item:nth-child(1) { border-left-color: var(--mauve); animation-delay: 0ms; }
@@ -330,7 +354,7 @@
             border-radius: 10px;
             padding: 1rem;
             border-left: 3px solid var(--teal);
-            transition: background 160ms var(--ease-out), transform 160ms var(--ease-out);
+            transition: background 160ms var(--ease-out), transform 160ms var(--ease-out), background-color 0.4s var(--ease-out);
         }
 
         .game-card:hover {
@@ -366,6 +390,46 @@
             font-size: 0.75rem;
             color: var(--surface2);
             margin-top: 2rem;
+        }
+
+        /* ── Theme Toggle Button ── */
+        .theme-toggle {
+            margin-left: auto;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            background: var(--surface0);
+            color: var(--text);
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 160ms var(--ease-out), transform 160ms var(--ease-out), background-color 0.4s var(--ease-out);
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface1);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.9) rotate(180deg);
+        }
+
+        .theme-toggle:focus-visible {
+            outline: 2px solid var(--mauve);
+            outline-offset: 2px;
+        }
+
+        .theme-toggle .icon {
+            display: inline-block;
+            transition: transform 300ms var(--ease-out);
+        }
+
+        body[data-theme="latte"] .theme-toggle .icon {
+            transform: rotate(360deg);
         }
 
         @keyframes fadeUp {
@@ -423,6 +487,9 @@
                     <h1>FLT18355</h1>
                     <div class="tagline">Arch Linux · Termux · Obsidian</div>
                 </div>
+                <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                    <span class="icon">☀️</span>
+                </button>
             </div>
 
             <div class="status-line">
@@ -509,6 +576,7 @@
 </div>
 
 <script>
+    // ── Tab Switch ──
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -517,6 +585,26 @@
             document.getElementById('page-' + tab.dataset.page).classList.add('active');
         });
     });
+
+    // ── Theme Toggle (Mocha ↔ Latte) ──
+    (function() {
+        var btn = document.getElementById('themeToggle');
+        var icon = btn.querySelector('.icon');
+        var saved = localStorage.getItem('catppuccin-theme');
+
+        function apply(theme) {
+            document.body.setAttribute('data-theme', theme);
+            icon.textContent = theme === 'latte' ? '🌙' : '☀️';
+            localStorage.setItem('catppuccin-theme', theme);
+        }
+
+        if (saved) apply(saved);
+
+        btn.addEventListener('click', function() {
+            var current = document.body.getAttribute('data-theme');
+            apply(current === 'latte' ? 'mocha' : 'latte');
+        });
+    })();
 </script>
 </body>
 </html>
