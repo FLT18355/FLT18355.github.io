@@ -161,6 +161,16 @@
       box-shadow: 0 0 0 4px var(--primary-dim), var(--shadow);
     }
     .theme-toggle.dragging .ico { transition: none; }
+    .trail-dot {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      pointer-events: none;
+      z-index: 49;
+      will-change: transform, opacity;
+    }
     .theme-toggle .ico {
       position: absolute;
       width: 15px;
@@ -572,7 +582,7 @@
         var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         var dragging = false, startX = 0, originX = 0, moved = 0;
-        var prevX = 0, lastT = 0, vel = 0, currentAnim = null;
+        var prevX = 0, lastT = 0, vel = 0, currentAnim = null, lastTrailX = 0, trailCount = 0;
 
         function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
         function rubber(o) { var d = 24; return (o * d * 0.55) / (d + 0.55 * Math.abs(o)); }
@@ -588,7 +598,7 @@
             currentAnim.cancel(); currentAnim = null;
           }
           originX = tx();
-          prevX = originX; lastT = e.timeStamp; vel = 0;
+          prevX = originX; lastT = e.timeStamp; vel = 0; lastTrailX = originX; trailCount = 0;
           btn.classList.add('dragging');
           try { btn.setPointerCapture(e.pointerId); } catch (err) {}
         });
@@ -602,6 +612,10 @@
           var dt = e.timeStamp - lastT;
           if (dt > 0) { vel = (x - prevX) / dt * 1000; prevX = x; lastT = e.timeStamp; }
           thumb.style.transform = 'translateX(' + x + 'px) scale(1.12)';
+          if (!reduce && trailCount < 48 && Math.abs(x - lastTrailX) >= 6) {
+            lastTrailX = x;
+            spawnTrail();
+          }
           var p = clamp(raw / maxX, 0, 1);
           icoMoon.style.opacity = p;
           icoSun.style.opacity = 1 - p;
@@ -629,6 +643,25 @@
           icoMoon.style.transform = '';
           icoSun.style.transform = '';
           springTo(targetX, vel);
+        }
+        function spawnTrail() {
+          var r = btn.getBoundingClientRect();
+          var cx = r.left + PAD + lastTrailX + THUMB / 2;
+          var cy = r.top + r.height / 2;
+          var dot = document.createElement('span');
+          dot.className = 'trail-dot';
+          dot.style.left = cx + 'px';
+          dot.style.top = cy + 'px';
+          document.body.appendChild(dot);
+          trailCount++;
+          var a = dot.animate(
+            [
+              { opacity: 0.45, transform: 'translate(-50%, -50%) scale(1)' },
+              { opacity: 0, transform: 'translate(-50%, -50%) scale(0.35)' }
+            ],
+            { duration: 420, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' }
+          );
+          a.onfinish = function () { dot.remove(); trailCount--; };
         }
 
         function springTo(targetX, velocity) {
