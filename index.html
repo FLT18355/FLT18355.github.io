@@ -407,6 +407,8 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
             transition: background 160ms var(--ease-out), transform 160ms var(--ease-out), background-color 0.4s var(--ease-out);
         }
 
@@ -426,10 +428,28 @@
         .theme-toggle .icon {
             display: inline-block;
             transition: transform 300ms var(--ease-out);
+            position: relative;
+            z-index: 1;
         }
 
         body[data-theme="latte"] .theme-toggle .icon {
             transform: rotate(360deg);
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            pointer-events: none;
+            transform: scale(0);
+            animation: ripple-expand 500ms var(--ease-out) forwards;
+        }
+
+        @keyframes ripple-expand {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         @keyframes fadeUp {
@@ -600,7 +620,19 @@
 
         if (saved) apply(saved);
 
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function(e) {
+            // Ripple
+            var r = document.createElement('span');
+            r.className = 'ripple';
+            var rect = btn.getBoundingClientRect();
+            var size = Math.max(rect.width, rect.height) * 2;
+            r.style.width = r.style.height = size + 'px';
+            r.style.left = (e.clientX - rect.left - size / 2) + 'px';
+            r.style.top = (e.clientY - rect.top - size / 2) + 'px';
+            btn.appendChild(r);
+            r.addEventListener('animationend', function() { r.remove(); });
+
+            // Theme switch
             var current = document.body.getAttribute('data-theme');
             apply(current === 'latte' ? 'mocha' : 'latte');
         });
