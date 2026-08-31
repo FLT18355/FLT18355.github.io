@@ -131,14 +131,17 @@
       border-radius: 999px;
       border: 1px solid var(--border);
       background: var(--bg-input);
-      cursor: pointer;
+      cursor: grab;
       padding: 0;
       display: flex;
       align-items: center;
       box-shadow: var(--shadow);
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
       transition: background-color 200ms var(--ease-out), border-color 200ms var(--ease-out);
     }
-    .theme-toggle:active { transform: scale(0.96); }
+    .theme-toggle:active { transform: scale(0.96); cursor: grabbing; }
     .theme-toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
     .theme-toggle .thumb {
       position: relative;
@@ -153,6 +156,8 @@
       justify-content: center;
       transition: transform 220ms var(--ease-out), background-color 200ms var(--ease-out);
     }
+    .theme-toggle.dragging .thumb,
+    .theme-toggle.dragging .ico { transition: none; }
     .theme-toggle .ico {
       position: absolute;
       width: 15px;
@@ -160,7 +165,7 @@
       transition: opacity 200ms var(--ease-out);
     }
     .theme-toggle .ico-sun { opacity: 0; }
-    :root[data-theme="mocha"] .theme-toggle .thumb { transform: translateX(26px); }
+    :root[data-theme="mocha"] .theme-toggle .thumb { transform: translateX(24px); }
     :root[data-theme="mocha"] .theme-toggle .ico-moon { opacity: 1; }
     :root[data-theme="mocha"] .theme-toggle .ico-sun { opacity: 0; }
     :root[data-theme="latte"] .theme-toggle .thumb { transform: translateX(0); }
@@ -556,11 +561,56 @@
         var root = document.documentElement;
         var btn = document.getElementById('themeToggle');
         if (!btn) return;
-        btn.addEventListener('click', function () {
-          var next = root.getAttribute('data-theme') === 'mocha' ? 'latte' : 'mocha';
-          root.setAttribute('data-theme', next);
-          try { localStorage.setItem('theme', next); } catch (e) {}
+        var thumb = btn.querySelector('.thumb');
+        var icoMoon = btn.querySelector('.ico-moon');
+        var icoSun = btn.querySelector('.ico-sun');
+        var PAD = 3, THUMB = 26;
+        var maxX = btn.clientWidth - THUMB - PAD * 2;
+
+        var dragging = false, startX = 0, originX = 0, moved = 0, lastX = 0;
+
+        btn.addEventListener('pointerdown', function (e) {
+          dragging = true;
+          moved = 0;
+          startX = e.clientX;
+          originX = root.getAttribute('data-theme') === 'mocha' ? maxX : 0;
+          lastX = originX;
+          btn.classList.add('dragging');
+          try { btn.setPointerCapture(e.pointerId); } catch (err) {}
         });
+
+        btn.addEventListener('pointermove', function (e) {
+          if (!dragging) return;
+          var dx = e.clientX - startX;
+          moved = Math.max(moved, Math.abs(dx));
+          var x = Math.max(0, Math.min(maxX, originX + dx));
+          lastX = x;
+          thumb.style.transform = 'translateX(' + x + 'px)';
+          var p = maxX ? x / maxX : 0;
+          icoMoon.style.opacity = p;
+          icoSun.style.opacity = 1 - p;
+        });
+
+        function endDrag(e) {
+          if (!dragging) return;
+          dragging = false;
+          try { btn.releasePointerCapture(e.pointerId); } catch (err) {}
+          var current = root.getAttribute('data-theme');
+          var target = moved < 4
+            ? (current === 'mocha' ? 'latte' : 'mocha')
+            : (lastX > maxX / 2 ? 'mocha' : 'latte');
+          btn.classList.remove('dragging');
+          if (target !== current) {
+            root.setAttribute('data-theme', target);
+            try { localStorage.setItem('theme', target); } catch (err) {}
+          }
+          thumb.style.transform = '';
+          icoMoon.style.opacity = '';
+          icoSun.style.opacity = '';
+        }
+
+        btn.addEventListener('pointerup', endDrag);
+        btn.addEventListener('pointercancel', endDrag);
       })();
     </script>
 </body>
