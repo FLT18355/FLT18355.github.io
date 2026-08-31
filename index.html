@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="mocha">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FLT18355 — Explore &amp; Discover</title>
   <style>
+    @property --primary { syntax: "<color>"; inherits: true; initial-value: #89b4fa; }
+    @property --primary-hover { syntax: "<color>"; inherits: true; initial-value: #b4befe; }
+    @property --primary-dim { syntax: "<color>"; inherits: true; initial-value: rgba(137, 180, 250, 0.15); }
+    @property --primary-glow { syntax: "<color>"; inherits: true; initial-value: rgba(137, 180, 250, 0.08); }
+    @property --text { syntax: "<color>"; inherits: true; initial-value: #cdd6f4; }
+    @property --text-secondary { syntax: "<color>"; inherits: true; initial-value: #bac2de; }
+    @property --text-muted { syntax: "<color>"; inherits: true; initial-value: #7f849c; }
+    @property --bg { syntax: "<color>"; inherits: true; initial-value: #1e1e2e; }
+    @property --bg-card { syntax: "<color>"; inherits: true; initial-value: #313244; }
+    @property --bg-input { syntax: "<color>"; inherits: true; initial-value: #45475a; }
+    @property --border { syntax: "<color>"; inherits: true; initial-value: #45475a; }
     :root {
       --primary: #89b4fa;
       --primary-hover: #b4befe;
@@ -19,6 +30,32 @@
       --border: #45475a;
       --radius: 10px;
       --shadow: 0 1px 4px rgba(0,0,0,0.3);
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      transition:
+        --primary 240ms var(--ease-out),
+        --primary-hover 240ms var(--ease-out),
+        --primary-dim 240ms var(--ease-out),
+        --primary-glow 240ms var(--ease-out),
+        --text 240ms var(--ease-out),
+        --text-secondary 240ms var(--ease-out),
+        --text-muted 240ms var(--ease-out),
+        --bg 240ms var(--ease-out),
+        --bg-card 240ms var(--ease-out),
+        --bg-input 240ms var(--ease-out),
+        --border 240ms var(--ease-out);
+    }
+    :root[data-theme="latte"] {
+      --primary: #1e66f5;
+      --primary-hover: #7287fd;
+      --primary-dim: rgba(30, 102, 245, 0.12);
+      --primary-glow: rgba(30, 102, 245, 0.08);
+      --text: #4c4f69;
+      --text-secondary: #5c5f77;
+      --text-muted: #9ca0b0;
+      --bg: #eff1f5;
+      --bg-card: #ccd0da;
+      --bg-input: #bcc0cc;
+      --border: #bcc0cc;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -82,6 +119,59 @@
       background: var(--bg-input);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
+    }
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 50;
+      width: 58px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      box-shadow: var(--shadow);
+      transition: background-color 200ms var(--ease-out), border-color 200ms var(--ease-out);
+    }
+    .theme-toggle:active { transform: scale(0.96); }
+    .theme-toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .theme-toggle .thumb {
+      position: relative;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin: 0 3px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 220ms var(--ease-out), background-color 200ms var(--ease-out);
+    }
+    .theme-toggle .ico {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      transition: opacity 200ms var(--ease-out);
+    }
+    .theme-toggle .ico-sun { opacity: 0; }
+    :root[data-theme="mocha"] .theme-toggle .thumb { transform: translateX(26px); }
+    :root[data-theme="mocha"] .theme-toggle .ico-moon { opacity: 1; }
+    :root[data-theme="mocha"] .theme-toggle .ico-sun { opacity: 0; }
+    :root[data-theme="latte"] .theme-toggle .thumb { transform: translateX(0); }
+    :root[data-theme="latte"] .theme-toggle .ico-moon { opacity: 0; }
+    :root[data-theme="latte"] .theme-toggle .ico-sun { opacity: 1; }
+    @media (hover: hover) and (pointer: fine) {
+      .theme-toggle:hover { border-color: var(--primary); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      :root { transition: none; }
+      .theme-toggle, .theme-toggle .thumb, .theme-toggle .ico { transition: none; }
     }
 
     h1 {
@@ -346,8 +436,23 @@
       .project-card { flex-direction: column; }
     }
   </style>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'latte' : 'mocha';
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
 </head>
 <body>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换 Latte / Mocha 配色" title="切换主题">
+      <span class="thumb">
+        <svg class="ico ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="ico ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </span>
+    </button>
   <div class="container">
     <header>
       <img class="avatar-logo" src="logo.png" alt="FLT18355" />
@@ -377,10 +482,12 @@
           <div class="section-bar"></div>
           <h2>Tech Stack</h2>
         </div>
-          <span class="tech-tag main">Python</span>
-          <span class="tech-tag main">Node.js</span>
-          <span class="tech-tag">HTML</span>
-          <span class="tech-tag">Lua</span>
+          <div class="tech-grid">
+            <span class="tech-tag main">Python</span>
+            <span class="tech-tag main">Node.js</span>
+            <span class="tech-tag">HTML</span>
+            <span class="tech-tag">Lua</span>
+          </div>
       </section>
 
       <section>
@@ -444,5 +551,17 @@
       Explore &amp; Discover
     </footer>
   </div>
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var btn = document.getElementById('themeToggle');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+          var next = root.getAttribute('data-theme') === 'mocha' ? 'latte' : 'mocha';
+          root.setAttribute('data-theme', next);
+          try { localStorage.setItem('theme', next); } catch (e) {}
+        });
+      })();
+    </script>
 </body>
 </html>
