@@ -1,0 +1,151 @@
+/* ============================================================
+   motion.css — 增量动效层（规则需要 html.motion-js 门控）
+   由 app-motion.js 在「支持 IntersectionObserver 且用户未要求
+   减弱动效」时给 <html> 加上该类；否则本文件内动效规则均为惰性。
+   ============================================================ */
+
+/* ---------- 1. 区块标题下方的强调线：入场时从左画出来 ---------- */
+html.motion-js .block-header { position: relative; }
+html.motion-js .block-header::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -1px;
+  width: 64px; height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--acc), transparent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+html.motion-js .block.in .block-header::after {
+  animation: lineDraw 0.55s var(--ease-out) forwards;
+  animation-delay: calc(var(--d, 0s) + 0.3s);
+}
+@keyframes lineDraw { to { transform: scaleX(1); } }
+
+/* ---------- 2. 标签/筹码跟随区块做二级错峰入场 ---------- */
+html.motion-js .block.in .interest,
+html.motion-js .block.in .tech-tag,
+html.motion-js .block.in .flavor {
+  animation: chipIn 0.5s var(--ease-out) backwards;
+}
+html.motion-js .block.in .interest:nth-child(1),
+html.motion-js .block.in .tech-tag:nth-child(1),
+html.motion-js .block.in .flavor:nth-child(1) { animation-delay: calc(var(--d, 0s) + 0.18s); }
+html.motion-js .block.in .interest:nth-child(2),
+html.motion-js .block.in .tech-tag:nth-child(2),
+html.motion-js .block.in .flavor:nth-child(2) { animation-delay: calc(var(--d, 0s) + 0.24s); }
+html.motion-js .block.in .interest:nth-child(3),
+html.motion-js .block.in .tech-tag:nth-child(3),
+html.motion-js .block.in .flavor:nth-child(3) { animation-delay: calc(var(--d, 0s) + 0.30s); }
+html.motion-js .block.in .interest:nth-child(4),
+html.motion-js .block.in .tech-tag:nth-child(4),
+html.motion-js .block.in .flavor:nth-child(4) { animation-delay: calc(var(--d, 0s) + 0.36s); }
+html.motion-js .block.in .interest:nth-child(n+5),
+html.motion-js .block.in .tech-tag:nth-child(n+5),
+html.motion-js .block.in .flavor:nth-child(n+5) { animation-delay: calc(var(--d, 0s) + 0.42s); }
+@keyframes chipIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 3. 大卡片的指针光斑（跟随鼠标的柔光） ---------- */
+html.motion-js .block { position: relative; }
+html.motion-js .block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    320px circle at var(--sx, 50%) var(--sy, 50%),
+    color-mix(in srgb, var(--acc) 7%, transparent),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-out);
+}
+html.motion-js .block.hot::after { opacity: 1; }
+
+/* ---------- 4. 项目卡片 3D 微倾斜 + 主色光斑 ---------- */
+html.motion-js .project-card {
+  --rx: 0deg; --ry: 0deg; --ty: 0px;
+  will-change: transform;
+  transform: perspective(760px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--ty));
+}
+html.motion-js .project-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    260px circle at var(--sx, 50%) var(--sy, 50%),
+    color-mix(in srgb, var(--acc) 16%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+  z-index: 1;
+}
+html.motion-js .project-card.hot::before { opacity: 1; }
+html.motion-js .project-card:hover { --ty: -3px; }
+html.motion-js .project-card:active { --ty: 0px; --rx: 0deg; --ry: 0deg; }
+
+/* 主题涟漪遮罩（定位类，动画由 app-motion.js 驱动） */
+.theme-ripple {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  pointer-events: none;
+}
+
+/* ---------- 5. 阅读进度线：页面最顶上的主色细线 ---------- */
+.progress-line {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  z-index: 60;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--mauve), var(--primary), var(--teal), var(--green), var(--peach));
+  transform: scaleX(var(--p, 0));
+  transform-origin: left center;
+  opacity: 0.85;
+}
+
+/* ---------- 6. 联系方式图标：悬停时轻轻抖一下 ---------- */
+html.motion-js .contact-item:hover .contact-ico {
+  animation: iconPop 0.45s var(--ease-out);
+}
+@keyframes iconPop {
+  0%   { transform: scale(1) rotate(0deg); }
+  35%  { transform: scale(1.18) rotate(-6deg); }
+  65%  { transform: scale(1.08) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ---------- 7. 页脚：滚动到附近时浮现 ---------- */
+html.motion-js .footline {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+html.motion-js .footline.in { opacity: 1; transform: none; }
+
+/* ---------- 减弱动效：整体熄火 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html.motion-js .block,
+  html.motion-js .block-header::after,
+  html.motion-js .footline,
+  html.motion-js .interest,
+  html.motion-js .tech-tag,
+  html.motion-js .flavor,
+  html.motion-js .contact-ico {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  html.motion-js .project-card { transform: none !important; }
+  html.motion-js .block::after,
+  html.motion-js .project-card::before { display: none; }
+}
