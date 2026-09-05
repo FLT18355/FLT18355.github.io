@@ -86,7 +86,7 @@
       --primary-glow: rgba(30, 102, 245, 0.08);
       --text: #4c4f69;
       --text-secondary: #5c5f77;
-      --text-muted: #7c7f93;
+      --text-muted: #6c6f85;
       --bg: #eff1f5;
       --bg-card: #ccd0da;
       --bg-input: #bcc0cc;
@@ -125,7 +125,7 @@
     ::selection { background: color-mix(in srgb, var(--primary) 28%, transparent); }
     html { scrollbar-color: var(--bg-input) var(--bg); }
 
-    /* Ambient background glows — parallax drift with pointer */
+    /* Ambient background glows - parallax drift with pointer */
     .glow { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; will-change: transform; }
     .glow-a {
       top: -30%; left: -15%; width: 70vw; height: 70vw;
@@ -218,21 +218,11 @@
 
     .tagline {
       margin-top: 12px;
-      font-size: 0.85rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
       color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
     }
-    .tagline .sep {
-      width: 3px; height: 3px; border-radius: 50%;
-      background: var(--primary); opacity: 0.6;
-    }
-    .tagline .sep:nth-of-type(1) { background: var(--mauve); }
-    .tagline .sep:nth-of-type(2) { background: var(--green); }
-    .tagline .sep:nth-of-type(3) { background: var(--peach); }
 
     .rail-label {
       font-family: var(--mono);
@@ -266,13 +256,13 @@
     .contact-item:hover {
       border-color: var(--ci);
       transform: translateX(3px);
-      box-shadow: 0 6px 18px color-mix(in srgb, var(--ci) 20%, transparent);
+      box-shadow: var(--shadow);
     }
     .contact-item:active { transform: translateX(0) scale(0.98); }
     .contact-item:focus-visible { outline: 2px solid var(--ci); outline-offset: 2px; }
 
     .contact-ico {
-      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      width: 28px; height: 28px; border-radius: 10px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       background: color-mix(in srgb, var(--ci) 15%, transparent); color: var(--ci);
     }
@@ -323,11 +313,6 @@
       box-shadow: var(--shadow);
       transition: border-color 0.2s, box-shadow 0.3s var(--ease-out);
     }
-    .block.b-about { --acc: var(--mauve); --acc-dim: var(--mauve-dim); }
-    .block.b-interests { --acc: var(--green); --acc-dim: var(--green-dim); }
-    .block.b-tech { --acc: var(--teal); --acc-dim: var(--teal-dim); }
-    .block.b-projects { --acc: var(--peach); --acc-dim: var(--peach-dim); }
-    .block.b-following { --acc: var(--pink); --acc-dim: var(--pink-dim); }
     html.motion-js .block { opacity: 0; }
     html.motion-js .block.in { animation: blockIn 0.65s var(--ease-out) both; animation-delay: var(--d, 0s); }
     html.motion-js .content .block:nth-child(1) { --d: 0.06s; }
@@ -335,7 +320,7 @@
     html.motion-js .content .block:nth-child(3) { --d: 0.22s; }
     html.motion-js .content .block:nth-child(4) { --d: 0.30s; }
     html.motion-js .content .block:nth-child(5) { --d: 0.38s; }
-    .block:hover { border-color: var(--acc); box-shadow: 0 6px 20px var(--acc-dim); }
+    .block:hover { border-color: var(--primary); box-shadow: var(--shadow-lift); }
 
     .block-header {
       display: flex;
@@ -345,14 +330,7 @@
       padding-bottom: 12px;
       border-bottom: 1px solid var(--border);
     }
-    .block-index {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: var(--acc);
-      letter-spacing: 0.04em;
-    }
-    .block-header h2 { font-size: 1.02rem; color: var(--text); font-weight: 600; letter-spacing: -0.01em; }
+    .block-header h2 { font-size: 1.15rem; color: var(--text); font-weight: 700; letter-spacing: -0.02em; }
 
     p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; text-wrap: pretty; }
 
@@ -391,7 +369,6 @@
     .interest {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
       padding: 7px 13px;
       border-radius: 999px;
       background: var(--surface);
@@ -400,25 +377,13 @@
       font-size: 0.82rem;
       transition: border-color 0.15s, color 0.15s, transform 0.15s var(--ease-out);
     }
-    .interest::before {
-      content: "";
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--ic);
-    }
-    .interest:hover { border-color: var(--ic); color: var(--text); transform: translateY(-2px); }
-    .i-blue { --ic: var(--primary); }
-    .i-mauve { --ic: var(--mauve); }
-    .i-pink { --ic: var(--pink); }
-    .i-green { --ic: var(--green); }
-    .i-peach { --ic: var(--peach); }
-    .i-teal { --ic: var(--teal); }
+    .interest:hover { border-color: var(--primary); color: var(--text); transform: translateY(-2px); }
 
     /* Tech stack */
     .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
     .tech-tag {
       padding: 6px 13px;
-      border-radius: 8px;
+      border-radius: 999px;
       font-size: 13px;
       font-weight: 500;
       border: 1px solid var(--border);
@@ -434,31 +399,27 @@
     .tech-tag.t-mauve { background: var(--mauve-dim); color: var(--mauve); border-color: transparent; }
     .tech-tag:hover { border-color: currentColor; color: var(--text); transform: translateY(-2px); }
 
-    /* Featured projects — 2-up card grid */
+    /* Featured projects - 2-up card grid */
     .project-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     @media (min-width: 760px) { .project-grid { grid-template-columns: 1fr 1fr; } }
 
     .project-card {
       --acc: var(--primary);
       --acc-dim: var(--primary-dim);
+      position: relative;
       display: flex;
       flex-direction: column;
       gap: 12px;
       text-decoration: none;
       color: inherit;
       padding: 18px;
-      border-radius: 12px;
+      border-radius: 14px;
       background: var(--glass-item);
       border: 1px solid var(--glass-border);
       -webkit-backdrop-filter: blur(10px) saturate(1.25);
       backdrop-filter: blur(10px) saturate(1.25);
       transition: background-color 0.15s, border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
     }
-    .project-card.p-terminal { --acc: var(--teal); --acc-dim: var(--teal-dim); }
-    .project-card.p-lxm { --acc: var(--pink); --acc-dim: var(--pink-dim); }
-    .project-card.p-dotfiles { --acc: var(--mauve); --acc-dim: var(--mauve-dim); }
-    .project-card.f-herdr { --acc: var(--primary); --acc-dim: var(--primary-dim); }
-    .project-card.f-omp { --acc: var(--green); --acc-dim: var(--green-dim); }
     .project-card::after {
       content: "";
       position: absolute;
@@ -469,9 +430,9 @@
       pointer-events: none;
     }
     .project-card:hover {
-      border-color: var(--acc);
+      border-color: var(--primary);
       transform: translateY(-3px);
-      box-shadow: var(--shadow-lift), 0 0 22px var(--acc-dim);
+      box-shadow: var(--shadow-lift);
     }
     .project-card:hover::after { transform: translateX(110%); }
     .project-card:active { transform: translateY(0) scale(0.985); }
@@ -520,24 +481,30 @@
 
     /* Footer spans full width under the grid */
     .footline {
-      grid-column: 1 / -1;
       text-align: center;
       padding: 28px 0 8px;
       color: var(--text-muted);
       font-size: 0.78rem;
       border-top: 1px solid var(--border);
       margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
     }
-    .footline .sep {
-      display: inline-block;
-      width: 3px; height: 3px; border-radius: 50%;
-      background: var(--primary);
-      margin: 0 8px;
-      vertical-align: middle;
-      opacity: 0.5;
+    .footline a {
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .footline a:hover {
+      color: var(--primary);
+      border-color: var(--primary);
     }
 
-    /* Theme toggle — demo/button.html 一比一还原（200×90 原布局，wrapper 统一缩放），配色换 Catppuccin */
+    /* Theme toggle - demo/button.html 一比一还原（200×90 原布局，wrapper 统一缩放），配色换 Catppuccin */
     .toggle-scale {
       --tgl-s: 0.5;
       position: relative;
@@ -610,8 +577,11 @@
       left: 0;
       background: #eff1f5;
       border-radius: 999px;
+      /* 静态回退停在右侧外，动画不运行时不可见、不遮挡太阳 */
+      transform: translateX(270px);
       transition: opacity 0.55s ease;
-      z-index: 1;
+      /* 云朵从太阳前方飘过（云遮日），避免实心白云与太阳光晕糊在一起 */
+      z-index: 4;
       pointer-events: none;
     }
     .theme-toggle .cloud::before, .theme-toggle .cloud::after {
@@ -620,16 +590,16 @@
       background: #eff1f5;
       border-radius: 50%;
     }
-    .theme-toggle .cloud1 { width: 40px; height: 18px; top: 12%; animation: drift 20s linear infinite; animation-delay: -14s; }
+    .theme-toggle .cloud1 { width: 40px; height: 18px; top: 12%; animation: drift 20s linear infinite; animation-delay: -2s; }
     .theme-toggle .cloud1::before { width: 22px; height: 22px; top: -11px; left: 4px; }
     .theme-toggle .cloud1::after  { width: 28px; height: 28px; top: -14px; right: 4px; }
-    .theme-toggle .cloud2 { width: 32px; height: 14px; top: 52%; animation: drift 28s linear infinite; animation-delay: -15s; }
+    .theme-toggle .cloud2 { width: 32px; height: 14px; top: 52%; animation: drift 28s linear infinite; animation-delay: -7s; }
     .theme-toggle .cloud2::before { width: 18px; height: 18px; top: -9px; left: 3px; }
     .theme-toggle .cloud2::after  { width: 22px; height: 22px; top: -11px; right: 3px; }
-    .theme-toggle .cloud3 { width: 46px; height: 20px; top: 32%; animation: drift 24s linear infinite; animation-delay: -9s; }
+    .theme-toggle .cloud3 { width: 46px; height: 20px; top: 32%; animation: drift 24s linear infinite; animation-delay: -12s; }
     .theme-toggle .cloud3::before { width: 26px; height: 26px; top: -13px; left: 5px; }
     .theme-toggle .cloud3::after  { width: 32px; height: 32px; top: -16px; right: 5px; }
-    .theme-toggle .cloud4 { width: 28px; height: 12px; top: 64%; animation: drift 16s linear infinite; animation-delay: -4s; }
+    .theme-toggle .cloud4 { width: 28px; height: 12px; top: 64%; animation: drift 16s linear infinite; animation-delay: -17s; }
     .theme-toggle .cloud4::before { width: 16px; height: 16px; top: -8px; left: 3px; }
     .theme-toggle .cloud4::after  { width: 20px; height: 20px; top: -10px; right: 3px; }
     @keyframes drift {

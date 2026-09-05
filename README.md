@@ -6,9 +6,9 @@
 
 | 页面 | 内容 |
 |------|------|
-| [`index.html`](index.html) | 主页 — 关于我、兴趣、技术栈 |
-| [`projects.html`](projects.html) | 重点项目 — terminal / lxm / dotfiles |
-| [`following.html`](following.html) | 关注项目 — herdr / oh-my-pi |
+| [`index.html`](index.html) | 主页:关于我、兴趣、技术栈 |
+| [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles |
+| [`following.html`](following.html) | 关注项目:herdr / oh-my-pi |
 
 ## 文件结构
 
@@ -31,7 +31,7 @@
 ## 设计与技术细节
 
 - **主题**：Mocha（深，黑夜）/ Latte（浅，白天）两套 Catppuccin 风味，通过 `@property` 注册的自定义属性实现主题间颜色平滑过渡；系统偏好自动适配，选择持久化在 `localStorage`
-- **主题拨钮**：demo/button.html 一比一还原（200×90 原布局 + wrapper 统一缩放适配导航条，仅配色换 Catppuccin 色板）——Latte 下蓝天白云 + 太阳呼吸光，Mocha 下星空闪烁 + 月亮浮现；滑钮可拖拽（场景随 `--p` 交叉淡化），松手 overshoot 回弹；场景动画与 demo 一致永转，不随 `prefers-reduced-motion` 关闭
+- **主题拨钮**：demo/button.html 一比一还原（200×90 原布局 + wrapper 统一缩放适配导航条，仅配色换 Catppuccin 色板）。Latte 下蓝天白云 + 太阳呼吸光，云朵从右侧外飘入、穿出左侧外循环；Mocha 下星空闪烁 + 月亮浮现；滑钮可拖拽（场景随 `--p` 交叉淡化），松手 overshoot 回弹；场景动画与 demo 一致永转，不随 `prefers-reduced-motion` 关闭
 - **卡片**：毛玻璃质感（`backdrop-filter: blur + saturate`），不支持的浏览器自动退化为半透明纯色
 - **导航**：sticky 毛玻璃导航条，当前页指示条在页面间滑动切换
 - **动效**（渐进增强）：

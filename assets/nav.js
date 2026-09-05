@@ -1,4 +1,4 @@
-/* nav.js — 指示条定位：加载时滑到当前页下方 */
+  /* nav.js - 指示条定位：加载时滑到当前页下方 */
 (function () {
   'use strict';
   var list = document.querySelector('.nav-list');

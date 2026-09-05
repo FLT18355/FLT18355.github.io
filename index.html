@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FLT18355 — Home</title>
+  <meta name="description" content="FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。" />
+  <meta name="theme-color" content="#1e1e2e" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <title>FLT18355 - Home</title>
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="stylesheet" href="assets/motion.css" />
   <link rel="stylesheet" href="assets/nav.css" />
 
   <script>
-    (function () {{
-      try {{
+    (function () {
+      try {
         var t = localStorage.getItem('theme');
         if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'latte' : 'mocha';
         document.documentElement.setAttribute('data-theme', t);
-      }} catch (e) {{}}
-    }})();
+      } catch (e) {}
+    })();
   </script>
 </head>
 <body>
@@ -58,15 +61,7 @@
         <img class="avatar-logo" src="logo.svg" alt="FLT18355" />
         <h1>FLT18355</h1>
         <div class="handle">@FLT18355</div>
-        <p class="tagline">
-          Python
-          <span class="sep"></span>
-          Catppuccin
-          <span class="sep"></span>
-          Explore
-          <span class="sep"></span>
-          Discover
-        </p>
+        <p class="tagline">Python. Arch. Catppuccin.</p>
       </div>
 
       <nav class="rail-contacts" aria-label="联系方式">
@@ -119,7 +114,6 @@
     <main class="content">
       <section class="block b-about">
         <div class="block-header">
-          <span class="block-index">01</span>
           <h2>About Me</h2>
         </div>
         <p class="about-lead">A <strong>Catppuccin</strong> enjoyer.</p>
@@ -132,20 +126,18 @@
       </section>
       <section class="block b-interests">
         <div class="block-header">
-          <span class="block-index">02</span>
           <h2>Interests</h2>
         </div>
         <div class="interest-list">
-          <span class="interest i-teal">Terminal &amp; dotfiles</span>
-          <span class="interest i-mauve">Catppuccin theming</span>
-          <span class="interest i-pink">Music</span>
-          <span class="interest i-green">Open source</span>
-          <span class="interest i-blue">TUI tools</span>
+          <span class="interest">Terminal &amp; dotfiles</span>
+          <span class="interest">Catppuccin theming</span>
+          <span class="interest">Music</span>
+          <span class="interest">Open source</span>
+          <span class="interest">TUI tools</span>
         </div>
       </section>
       <section class="block b-tech">
         <div class="block-header">
-          <span class="block-index">03</span>
           <h2>Tech Stack</h2>
         </div>
         <div class="tech-grid">
@@ -157,11 +149,8 @@
       </section>
 
       <footer class="footline">
-        Built with passion
-        <span class="sep"></span>
-        © 2026 FLT18355
-        <span class="sep"></span>
-        Explore &amp; Discover
+        <span>© 2026 FLT18355</span>
+        <a href="https://github.com/FLT18355/FLT18355.github.io" target="_blank" rel="noopener">Source on GitHub</a>
       </footer>
     </main>
   </div>

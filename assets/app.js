@@ -10,9 +10,17 @@
 
   function isMocha() { return root.getAttribute('data-theme') === 'mocha'; }
 
+  var THEME_COLOR = { mocha: '#1e1e2e', latte: '#eff1f5' };
+
+  function syncMetaTheme() {
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', THEME_COLOR[root.getAttribute('data-theme')] || THEME_COLOR.mocha);
+  }
+
   function commitTheme(prevTheme, nextTheme) {
     if (prevTheme === nextTheme) return;
     root.setAttribute('data-theme', nextTheme);
+    syncMetaTheme();
     try { localStorage.setItem('theme', nextTheme); } catch (err) {}
     window.dispatchEvent(new CustomEvent('themechange', {
       detail: { from: prevTheme, to: nextTheme, via: btn }

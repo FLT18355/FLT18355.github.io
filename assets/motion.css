@@ -1,5 +1,5 @@
 /* ============================================================
-   motion.css — 增量动效层（规则需要 html.motion-js 门控）
+   motion.css - 增量动效层（规则需要 html.motion-js 门控）
    由 app-motion.js 在「支持 IntersectionObserver 且用户未要求
    减弱动效」时给 <html> 加上该类；否则本文件内动效规则均为惰性。
    ============================================================ */
@@ -106,7 +106,7 @@ html.motion-js .project-card:active { --ty: 0px; --rx: 0deg; --ry: 0deg; }
   height: 2px;
   z-index: 60;
   pointer-events: none;
-  background: linear-gradient(90deg, var(--mauve), var(--primary), var(--teal), var(--green), var(--peach));
+  background: var(--primary);
   transform: scaleX(var(--p, 0));
   transform-origin: left center;
   opacity: 0.85;
