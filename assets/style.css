@@ -267,6 +267,7 @@
       background: color-mix(in srgb, var(--ci) 15%, transparent); color: var(--ci);
     }
     .contact-ico svg { width: 15px; height: 15px; }
+    .contact-ico img { width: 15px; height: 15px; }
     .contact-text { min-width: 0; }
     .contact-label {
       display: block;
@@ -295,6 +296,7 @@
     }
     .contact-item:hover .contact-arrow { opacity: 1; transform: translateX(0); color: var(--ci); }
     .contact-item.t-teal { --ci: var(--teal); }
+    .contact-item.t-green { --ci: var(--green); }
     .contact-item.t-pink { --ci: var(--pink); }
     .contact-item.t-mauve { --ci: var(--mauve); }
 
