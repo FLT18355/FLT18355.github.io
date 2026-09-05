@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="mocha">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{{description}}" />
+  <meta name="theme-color" content="#1e1e2e" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/motion.css" />
+  <link rel="stylesheet" href="assets/nav.css" />
+  <link rel="stylesheet" href="assets/font-picker.css" />
+
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'latte' : 'mocha';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+    /* 字体选择:恢复已存选择,避免字体闪烁(选择界面显隐由 font-picker.js 处理) */
+    (function () {
+      var root = document.documentElement;
+      try {
+        var f = localStorage.getItem('site-font');
+        if (f === 'default' || f === 'maple') root.setAttribute('data-font', f);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+
+  {{font-picker}}
+
+  {{nav}}
+
+  <div class="shell">
+    <aside class="rail">
+      {{profile}}
+      {{contacts}}
+    </aside>
+    <!-- ============ Right column: content ============ -->
+    <main class="content">
+{{content}}
+
+      <footer class="footline">
+        <span>© 2026 FLT18355</span>
+        <a href="https://github.com/FLT18355/FLT18355.github.io" target="_blank" rel="noopener">Source on GitHub</a>
+        <button type="button" class="footline-btn" id="fontPickerReopen">字体</button>
+      </footer>
+    </main>
+  </div>
+  <script src="assets/app.js"></script>
+  <script src="assets/app-motion.js"></script>
+  <script src="assets/nav.js"></script>
+  <script src="assets/font-picker.js"></script>
+</body>
+</html>

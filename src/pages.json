@@ -1,0 +1,5 @@
+{
+  "index.html":    { "title": "FLT18355 - Home",     "description": "FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。", "current": "home",     "page": "index.html" },
+  "projects.html": { "title": "FLT18355 - Projects", "description": "FLT18355 的重点项目:终端配置、OpenTUI 音乐播放器 lxm 与 dotfiles。", "current": "projects",  "page": "projects.html" },
+  "following.html":{ "title": "FLT18355 - Following","description": "FLT18355 正在关注的项目:herdr 与 oh-my-pi。", "current": "following", "page": "following.html" }
+}

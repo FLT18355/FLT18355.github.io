@@ -10,14 +10,23 @@
 | [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles |
 | [`following.html`](following.html) | 关注项目:herdr / oh-my-pi |
 
+## 构建
+
+页面由 `build.py` 从 `src/` 下的模板与片段渲染生成,公共部分(font-picker / nav / profile / contacts)只维护一份,避免三页重复。改完公共部分或某页内容后跑一次重新生成:
+
+```bash
+python3 build.py
+```
+
 ## 文件结构
 
 ```
-├── index.html            主页
-├── projects.html         重点项目
-├── following.html        关注项目
+├── index.html            主页（build.py 生成，勿手改）
+├── projects.html         重点项目（同上）
+├── following.html        关注项目（同上）
 ├── logo.svg              站点 logo（头像）
 ├── font.woff2            Maple Mono NF CN（等宽 + Nerd Font + 中文，7.1MB，按需加载）
+├── build.py              模板渲染脚本
 └── assets/
     ├── style.css         设计令牌（双主题）+ 全部基础样式 + 主题拨钮
     ├── motion.css        增量动效层（html.motion-js 门控）
@@ -27,9 +36,31 @@
     ├── app-motion.js     动效编排（滚动入场、光斑、倾斜、涟漪、进度线）
     ├── nav.js            导航指示条定位
     └── font-picker.js    字体选择交互（首启弹出 + 页脚重开）
+
+源文件（编辑这些，再跑 build.py）：
+
+└── src/
+    ├── template.html        页面骨架（{{占位}} 由 build.py 填充）
+    ├── pages.json            三页的 title / description / 当前页标记 / 内容页
+    ├── partials/
+    │   ├── font-picker.html  首启字体选择界面
+    │   ├── nav.html          顶部导航（含主题拨钮）
+    │   ├── profile.html       左栏头像 / 名号 / 标语
+    │   └── contacts.html      联系方式列表
+    └── pages/
+        ├── index.html        主页内容
+        ├── projects.html     重点项目内容
+        └── following.html    关注项目内容
 ```
 
-无构建、无框架、无外部 CDN 资源，直接部署到 GitHub Pages 即可。
+无框架、无外部 CDN 资源，跑 `build.py` 生成纯静态 HTML，直接部署到 GitHub Pages。
+
+## 技术文档
+
+- [`doc/architecture.md`](doc/architecture.md) 架构与关键机制（主题 / 字体门控 / 动效 / 无障碍）
+- [`doc/source-map.md`](doc/source-map.md) 源文件职责清单（改哪里）
+- [`doc/build.md`](doc/build.md) 构建流程与构建后验证清单
+- [`doc/ai-maintainer-guide.md`](doc/ai-maintainer-guide.md) AI 维护手册（硬约束与易错点，改动前必读）
 
 ## 设计与技术细节
 
