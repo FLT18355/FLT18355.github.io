@@ -136,7 +136,7 @@
     .shell {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 48px 28px 24px;
+      padding: 28px 28px 24px;
       display: grid;
       grid-template-columns: 300px 1fr;
       gap: 40px;
@@ -148,7 +148,7 @@
     /* ============ Left rail: identity (sticky) ============ */
     .rail {
       position: sticky;
-      top: 40px;
+      top: 76px;
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -608,7 +608,7 @@
 
     /* ============ Responsive collapse ============ */
     @media (max-width: 920px) {
-      .shell { grid-template-columns: 1fr; gap: 24px; padding-top: 72px; }
+      .shell { grid-template-columns: 1fr; gap: 24px; padding-top: 28px; }
       .rail { position: static; }
       .profile {
         display: grid;
@@ -623,7 +623,7 @@
       .profile .tagline { justify-content: flex-start; margin-top: 8px; }
     }
     @media (max-width: 560px) {
-      .shell { padding: 68px 16px 16px; }
+      .shell { padding: 22px 16px 16px; }
       .block { padding: 18px; }
       .profile { display: block; text-align: center; padding: 24px 16px 20px; }
       .avatar-logo { margin: 0 auto 12px; width: 76px; height: 76px; }

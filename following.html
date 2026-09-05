@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FLT18355 — 主页</title>
+  <title>FLT18355 — 关注项目</title>
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="stylesheet" href="assets/motion.css" />
   <link rel="stylesheet" href="assets/nav.css" />
@@ -25,9 +25,9 @@
   <header class="site-nav">
     <div class="nav-inner">
       <nav class="nav-list" aria-label="页面导航">
-        <a class="nav-item" href="index.html" aria-current="page">主页</a>
+        <a class="nav-item" href="index.html">主页</a>
         <a class="nav-item" href="projects.html">重点项目</a>
-        <a class="nav-item" href="following.html">关注项目</a>
+        <a class="nav-item" href="following.html" aria-current="page">关注项目</a>
         <span class="nav-indicator" aria-hidden="true"></span>
       </nav>
     <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换 Latte / Mocha 配色" title="切换主题">
@@ -104,42 +104,48 @@
     </aside>
     <!-- ============ Right column: content ============ -->
     <main class="content">
-      <section class="block b-about">
+      <section class="block b-following">
         <div class="block-header">
           <span class="block-index">01</span>
-          <h2>About Me</h2>
+          <h2>Recently Following</h2>
         </div>
-        <p class="about-lead">A <strong>Catppuccin</strong> enjoyer.</p>
-        <div class="flavors" role="img" aria-label="Catppuccin 四种风味">
-          <span class="flavor f-mocha"><i></i>Mocha</span>
-          <span class="flavor f-latte"><i></i>Latte</span>
-          <span class="flavor f-frappe"><i></i>Frappé</span>
-          <span class="flavor f-macchiato"><i></i>Macchiato</span>
-        </div>
-      </section>
-      <section class="block b-interests">
-        <div class="block-header">
-          <span class="block-index">02</span>
-          <h2>Interests</h2>
-        </div>
-        <div class="interest-list">
-          <span class="interest i-teal">Terminal &amp; dotfiles</span>
-          <span class="interest i-mauve">Catppuccin theming</span>
-          <span class="interest i-pink">Music</span>
-          <span class="interest i-green">Open source</span>
-          <span class="interest i-blue">TUI tools</span>
-        </div>
-      </section>
-      <section class="block b-tech">
-        <div class="block-header">
-          <span class="block-index">03</span>
-          <h2>Tech Stack</h2>
-        </div>
-        <div class="tech-grid">
-          <span class="tech-tag main t-blue">Python</span>
-          <span class="tech-tag main t-green">Node.js</span>
-          <span class="tech-tag t-peach">HTML</span>
-          <span class="tech-tag t-mauve">Lua</span>
+        <div class="project-grid">
+          <a href="https://github.com/herdrdev/herdr" target="_blank" rel="noopener" class="project-card f-herdr">
+            <span class="project-go" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </span>
+            <div class="project-top">
+              <div class="project-icon">H</div>
+              <div>
+                <div class="project-title">herdr</div>
+                <div class="project-sub">herdrdev/herdr</div>
+              </div>
+            </div>
+            <div class="project-desc">The runtime your coding agents live on. A Rust terminal multiplexer and workspace manager for AI coding agents.</div>
+            <div class="project-meta">
+              <span>rust</span>
+              <span>tui</span>
+              <span>agents</span>
+            </div>
+          </a>
+          <a href="https://github.com/can1357/oh-my-pi" target="_blank" rel="noopener" class="project-card f-omp">
+            <span class="project-go" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </span>
+            <div class="project-top">
+              <div class="project-icon">&pi;</div>
+              <div>
+                <div class="project-title">oh-my-pi</div>
+                <div class="project-sub">can1357/oh-my-pi</div>
+              </div>
+            </div>
+            <div class="project-desc">A coding agent with the IDE wired in. Multi-provider terminal assistant built on Bun and TypeScript.</div>
+            <div class="project-meta">
+              <span>typescript</span>
+              <span>tui</span>
+              <span>coding-agent</span>
+            </div>
+          </a>
         </div>
       </section>
 

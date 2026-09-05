@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FLT18355 — 主页</title>
+  <title>FLT18355 — 重点项目</title>
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="stylesheet" href="assets/motion.css" />
   <link rel="stylesheet" href="assets/nav.css" />
@@ -25,8 +25,8 @@
   <header class="site-nav">
     <div class="nav-inner">
       <nav class="nav-list" aria-label="页面导航">
-        <a class="nav-item" href="index.html" aria-current="page">主页</a>
-        <a class="nav-item" href="projects.html">重点项目</a>
+        <a class="nav-item" href="index.html">主页</a>
+        <a class="nav-item" href="projects.html" aria-current="page">重点项目</a>
         <a class="nav-item" href="following.html">关注项目</a>
         <span class="nav-indicator" aria-hidden="true"></span>
       </nav>
@@ -104,42 +104,66 @@
     </aside>
     <!-- ============ Right column: content ============ -->
     <main class="content">
-      <section class="block b-about">
+      <section class="block b-projects">
         <div class="block-header">
           <span class="block-index">01</span>
-          <h2>About Me</h2>
+          <h2>Featured Projects</h2>
         </div>
-        <p class="about-lead">A <strong>Catppuccin</strong> enjoyer.</p>
-        <div class="flavors" role="img" aria-label="Catppuccin 四种风味">
-          <span class="flavor f-mocha"><i></i>Mocha</span>
-          <span class="flavor f-latte"><i></i>Latte</span>
-          <span class="flavor f-frappe"><i></i>Frappé</span>
-          <span class="flavor f-macchiato"><i></i>Macchiato</span>
-        </div>
-      </section>
-      <section class="block b-interests">
-        <div class="block-header">
-          <span class="block-index">02</span>
-          <h2>Interests</h2>
-        </div>
-        <div class="interest-list">
-          <span class="interest i-teal">Terminal &amp; dotfiles</span>
-          <span class="interest i-mauve">Catppuccin theming</span>
-          <span class="interest i-pink">Music</span>
-          <span class="interest i-green">Open source</span>
-          <span class="interest i-blue">TUI tools</span>
-        </div>
-      </section>
-      <section class="block b-tech">
-        <div class="block-header">
-          <span class="block-index">03</span>
-          <h2>Tech Stack</h2>
-        </div>
-        <div class="tech-grid">
-          <span class="tech-tag main t-blue">Python</span>
-          <span class="tech-tag main t-green">Node.js</span>
-          <span class="tech-tag t-peach">HTML</span>
-          <span class="tech-tag t-mauve">Lua</span>
+        <div class="project-grid">
+          <a href="https://github.com/FLT18355/terminal" target="_blank" rel="noopener" class="project-card p-terminal">
+            <span class="project-go" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </span>
+            <div class="project-top">
+              <div class="project-icon">&gt;_</div>
+              <div>
+                <div class="project-title">REPO</div>
+                <div class="project-sub">FLT18355/terminal</div>
+              </div>
+            </div>
+            <div class="project-desc">REPO</div>
+            <div class="project-meta">
+              <span>dotfiles</span>
+              <span>catppuccin</span>
+              <span>REPO</span>
+            </div>
+          </a>
+          <a href="https://github.com/FLT18355/lxm" target="_blank" rel="noopener" class="project-card p-lxm">
+            <span class="project-go" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </span>
+            <div class="project-top">
+              <div class="project-icon">M</div>
+              <div>
+                <div class="project-title">LX Music</div>
+                <div class="project-sub">FLT18355/lxm</div>
+              </div>
+            </div>
+            <div class="project-desc">Music player for the terminal.</div>
+            <div class="project-meta">
+              <span>music</span>
+              <span>catppuccin</span>
+              <span>openTUI</span>
+            </div>
+          </a>
+          <a href="https://github.com/FLT18355/dotfiles" target="_blank" rel="noopener" class="project-card p-dotfiles">
+            <span class="project-go" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </span>
+            <div class="project-top">
+              <div class="project-icon">D</div>
+              <div>
+                <div class="project-title">Dotfiles</div>
+                <div class="project-sub">FLT18355/dotfiles</div>
+              </div>
+            </div>
+            <div class="project-desc">Configured dev environment with Catppuccin theming, deployed with GNU Stow.</div>
+            <div class="project-meta">
+              <span>shell</span>
+              <span>stow</span>
+              <span>catppuccin</span>
+            </div>
+          </a>
         </div>
       </section>
 

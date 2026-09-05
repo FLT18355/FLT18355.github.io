@@ -1,0 +1,80 @@
+/* ============================================================
+   nav.css — 顶部导航条（主页 / 重点项目 / 关注项目）
+   三条链接 + 滑动指示条；主题拨钮收纳在右侧。
+   ============================================================ */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  transition: background-color 240ms var(--ease-out), border-color 240ms var(--ease-out);
+}
+.nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 28px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ---------- 导航列表与滑动指示条 ---------- */
+.nav-list {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+.nav-item {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 10px;
+  transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+.nav-item:hover { color: var(--text); }
+.nav-item:active { transform: scale(0.96); }
+.nav-item:focus-visible { outline: 2px solid var(--primary); outline-offset: -4px; }
+.nav-item[aria-current="page"] { color: var(--text); }
+
+.nav-indicator {
+  position: absolute;
+  left: 0; bottom: 9px;
+  height: 2.5px;
+  width: var(--w, 0);
+  transform: translateX(var(--x, 0));
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary-hover), var(--primary));
+  opacity: 0;
+  pointer-events: none;
+}
+html.motion-js .nav-indicator {
+  transition: transform 0.42s var(--ease-out), width 0.42s var(--ease-out), opacity 0.3s;
+}
+.nav-indicator.ready { opacity: 1; }
+
+/* 拨钮收进导航条后取消固定定位（覆盖 style.css） */
+.site-nav .theme-toggle {
+  position: static;
+  flex-shrink: 0;
+}
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 560px) {
+  .nav-inner { padding: 0 14px; }
+  .nav-item { padding: 0 10px; font-size: 0.84rem; }
+}
