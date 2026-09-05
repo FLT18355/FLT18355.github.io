@@ -5,6 +5,7 @@
   'use strict';
   var overlay = document.getElementById('fontPicker');
   if (!overlay) return;
+  var root = document.documentElement;
 
   var saved = null;
   try { saved = localStorage.getItem('site-font'); } catch (e) {}
@@ -22,8 +23,9 @@
 
   function choose(font) {
     try { localStorage.setItem('site-font', font); } catch (err) {}
-    /* 立即刷新:重载时 head 内联脚本恢复 data-font,字体从渲染一开始就正确,
-       避免动态切换导致整页字体跳动 */
+    /* 先即时切换,再刷新:重载时 head 内联脚本同样恢复 data-font;
+       若浏览器拦截刷新,字体也已立即生效,手动刷新确认即可 */
+    root.setAttribute('data-font', font);
     location.reload();
   }
 
