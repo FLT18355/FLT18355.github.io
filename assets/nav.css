@@ -67,14 +67,11 @@ html.motion-js .nav-indicator {
 }
 .nav-indicator.ready { opacity: 1; }
 
-/* 拨钮在 flex 行内不参与伸缩（定位由 style.css 负责） */
-.site-nav .theme-toggle { flex-shrink: 0; }
+.toggle-scale { margin: auto 0; }
 
 /* ---------- 窄屏 ---------- */
 @media (max-width: 560px) {
   .nav-inner { padding: 0 14px; }
   .nav-item { padding: 0 10px; font-size: 0.84rem; }
-  .site-nav .theme-toggle { width: 100px; height: 42px; }
-  .site-nav .theme-toggle .knob { width: 34px; height: 34px; top: 4px; }
-  :root[data-theme="mocha"] .site-nav .theme-toggle .knob { transform: translateX(58px); }
+  .toggle-scale { --tgl-s: 0.42; }
 }

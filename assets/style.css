@@ -537,48 +537,70 @@
       opacity: 0.5;
     }
 
-    /* Theme toggle — 白天/黑夜场景拨钮（demo/button.html 同款布局，Catppuccin 配色） */
-    .theme-toggle {
+    /* Theme toggle — demo/button.html 一比一还原（200×90 原布局，wrapper 统一缩放），配色换 Catppuccin */
+    .toggle-scale {
+      --tgl-s: 0.5;
       position: relative;
-      width: 118px; height: 46px;
-      border-radius: 999px;
       flex-shrink: 0;
-      cursor: pointer;
+      width: calc(200px * var(--tgl-s));
+      height: calc(90px * var(--tgl-s));
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 0; left: 0;
+      width: 200px; height: 90px;
+      border-radius: 90px;
+      cursor: grab;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      outline: none;
       padding: 0;
       overflow: hidden;
-      border: 1px solid var(--glass-border);
-      background: linear-gradient(135deg, #79c0ec 0%, #8fb8f7 55%, #b9c6fd 100%);
-      box-shadow: 0 0 24px rgba(116, 199, 236, 0.25), 0 6px 18px rgba(30, 102, 245, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-      transition: background 0.7s ease, box-shadow 0.5s ease, border-color 0.5s ease, transform 0.35s var(--ease-out);
+      transform-origin: top left;
+      transform: scale(var(--tgl-s));
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      background: linear-gradient(135deg, #74c7ec 0%, #89b4fa 55%, #b4befe 100%);
+      transition: background 0.7s ease, box-shadow 0.5s ease, border-color 0.5s ease, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: 0 0 40px rgba(137, 180, 250, 0.22), 0 10px 28px rgba(116, 199, 236, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
     :root[data-theme="mocha"] .theme-toggle {
       background: linear-gradient(135deg, #11111b 0%, #181825 55%, #313244 100%);
-      border-color: rgba(203, 214, 244, 0.08);
-      box-shadow: 0 0 24px rgba(180, 190, 254, 0.10), 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      border-color: rgba(205, 214, 244, 0.08);
+      box-shadow: 0 0 40px rgba(180, 190, 254, 0.07), 0 10px 28px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
     .theme-toggle:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 34px rgba(116, 199, 236, 0.4), 0 8px 24px rgba(30, 102, 245, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      transform: scale(calc(var(--tgl-s) * 1.07));
+      border-color: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 0 60px rgba(137, 180, 250, 0.3), 0 12px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: background 0.7s ease, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease, border-color 0.3s ease;
     }
     :root[data-theme="mocha"] .theme-toggle:hover {
-      box-shadow: 0 0 34px rgba(180, 190, 254, 0.16), 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      border-color: rgba(205, 214, 244, 0.18);
+      box-shadow: 0 0 70px rgba(180, 190, 254, 0.14), 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
-    .theme-toggle:active { transform: scale(1.01); }
+    .theme-toggle:active {
+      transform: scale(calc(var(--tgl-s) * 1.03));
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 25px rgba(137, 180, 250, 0.12), 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
     .theme-toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
 
     .theme-toggle .sun {
       position: absolute;
-      top: 6px; right: 12px;
-      width: 15px; height: 15px;
+      top: 14px;
+      right: 26px;
+      width: 28px; height: 28px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #f5e0dc 0%, #f9e2af 55%, #df8e1d 100%);
-      box-shadow: 0 0 10px rgba(249, 226, 175, 0.9), 0 0 22px rgba(223, 142, 29, 0.5);
+      background: radial-gradient(circle at 35% 35%, #fdf6d8 0%, #f9e2af 70%, #e8a53a 100%);
+      box-shadow: 0 0 14px rgba(249, 226, 175, 0.85), 0 0 30px rgba(223, 182, 29, 0.55), 0 0 50px rgba(223, 142, 29, 0.3);
       animation: sunGlow 3s ease-in-out infinite;
       transition: opacity 0.55s ease, transform 0.55s ease;
     }
     @keyframes sunGlow {
-      0%, 100% { transform: scale(1);    box-shadow: 0 0 10px rgba(249,226,175,.9),  0 0 22px rgba(223,142,29,.5); }
-      50%      { transform: scale(1.08); box-shadow: 0 0 14px rgba(249,226,175,1),   0 0 30px rgba(223,142,29,.65); }
+      0%, 100% { transform: scale(1);   box-shadow: 0 0 14px rgba(249,226,175,.85), 0 0 30px rgba(223,182,29,.55),  0 0 50px rgba(223,142,29,.3); }
+      50%      { transform: scale(1.07); box-shadow: 0 0 20px rgba(249,226,175,1),   0 0 42px rgba(223,182,29,.7),   0 0 68px rgba(223,142,29,.4); }
     }
     :root[data-theme="mocha"] .theme-toggle .sun { opacity: 0; transform: scale(0.5); }
 
@@ -597,28 +619,32 @@
       background: #eff1f5;
       border-radius: 50%;
     }
-    .theme-toggle .cloud1 { width: 20px; height: 9px;  top: 8px;  animation: drift 20s linear infinite; }
-    .theme-toggle .cloud1::before { width: 11px; height: 11px; top: -6px; left: 2px; }
-    .theme-toggle .cloud1::after  { width: 14px; height: 14px; top: -7px; right: 2px; }
-    .theme-toggle .cloud2 { width: 16px; height: 7px;  top: 26px; animation: drift 28s linear infinite; animation-delay: -10s; }
-    .theme-toggle .cloud2::before { width: 9px;  height: 9px;  top: -5px; left: 2px; }
-    .theme-toggle .cloud2::after  { width: 11px; height: 11px; top: -6px; right: 2px; }
-    .theme-toggle .cloud3 { width: 23px; height: 10px; top: 16px; animation: drift 24s linear infinite; animation-delay: -16s; }
-    .theme-toggle .cloud3::before { width: 13px; height: 13px; top: -7px; left: 3px; }
-    .theme-toggle .cloud3::after  { width: 16px; height: 16px; top: -8px; right: 3px; }
+    .theme-toggle .cloud1 { width: 40px; height: 18px; top: 12%; animation: drift 20s linear infinite; animation-delay: 0s; }
+    .theme-toggle .cloud1::before { width: 22px; height: 22px; top: -11px; left: 4px; }
+    .theme-toggle .cloud1::after  { width: 28px; height: 28px; top: -14px; right: 4px; }
+    .theme-toggle .cloud2 { width: 32px; height: 14px; top: 52%; animation: drift 28s linear infinite; animation-delay: -10s; }
+    .theme-toggle .cloud2::before { width: 18px; height: 18px; top: -9px; left: 3px; }
+    .theme-toggle .cloud2::after  { width: 22px; height: 22px; top: -11px; right: 3px; }
+    .theme-toggle .cloud3 { width: 46px; height: 20px; top: 32%; animation: drift 24s linear infinite; animation-delay: -16s; }
+    .theme-toggle .cloud3::before { width: 26px; height: 26px; top: -13px; left: 5px; }
+    .theme-toggle .cloud3::after  { width: 32px; height: 32px; top: -16px; right: 5px; }
+    .theme-toggle .cloud4 { width: 28px; height: 12px; top: 64%; animation: drift 16s linear infinite; animation-delay: -6s; }
+    .theme-toggle .cloud4::before { width: 16px; height: 16px; top: -8px; left: 3px; }
+    .theme-toggle .cloud4::after  { width: 20px; height: 20px; top: -10px; right: 3px; }
     @keyframes drift {
-      0%   { transform: translateX(160px); }
-      100% { transform: translateX(-55px); }
+      0%   { transform: translateX(270px); }
+      100% { transform: translateX(-90px); }
     }
     :root[data-theme="mocha"] .theme-toggle .cloud { opacity: 0; }
 
     .theme-toggle .moon {
       position: absolute;
-      top: 7px; left: 11px;
-      width: 16px; height: 16px;
+      top: 12px;
+      left: 22px;
+      width: 30px; height: 30px;
       border-radius: 50%;
-      background: radial-gradient(circle at 34% 32%, #eff1f5 0%, #cdd6f4 55%, #a5adce 100%);
-      box-shadow: 0 0 10px rgba(205, 214, 244, 0.85), 0 0 20px rgba(180, 190, 254, 0.5);
+      background: radial-gradient(circle at 34% 32%, #eff1f5 0%, #cdd6f4 55%, #a6adc8 100%);
+      box-shadow: 0 0 12px rgba(205, 214, 244, 0.95), 0 0 26px rgba(180, 190, 254, 0.6), inset 0 0 6px rgba(110, 115, 141, 0.25);
       opacity: 0;
       transform: scale(0.5);
       transition: opacity 0.55s ease, transform 0.55s ease;
@@ -639,33 +665,55 @@
       pointer-events: none;
     }
     :root[data-theme="mocha"] .theme-toggle .star { opacity: 1; }
-    .theme-toggle .s1 { top: 8px;  left: 34px; animation-delay: 0s; }
-    .theme-toggle .s2 { top: 24px; left: 46px; animation-delay: 0.4s; }
-    .theme-toggle .s3 { top: 7px;  left: 58px; animation-delay: 0.8s; }
-    .theme-toggle .s4 { top: 32px; left: 38px; animation-delay: 1.2s; }
-    .theme-toggle .s5 { top: 16px; left: 68px; animation-delay: 0.6s; }
-    .theme-toggle .s6 { top: 30px; left: 62px; animation-delay: 1.6s; }
+    .theme-toggle .star.s1 { top: 20px; left: 64px;  animation-delay: 0s; }
+    .theme-toggle .star.s2 { top: 38px; left: 104px; animation-delay: 0.4s; }
+    .theme-toggle .star.s3 { top: 16px; left: 134px; animation-delay: 0.8s; }
+    .theme-toggle .star.s4 { top: 46px; left: 52px;  animation-delay: 1.2s; }
+    .theme-toggle .star.s5 { top: 28px; left: 162px; animation-delay: 0.6s; }
+    .theme-toggle .star.s6 { top: 54px; left: 124px; animation-delay: 1.6s; }
+    .theme-toggle .star.s7 { top: 22px; left: 90px;  animation-delay: 1.0s; }
+    .theme-toggle .star.s8 { top: 50px; left: 158px; animation-delay: 0.3s; }
     @keyframes twinkle {
       0%, 100% { transform: scale(1);   opacity: 1; }
-      50%      { transform: scale(1.6); opacity: 0.35; }
+      50%      { transform: scale(1.7); opacity: 0.35; }
     }
 
     .theme-toggle .knob {
       position: absolute;
-      top: 3px; left: 4px;
-      width: 38px; height: 38px;
+      top: 0; left: 0;
+      width: 86px; height: 86px;
       border-radius: 50%;
-      background: linear-gradient(160deg, #dfe3fb 0%, #b4befe 60%, #93a4f7 100%);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22), inset 0 -2px 5px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(255, 255, 255, 0.55);
+      background: linear-gradient(160deg, #fde7c8 0%, #f5c07d 60%, #e8a24b 100%);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.26), inset 0 -3px 6px rgba(0, 0, 0, 0.09), inset 0 2px 4px rgba(255, 255, 255, 0.5);
       transition: transform 0.55s cubic-bezier(0.68, -0.1, 0.265, 1.2), background 0.55s ease, box-shadow 0.55s ease;
       z-index: 10;
     }
     :root[data-theme="mocha"] .theme-toggle .knob {
-      transform: translateX(72px);
-      background: linear-gradient(160deg, #cdd6f4 0%, #bac2de 60%, #9399b2 100%);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 -2px 5px rgba(0, 0, 0, 0.12), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      transform: translateX(110px);
+      background: linear-gradient(160deg, #cdd6f4 0%, #b4befe 60%, #8fa3e8 100%);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.42), inset 0 -3px 6px rgba(0, 0, 0, 0.12), inset 0 2px 4px rgba(255, 255, 255, 0.4);
     }
 
+    /* 拖动态：场景随 --p 交叉淡化，滑钮实时跟手（id 选择器压过 :root[data-theme] 规则，拖动时主题不生效） */
+    #themeToggle.dragging,
+    #themeToggle.dragging .sun,
+    #themeToggle.dragging .cloud,
+    #themeToggle.dragging .moon,
+    #themeToggle.dragging .knob {
+      transition: none;
+    }
+    #themeToggle.dragging .sun   { opacity: calc(1 - var(--p)); transform: scale(calc(0.5 + 0.5 * var(--p))); }
+    #themeToggle.dragging .cloud { opacity: calc(1 - var(--p)); }
+    #themeToggle.dragging .moon  { opacity: var(--p); transform: scale(calc(0.5 + 0.5 * var(--p))); }
+
+    .trail-dot {
+      position: fixed;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.7;
+      z-index: 60;
+    }
     /* Animations */
     @keyframes blockIn {
       from { opacity: 0; transform: translateY(22px); }
@@ -684,6 +732,7 @@
       :root { transition: none; }
       .theme-toggle, .theme-toggle .knob { transition: none; }
       .theme-toggle .sun, .theme-toggle .cloud, .theme-toggle .moon, .theme-toggle .star { animation: none; transition: none; }
+      .trail-dot { display: none; }
       .block, .rail, .avatar-logo { animation: none !important; opacity: 1; transform: none; }
       .glow { transition: none; animation: none; }
       .project-card::after { display: none; }
