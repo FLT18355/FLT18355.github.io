@@ -18,10 +18,10 @@
 ├── following.html        关注项目
 ├── logo.svg              站点 logo（头像）
 └── assets/
-    ├── style.css         设计令牌（双主题）+ 全部基础样式
+    ├── style.css         设计令牌（双主题）+ 全部基础样式 + 主题拨钮
     ├── motion.css        增量动效层（html.motion-js 门控）
     ├── nav.css           顶部导航条 + 滑动指示条
-    ├── app.js            主题拨钮（拖拽 / 点击 / 键盘切换）
+    ├── app.js            主题拨钮（点击 / 键盘切换）
     ├── app-motion.js     动效编排（滚动入场、光斑、倾斜、涟漪、进度线）
     └── nav.js            导航指示条定位
 ```
@@ -30,7 +30,8 @@
 
 ## 设计与技术细节
 
-- **主题**：Mocha（深）/ Latte（浅）两套 Catppuccin 风味，通过 `@property` 注册的自定义属性实现主题间颜色平滑过渡；系统偏好自动适配，选择持久化在 `localStorage`
+- **主题**：Mocha（深，黑夜）/ Latte（浅，白天）两套 Catppuccin 风味，通过 `@property` 注册的自定义属性实现主题间颜色平滑过渡；系统偏好自动适配，选择持久化在 `localStorage`
+- **主题拨钮**：白天/黑夜场景动画——Latte 下蓝天白云 + 太阳呼吸光，Mocha 下星空闪烁 + 月亮浮现，滑钮带 overshoot 回弹，配色全部取自 Catppuccin 色板
 - **卡片**：毛玻璃质感（`backdrop-filter: blur + saturate`），不支持的浏览器自动退化为半透明纯色
 - **导航**：sticky 毛玻璃导航条，当前页指示条在页面间滑动切换
 - **动效**（渐进增强）：
