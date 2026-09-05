@@ -592,6 +592,7 @@
       top: 14px;
       right: 26px;
       width: 28px; height: 28px;
+      z-index: 3;
       border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #fdf6d8 0%, #f9e2af 70%, #e8a53a 100%);
       box-shadow: 0 0 14px rgba(249, 226, 175, 0.85), 0 0 30px rgba(223, 182, 29, 0.55), 0 0 50px rgba(223, 142, 29, 0.3);
@@ -619,16 +620,16 @@
       background: #eff1f5;
       border-radius: 50%;
     }
-    .theme-toggle .cloud1 { width: 40px; height: 18px; top: 12%; animation: drift 20s linear infinite; animation-delay: 0s; }
+    .theme-toggle .cloud1 { width: 40px; height: 18px; top: 12%; animation: drift 20s linear infinite; animation-delay: -14s; }
     .theme-toggle .cloud1::before { width: 22px; height: 22px; top: -11px; left: 4px; }
     .theme-toggle .cloud1::after  { width: 28px; height: 28px; top: -14px; right: 4px; }
-    .theme-toggle .cloud2 { width: 32px; height: 14px; top: 52%; animation: drift 28s linear infinite; animation-delay: -10s; }
+    .theme-toggle .cloud2 { width: 32px; height: 14px; top: 52%; animation: drift 28s linear infinite; animation-delay: -15s; }
     .theme-toggle .cloud2::before { width: 18px; height: 18px; top: -9px; left: 3px; }
     .theme-toggle .cloud2::after  { width: 22px; height: 22px; top: -11px; right: 3px; }
-    .theme-toggle .cloud3 { width: 46px; height: 20px; top: 32%; animation: drift 24s linear infinite; animation-delay: -16s; }
+    .theme-toggle .cloud3 { width: 46px; height: 20px; top: 32%; animation: drift 24s linear infinite; animation-delay: -9s; }
     .theme-toggle .cloud3::before { width: 26px; height: 26px; top: -13px; left: 5px; }
     .theme-toggle .cloud3::after  { width: 32px; height: 32px; top: -16px; right: 5px; }
-    .theme-toggle .cloud4 { width: 28px; height: 12px; top: 64%; animation: drift 16s linear infinite; animation-delay: -6s; }
+    .theme-toggle .cloud4 { width: 28px; height: 12px; top: 64%; animation: drift 16s linear infinite; animation-delay: -4s; }
     .theme-toggle .cloud4::before { width: 16px; height: 16px; top: -8px; left: 3px; }
     .theme-toggle .cloud4::after  { width: 20px; height: 20px; top: -10px; right: 3px; }
     @keyframes drift {
@@ -708,11 +709,18 @@
 
     .trail-dot {
       position: fixed;
-      width: 6px; height: 6px;
+      width: 8px; height: 8px;
+      margin: -4px 0 0 -4px;
       border-radius: 50%;
       pointer-events: none;
-      opacity: 0.7;
-      z-index: 60;
+      background: var(--primary);
+      box-shadow: 0 0 8px color-mix(in srgb, var(--primary) 70%, transparent);
+      z-index: 999;
+      animation: trailFade 0.65s ease-out forwards;
+    }
+    @keyframes trailFade {
+      0%   { opacity: 0.85; transform: scale(1); }
+      100% { opacity: 0;    transform: scale(0.4) translateY(-4px); }
     }
     /* Animations */
     @keyframes blockIn {
@@ -730,9 +738,7 @@
 
     @media (prefers-reduced-motion: reduce) {
       :root { transition: none; }
-      .theme-toggle, .theme-toggle .knob { transition: none; }
-      .theme-toggle .sun, .theme-toggle .cloud, .theme-toggle .moon, .theme-toggle .star { animation: none; transition: none; }
-      .trail-dot { display: none; }
+
       .block, .rail, .avatar-logo { animation: none !important; opacity: 1; transform: none; }
       .glow { transition: none; animation: none; }
       .project-card::after { display: none; }

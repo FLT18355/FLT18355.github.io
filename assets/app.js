@@ -74,11 +74,15 @@
     setProgress(target / MAX_X);
     drag.lastX = target;
 
-    /* 拖尾：knob 中心屏幕坐标（border 2px × scale 偏移） */
-    var r = btn.getBoundingClientRect();
-    var kx = r.left + (2 + target + 43) * drag.scale;
-    var ky = r.top + (90 / 2) * drag.scale;
-    if (Math.random() < 0.6) spawnTrail(kx, ky);
+    /* 拖尾：从滑钮「拖拽反方向」的边缘甩出（滞后于运动），不被圆钮遮住 */
+    if (Math.random() < 0.5) {
+      var r = btn.getBoundingClientRect();
+      var dir = drag.lastX <= target ? 1 : -1;            /* 运动方向 */
+      var edge = dir > 0 ? target : target + 86;          /* 反方向的边缘（布局 x） */
+      var kx = r.left + (2 + edge) * drag.scale + (dir > 0 ? -4 : 4) * drag.scale;
+      var ky = r.top + (90 / 2) * drag.scale + Math.random() * 6 - 3;
+      spawnTrail(kx, ky);
+    }
   });
 
   function finishDrag(e) {
