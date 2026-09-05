@@ -37,7 +37,7 @@
 - **主题拨钮**：demo/button.html 一比一还原（200×90 原布局 + wrapper 统一缩放适配导航条，仅配色换 Catppuccin 色板）。Latte 下蓝天白云 + 太阳呼吸光，云朵从右侧外飘入、穿出左侧外循环；Mocha 下星空闪烁 + 月亮浮现；滑钮可拖拽（场景随 `--p` 交叉淡化），松手 overshoot 回弹；场景动画与 demo 一致永转，不随 `prefers-reduced-motion` 关闭
 - **卡片**：毛玻璃质感（`backdrop-filter: blur + saturate`），不支持的浏览器自动退化为半透明纯色
 - **导航**：sticky 毛玻璃导航条，当前页指示条在页面间滑动切换
-- **字体选择**：首启弹出选择界面（始终用系统字体渲染），默认字体免下载秒开（国人推荐）；选 Maple Mono 才加载 7.1MB 的 `font.woff2`（`@font-face` 仅在被引用渲染时触发下载）。选择存 `localStorage`（`site-font`），页脚「字体」按钮可随时重开
+- **字体选择**：首启弹出选择界面（始终用系统字体渲染），默认字体免下载秒开（国人推荐）；选 Maple Mono 才加载 7.1MB 的 `font.woff2`（`@font-face` 仅在被引用渲染时触发下载）。选择后立即刷新页面生效，存 `localStorage`（`site-font`），页脚「字体」按钮可随时重开
 - **动效**（渐进增强）：
   - 区块滚动入场 + 筹码二级错峰（IntersectionObserver）
   - 卡片指针光斑跟随、项目卡 3D 微倾斜
