@@ -1,3 +1,17 @@
+    /* Maple Mono NF CN（等宽 + Nerd Font + 中文）——本地 font.woff2，零外部依赖 */
+    @font-face {
+      font-family: "Maple Mono NF CN";
+      src: url("../font.woff2") format("woff2");
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Maple Mono NF CN";
+      src: url("../font.woff2") format("woff2");
+      font-weight: 700;
+      font-display: swap;
+    }
+
     @property --primary { syntax: "<color>"; inherits: true; initial-value: #89b4fa; }
     @property --primary-hover { syntax: "<color>"; inherits: true; initial-value: #b4befe; }
     @property --primary-dim { syntax: "<color>"; inherits: true; initial-value: rgba(137, 180, 250, 0.15); }
@@ -51,7 +65,7 @@
       --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
       --surface: color-mix(in srgb, var(--text) 5%, var(--bg-card));
       --surface-strong: color-mix(in srgb, var(--text) 9%, var(--bg-card));
-      --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+      --mono: "Maple Mono NF CN", ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
       transition:
         --primary 240ms var(--ease-out),
         --primary-hover 240ms var(--ease-out),
@@ -111,7 +125,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      font-family: "Maple Mono NF CN", -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
