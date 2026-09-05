@@ -17,13 +17,16 @@
 ├── projects.html         重点项目
 ├── following.html        关注项目
 ├── logo.svg              站点 logo（头像）
+├── font.woff2            Maple Mono NF CN（等宽 + Nerd Font + 中文，7.1MB，按需加载）
 └── assets/
     ├── style.css         设计令牌（双主题）+ 全部基础样式 + 主题拨钮
     ├── motion.css        增量动效层（html.motion-js 门控）
     ├── nav.css           顶部导航条 + 滑动指示条
+    ├── font-picker.css   首启字体选择界面样式
     ├── app.js            主题拨钮（拖拽 / 点击 / 键盘切换）
     ├── app-motion.js     动效编排（滚动入场、光斑、倾斜、涟漪、进度线）
-    └── nav.js            导航指示条定位
+    ├── nav.js            导航指示条定位
+    └── font-picker.js    字体选择交互（首启弹出 + 页脚重开）
 ```
 
 无构建、无框架、无外部 CDN 资源，直接部署到 GitHub Pages 即可。
@@ -34,6 +37,7 @@
 - **主题拨钮**：demo/button.html 一比一还原（200×90 原布局 + wrapper 统一缩放适配导航条，仅配色换 Catppuccin 色板）。Latte 下蓝天白云 + 太阳呼吸光，云朵从右侧外飘入、穿出左侧外循环；Mocha 下星空闪烁 + 月亮浮现；滑钮可拖拽（场景随 `--p` 交叉淡化），松手 overshoot 回弹；场景动画与 demo 一致永转，不随 `prefers-reduced-motion` 关闭
 - **卡片**：毛玻璃质感（`backdrop-filter: blur + saturate`），不支持的浏览器自动退化为半透明纯色
 - **导航**：sticky 毛玻璃导航条，当前页指示条在页面间滑动切换
+- **字体选择**：首启弹出选择界面（始终用系统字体渲染），默认字体免下载秒开（国人推荐）；选 Maple Mono 才加载 7.1MB 的 `font.woff2`（`@font-face` 仅在被引用渲染时触发下载）。选择存 `localStorage`（`site-font`），页脚「字体」按钮可随时重开
 - **动效**（渐进增强）：
   - 区块滚动入场 + 筹码二级错峰（IntersectionObserver）
   - 卡片指针光斑跟随、项目卡 3D 微倾斜

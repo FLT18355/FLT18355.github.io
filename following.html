@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="stylesheet" href="assets/motion.css" />
   <link rel="stylesheet" href="assets/nav.css" />
+  <link rel="stylesheet" href="assets/font-picker.css" />
 
   <script>
     (function () {
@@ -19,11 +20,36 @@
         document.documentElement.setAttribute('data-theme', t);
       } catch (e) {}
     })();
+    /* 字体选择:恢复已存选择,避免字体闪烁(选择界面显隐由 font-picker.js 处理) */
+    (function () {
+      var root = document.documentElement;
+      try {
+        var f = localStorage.getItem('site-font');
+        if (f === 'default' || f === 'maple') root.setAttribute('data-font', f);
+      } catch (e) {}
+    })();
   </script>
 </head>
 <body>
   <div class="glow glow-a" aria-hidden="true"></div>
   <div class="glow glow-b" aria-hidden="true"></div>
+
+  <div class="font-picker" id="fontPicker" role="dialog" aria-modal="true" aria-labelledby="fontPickerTitle" hidden>
+    <div class="font-picker-card">
+      <h2 id="fontPickerTitle">选择字体</h2>
+      <p class="font-picker-sub">默认使用系统字体,秒开页面;Maple Mono 需下载 7.1MB 字体文件。</p>
+      <div class="font-picker-options">
+        <button type="button" class="font-option" data-font-choice="default">
+          <span class="font-option-name">默认字体 <em>(国人推荐)</em></span>
+          <span class="font-option-desc">系统字体,无需下载,打开最快</span>
+        </button>
+        <button type="button" class="font-option" data-font-choice="maple">
+          <span class="font-option-name">Maple Mono NF CN</span>
+          <span class="font-option-desc">等宽终端风,需下载 7.1MB 字体</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <header class="site-nav">
     <div class="nav-inner">
@@ -169,11 +195,13 @@
       <footer class="footline">
         <span>© 2026 FLT18355</span>
         <a href="https://github.com/FLT18355/FLT18355.github.io" target="_blank" rel="noopener">Source on GitHub</a>
+        <button type="button" class="footline-btn" id="fontPickerReopen">字体</button>
       </footer>
     </main>
   </div>
   <script src="assets/app.js"></script>
   <script src="assets/app-motion.js"></script>
   <script src="assets/nav.js"></script>
+  <script src="assets/font-picker.js"></script>
 </body>
 </html>
