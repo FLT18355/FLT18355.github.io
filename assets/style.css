@@ -707,21 +707,6 @@
     #themeToggle.dragging .cloud { opacity: calc(1 - var(--p)); }
     #themeToggle.dragging .moon  { opacity: var(--p); transform: scale(calc(0.5 + 0.5 * var(--p))); }
 
-    .trail-dot {
-      position: fixed;
-      width: 8px; height: 8px;
-      margin: -4px 0 0 -4px;
-      border-radius: 50%;
-      pointer-events: none;
-      background: var(--primary);
-      box-shadow: 0 0 8px color-mix(in srgb, var(--primary) 70%, transparent);
-      z-index: 999;
-      animation: trailFade 0.65s ease-out forwards;
-    }
-    @keyframes trailFade {
-      0%   { opacity: 0.85; transform: scale(1); }
-      100% { opacity: 0;    transform: scale(0.4) translateY(-4px); }
-    }
     /* Animations */
     @keyframes blockIn {
       from { opacity: 0; transform: translateY(22px); }

@@ -21,7 +21,7 @@
     ├── style.css         设计令牌（双主题）+ 全部基础样式 + 主题拨钮
     ├── motion.css        增量动效层（html.motion-js 门控）
     ├── nav.css           顶部导航条 + 滑动指示条
-    ├── app.js            主题拨钮（拖拽 / 点击 / 键盘切换，拖尾粒子）
+    ├── app.js            主题拨钮（拖拽 / 点击 / 键盘切换）
     ├── app-motion.js     动效编排（滚动入场、光斑、倾斜、涟漪、进度线）
     └── nav.js            导航指示条定位
 ```
@@ -31,7 +31,7 @@
 ## 设计与技术细节
 
 - **主题**：Mocha（深，黑夜）/ Latte（浅，白天）两套 Catppuccin 风味，通过 `@property` 注册的自定义属性实现主题间颜色平滑过渡；系统偏好自动适配，选择持久化在 `localStorage`
-- **主题拨钮**：demo/button.html 一比一还原（200×90 原布局 + wrapper 统一缩放适配导航条，仅配色换 Catppuccin 色板）——Latte 下蓝天白云 + 太阳呼吸光，Mocha 下星空闪烁 + 月亮浮现；滑钮可拖拽（场景随 `--p` 交叉淡化），松手 overshoot 回弹，拖动时自滑钮拖拽反方向边缘甩出主色拖尾粒子；场景动画与 demo 一致永转，不随 `prefers-reduced-motion` 关闭
+- **主题拨钮**：demo/button.html 一比一还原（200×90 原布局 + wrapper 统一缩放适配导航条，仅配色换 Catppuccin 色板）——Latte 下蓝天白云 + 太阳呼吸光，Mocha 下星空闪烁 + 月亮浮现；滑钮可拖拽（场景随 `--p` 交叉淡化），松手 overshoot 回弹；场景动画与 demo 一致永转，不随 `prefers-reduced-motion` 关闭
 - **卡片**：毛玻璃质感（`backdrop-filter: blur + saturate`），不支持的浏览器自动退化为半透明纯色
 - **导航**：sticky 毛玻璃导航条，当前页指示条在页面间滑动切换
 - **动效**（渐进增强）：

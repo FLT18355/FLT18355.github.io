@@ -23,22 +23,6 @@
   function setProgress(p) { btn.style.setProperty('--p', String(p)); }
   function clearProgress() { btn.style.removeProperty('--p'); }
 
-  /* 拖尾粒子 */
-  var trailQueue = [];
-
-  function spawnTrail(kx, ky) {
-    var d = document.createElement('span');
-    d.className = 'trail-dot';
-    d.style.left = kx + 'px';
-    d.style.top = ky + 'px';
-    document.body.appendChild(d);
-    trailQueue.push(d);
-    if (trailQueue.length > 30) {
-      var old = trailQueue.shift();
-      if (old.parentNode) old.parentNode.removeChild(old);
-    }
-  }
-
   var drag = null;
 
   btn.addEventListener('pointerdown', function (e) {
@@ -74,15 +58,6 @@
     setProgress(target / MAX_X);
     drag.lastX = target;
 
-    /* 拖尾：从滑钮「拖拽反方向」的边缘甩出（滞后于运动），不被圆钮遮住 */
-    if (Math.random() < 0.5) {
-      var r = btn.getBoundingClientRect();
-      var dir = drag.lastX <= target ? 1 : -1;            /* 运动方向 */
-      var edge = dir > 0 ? target : target + 86;          /* 反方向的边缘（布局 x） */
-      var kx = r.left + (2 + edge) * drag.scale + (dir > 0 ? -4 : 4) * drag.scale;
-      var ky = r.top + (90 / 2) * drag.scale + Math.random() * 6 - 3;
-      spawnTrail(kx, ky);
-    }
   });
 
   function finishDrag(e) {
