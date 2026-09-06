@@ -31,6 +31,7 @@ python3 build.py            # 从 src/ 重新生成五页
 - 左栏(rail)默认注入,来自 `src/partials/rail.html`(内含 profile + contacts 两个占位)。
 - search 页**无左栏**(bare 模式):`src/pages.json` 里该页 `"rail": false` 即可。build.py 会跳过 rail 注入并给 `.shell` 加 ` shell--bare` 类(单列网格 + 内容限宽居中)。新增无左栏页面:复制该字段 + 确认 `.shell--bare` 样式满足需求。
 - search 页另有**专属背景光斑动效**:`src/pages/search.html` 里的 `.search-bg` 空容器(仅此页存在),静态柔光层在 `assets/style.css`,漂浮动画在 `assets/motion.css` 第 8 节(`html.motion-js` 门控 + reduce 熄火)。它靠页面内容注入而不是 build 条件,所以其它页面天然不受影响。
+- search 页交互(时钟 / 最近搜索 / 快捷键)在 `assets/search.js`,由页面内容区 `<script src>` 引用(仅此页加载)。它守卫 DOM 缺失,复制到其它页面也不会报错,但不要加入模板统一加载(避免其它页面多一个请求)。
 
 ## 3. 硬约束与易错点
 
@@ -44,7 +45,7 @@ python3 build.py            # 从 src/ 重新生成五页
 - `font.woff2` 是**子集**(约 56KB,`subset-font.py` 从 `src/font-full.woff2` 全量裁剪),`@font-face` 声明不触发下载,只有 `html[data-font="maple"]` 规则下的元素实际引用才下载。
 - **改字体相关 CSS 时,不要**把 "Maple Mono NF CN" 写进无条件生效的规则(如默认 `body` 或 `:root` 的 `--mono`)。必须挂在 `html[data-font="maple"]` 下,否则默认用户也会加载字体。
 - 页面文案**新增字符**后必须重跑 `python3 subset-font.py`,否则子集缺字(显示豆腐块);全量字体保留在 `src/font-full.woff2`,子集化不会丢失字形。
-- 子集化字符集来源 = 生成页面 HTML + `assets/palette.js`(`subset-font.py` 的 `JS_SOURCES`);若往 JS 里加可见中文,须同步把该文件加入 `JS_SOURCES`。
+- 子集化字符集来源 = 生成页面 HTML + `assets/palette.js` + `assets/search.js`(`subset-font.py` 的 `JS_SOURCES`);若往 JS 里加可见中文(如 search.js 的时钟中文),须同步把该文件加入 `JS_SOURCES`。
 - 新增字体族/字重:在 `assets/style.css` 顶部 `@font-face` 区声明,并按现有模式做条件化。
 - 用户若反馈「字体不生效」:先查 `localStorage.site-font` 是否为 `'maple'`,以及 `data-font` 属性是否存在;再查 Network 是否有 woff2 请求。
 

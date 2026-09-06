@@ -147,6 +147,22 @@ html.motion-js .search-bg::after {
   to   { transform: translate3d(-5vw, 3vh, 0) scale(1.22); opacity: 0.85; }
 }
 
+/* ---------- 9. Search 页快捷链接:悬停微浮起;最近搜索 chips 入场 ---------- */
+html.motion-js .quicklink:hover {
+  transform: translateY(-3px);
+}
+html.motion-js .quicklink {
+  transition: border-color 0.15s, color 0.15s, background-color 0.2s var(--ease-out), transform 0.25s var(--ease-out);
+}
+html.motion-js .search-chip {
+  animation: chipIn 0.4s var(--ease-out) backwards;
+}
+html.motion-js .search-chip:nth-child(1) { animation-delay: 0.05s; }
+html.motion-js .search-chip:nth-child(2) { animation-delay: 0.1s; }
+html.motion-js .search-chip:nth-child(3) { animation-delay: 0.15s; }
+html.motion-js .search-chip:nth-child(4) { animation-delay: 0.2s; }
+html.motion-js .search-chip:nth-child(n+5) { animation-delay: 0.25s; }
+
 /* ---------- 减弱动效：整体熄火 ---------- */
 @media (prefers-reduced-motion: reduce) {
   html.motion-js .block,
@@ -166,4 +182,6 @@ html.motion-js .search-bg::after {
   html.motion-js .project-card::before { display: none; }
   html.motion-js .search-bg::before,
   html.motion-js .search-bg::after { animation: none; opacity: 0.5; }
+  html.motion-js .quicklink { transform: none; transition: none; }
+  html.motion-js .search-chip { animation: none; opacity: 1; transform: none; }
 }

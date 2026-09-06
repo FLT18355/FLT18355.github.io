@@ -59,7 +59,7 @@ search.html
 
 ### 3.3 动效(渐进增强层)
 - `assets/app-motion.js` 仅在支持 IntersectionObserver 且用户未开启 reduced-motion 时给 `<html>` 加 `.motion-js`,`assets/motion.css` 全部动效规则挂在该类下;JS 不跑或不支持时页面完全正常。
-- 功能:区块滚动入场 + 筹码错峰、指针光斑、项目卡 3D 微倾斜、主题涟漪、阅读进度线、页脚浮现、Search 页背景光斑(仅 search 页有 `.search-bg`,两个伪元素光斑缓慢漂浮 + 呼吸,26s/34s 错峰,挂 `html.motion-js` 门控,reduced-motion 熄火)。
+- 功能:区块滚动入场 + 筹码错峰、指针光斑、项目卡 3D 微倾斜、主题涟漪、阅读进度线、页脚浮现、Search 页背景光斑(仅 search 页有 `.search-bg`,两个伪元素光斑缓慢漂浮 + 呼吸,26s/34s 错峰,挂 `html.motion-js` 门控,reduced-motion 熄火)、Search 页快捷链接悬停微浮起 + 最近搜索 chips 错峰入场(第 9 节)。
 - **主题拨钮场景动画(云朵/太阳/星星)刻意不随 reduced-motion 关闭**(产品决策,README 有记录),其余动效遵守 reduced-motion。
 - 云朵动画 `@keyframes drift`(style.css):`translateX(270px)` → `-90px`,即右侧外飘入、穿出左侧外循环;云朵静态回退在右侧外(不遮挡太阳),`z-index` 高于太阳(云遮日)。四朵云用负 `animation-delay` 错峰,相位分布保证任意时刻有一朵正从右侧进入。
 - 现有动效均为 CSS + IntersectionObserver / rAF,无 GSAP 依赖、无 scroll 监听。
@@ -80,6 +80,6 @@ search.html
 | projects | `projects.html` | terminal / lxm / dotfiles 三卡 |
 | catppuccin | `catppuccin.html` | 色板页:4 风味 × 26 色（数据/渲染/复制逻辑在 `assets/palette.js`,含中文文案需进字体字符集） |
 | following | `following.html` | herdr / oh-my-pi / catppuccin（`f-catppuccin` 单色紫强调卡,线性猫 SVG 图标）/ neovim |
-| search | `search.html` | bare 模式(无左栏):实时时钟 + Bing 搜索表单(新标签打开结果),时钟刷新逻辑为页面内联脚本;背景光斑漂浮动效(静态层 `.search-bg` 在 style.css,动画在 motion.css 第 8 节) |
+| search | `search.html` | bare 模式(无左栏):实时时钟 + Bing 搜索表单(新标签打开结果) + 快捷站点链接(GitHub/Bilibili/YouTube/MDN) + 最近搜索历史(localStorage 5 条);交互逻辑在 `assets/search.js`(`/` 或 Ctrl+K 聚焦,Esc 清空);背景光斑漂浮动效(静态层 `.search-bg` 在 style.css,动画在 motion.css 第 8 节) |
 
 联系方式(partials/contacts.html):GitHub、QQ(wpa.qq.com 临时会话,w/ QQ-cm.svg 图标)、微信(weixin.qq.com)、B 站大号 / 小号。

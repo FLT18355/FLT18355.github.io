@@ -50,7 +50,11 @@ grep -o 'aria-current="page"[^>]*>[A-Za-z]*' index.html projects.html catppuccin
 - projects.html:高亮在 Projects,三张项目卡
 - following.html:高亮在 Following,两张卡
 - search.html:无左栏(无 300px 列),上方实时时钟、下方 Bing 搜索表单;提交后新标签打开 Bing 结果
+- search.html 快捷键:`/` 或 Ctrl/Cmd+K 聚焦搜索框并全选,Esc 清空;输入框内按 `/` 应正常输入不触发聚焦
+- search.html 最近搜索:提交过非空搜索后出现 Recent 区(chips 最多 5 条,点击新标签重搜,Clear 清空);localStorage 键 `search-history`
+- search.html 快捷链接:GitHub/Bilibili/YouTube/MDN 四卡,悬停微浮起
 - search.html 背景光斑:内容下方有 `.search-bg`(其它页面 grep 应为 0 处);开启动效时两个光斑缓慢漂浮,系统开「减弱动效」后静止
+- 页面隔离:`grep -c 'quicklink\|search-bg'` 在其它四页应全为 0;`assets/search.js` 仅 search.html 引用
 - 首次访问(清 localStorage)出现字体选择界面;选完自动刷新不再弹出;页脚「字体」按钮可重开
 - 双主题切换:拨钮拖拽/点击/键盘,主题持久化
 - 弱网/未选 Maple 时 Network 面板应**没有** font.woff2 请求;选 Maple 后才出现
