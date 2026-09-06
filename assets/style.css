@@ -425,6 +425,46 @@
     .tech-tag.t-mauve { background: var(--mauve-dim); color: var(--mauve); border-color: transparent; }
     .tech-tag:hover { border-color: currentColor; color: var(--text); transform: translateY(-2px); }
 
+    /* ============ Catppuccin palette swatches ============ */
+    .palette { margin-top: 18px; }
+    .palette-flavor + .palette-flavor { margin-top: 26px; }
+    .palette-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+    .palette-head h3 { font-size: 1.02rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+    .palette-head span { font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); }
+    .palette-group { display: flex; align-items: center; gap: 10px; margin: 16px 0 8px; }
+    .palette-group::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .palette-group span {
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+    .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 0;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+    }
+    .swatch-chip {
+      height: 52px;
+      border-radius: 10px;
+      border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+      transition: transform 0.15s var(--ease-out), box-shadow 0.15s;
+    }
+    .swatch:hover .swatch-chip { transform: translateY(-2px) scale(1.02); box-shadow: var(--shadow); }
+    .swatch:active .swatch-chip { transform: scale(0.97); }
+    .swatch:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 10px; }
+    .swatch-name { font-size: 0.7rem; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .swatch-hex { font-family: var(--mono); font-size: 0.62rem; color: var(--text-muted); line-height: 1.2; }
+    .swatch.copied .swatch-hex { color: var(--green); }
+
     /* Featured projects - 2-up card grid */
     .project-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     @media (min-width: 760px) { .project-grid { grid-template-columns: 1fr 1fr; } }

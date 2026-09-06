@@ -16,7 +16,7 @@ PARTIALS = SRC / "partials"
 PAGES = SRC / "pages"
 
 PARTIAL_NAMES = ["font-picker", "nav", "profile", "contacts"]
-NAV_MARKERS = ["home", "projects", "following"]
+NAV_MARKERS = ["home", "projects", "palette", "following"]
 
 
 def read(name: str, sub: Path) -> str:

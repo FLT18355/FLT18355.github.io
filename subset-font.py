@@ -23,13 +23,15 @@ CACHE = ROOT / ".cache"
 FULL_FONT = SRC / "font-full.woff2"
 OUT_FONT = ROOT / "font.woff2"
 
-# 页面字符收集来源(生成产物 + 独立 404 页)
-PAGE_SOURCES = ["index.html", "projects.html", "following.html", "404.html"]
+# 页面字符收集来源(生成产物 + 独立 404 页;新增页面需同步加入)
+PAGE_SOURCES = ["index.html", "projects.html", "catppuccin.html", "following.html", "404.html"]
+# JS 内可见文案(如 palette.js 的 flavor 说明、Copied!)也需进字符集
+JS_SOURCES = ["assets/palette.js"]
 
 
 def collect_charset(extra: str) -> str:
     chars = set(" \n")
-    for name in PAGE_SOURCES:
+    for name in PAGE_SOURCES + JS_SOURCES:
         p = ROOT / name
         if p.is_file():
             chars.update(p.read_text(encoding="utf-8"))

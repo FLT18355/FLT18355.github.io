@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。" />
+  <meta name="description" content="Catppuccin 四种风味 × 26 色的完整色板,点击复制 Hex。" />
   <meta name="theme-color" content="#1e1e2e" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="FLT18355" />
-  <meta property="og:title" content="FLT18355 - Home" />
-  <meta property="og:description" content="FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。" />
+  <meta property="og:title" content="FLT18355 - Palette" />
+  <meta property="og:description" content="Catppuccin 四种风味 × 26 色的完整色板,点击复制 Hex。" />
   <meta property="og:url" content="https://flt18355.github.io/" />
   <meta property="og:image" content="https://flt18355.github.io/logo.svg" />
   <meta name="twitter:card" content="summary" />
@@ -25,7 +25,7 @@
   }
   </script>
   <link rel="icon" type="image/svg+xml" href="logo.svg" />
-  <title>FLT18355 - Home</title>
+  <title>FLT18355 - Palette</title>
   <link rel="stylesheet" href="assets/style.css" />
   <link rel="stylesheet" href="assets/motion.css" />
   <link rel="stylesheet" href="assets/nav.css" />
@@ -74,9 +74,9 @@
     <header class="site-nav">
     <div class="nav-inner">
       <nav class="nav-list" aria-label="页面导航">
-        <a class="nav-item" href="index.html" aria-current="page">Home</a>
+        <a class="nav-item" href="index.html">Home</a>
         <a class="nav-item" href="projects.html">Projects</a>
-        <a class="nav-item" href="catppuccin.html">Palette</a>
+        <a class="nav-item" href="catppuccin.html" aria-current="page">Palette</a>
         <a class="nav-item" href="following.html">Following</a>
         <span class="nav-indicator" aria-hidden="true"></span>
       </nav>
@@ -168,42 +168,12 @@
     </aside>
     <!-- ============ Right column: content ============ -->
     <main class="content">
-      <section class="block b-about">
+      <section class="block b-palette">
         <div class="block-header">
-          <h2>About Me</h2>
+          <h2>Catppuccin Palette</h2>
         </div>
-        <p class="about-lead">A <strong>Catppuccin</strong> enjoyer. Python user tinkering with dotfiles and TUI tools on Arch Linux.</p>
-        <div class="flavors" role="img" aria-label="Catppuccin 四种风味">
-          <span class="flavor f-mocha"><i></i>Mocha</span>
-          <span class="flavor f-latte"><i></i>Latte</span>
-          <span class="flavor f-frappe"><i></i>Frappé</span>
-          <span class="flavor f-macchiato"><i></i>Macchiato</span>
-        </div>
-      </section>
-      <section class="block b-interests">
-        <div class="block-header">
-          <h2>Interests</h2>
-        </div>
-        <div class="interest-list">
-          <span class="interest">Terminal &amp; dotfiles</span>
-          <span class="interest">Catppuccin theming</span>
-          <span class="interest">Music</span>
-          <span class="interest">Open source</span>
-          <span class="interest">TUI tools</span>
-        </div>
-      </section>
-      <section class="block b-tech">
-        <div class="block-header">
-          <h2>Tech Stack</h2>
-        </div>
-        <div class="tech-grid">
-          <span class="tech-tag main t-blue">Python</span>
-          <span class="tech-tag main t-teal">TypeScript</span>
-          <span class="tech-tag t-green">Node.js</span>
-          <span class="tech-tag t-pink">Shell</span>
-          <span class="tech-tag t-peach">HTML</span>
-          <span class="tech-tag t-mauve">Lua</span>
-        </div>
+        <p class="about-lead">四种风味 × 26 色,<strong>点击色块</strong>复制 Hex。</p>
+        <div id="palette" class="palette"></div>
       </section>
 
       <footer class="footline">

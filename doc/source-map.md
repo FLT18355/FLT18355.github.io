@@ -28,6 +28,7 @@
 | `app-motion.js` | 动效编排:滚动入场、光斑、倾斜、涟漪、进度线 |
 | `nav.js` | 导航指示条定位 |
 | `font-picker.js` | 字体选择:首启显隐、选项绑定、页脚重开 |
+| `palette.js` | 色板页:4×26 色数据渲染 + 点击复制 Hex(含可见中文文案,需进字体字符集) |
 
 ## `src/`(唯一编辑入口)
 
@@ -42,6 +43,7 @@
 | `partials/contacts.html` | 左栏联系方式列表(GitHub / QQ / 微信 / B 站大号 / B 站小号) |
 | `pages/index.html` | 主页 `<main>` 内容(About / Interests / Tech Stack) |
 | `pages/projects.html` | 项目页 `<main>` 内容(terminal / lxm / dotfiles) |
+| `pages/catppuccin.html` | 色板页 `<main>` 内容(渲染容器,由 palette.js 填充) |
 | `pages/following.html` | 关注页 `<main>` 内容(herdr / oh-my-pi / catppuccin 彩色卡 / neovim) |
 
 ## 页面差异速查

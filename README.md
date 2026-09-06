@@ -8,6 +8,7 @@
 |------|------|
 | [`index.html`](index.html) | 主页:关于我、兴趣、技术栈 |
 | [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles |
+| [`catppuccin.html`](catppuccin.html) | Catppuccin 色板:4 风味 × 26 色,点击复制 Hex |
 | [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin（紫色重点卡 + 猫图标）/ neovim |
 
 ## 构建
@@ -38,7 +39,8 @@ python3 subset-font.py    # 按页面文本子集化字体(文案改动后重跑
     ├── app.js            主题拨钮（拖拽 / 点击 / 键盘切换）
     ├── app-motion.js     动效编排（滚动入场、光斑、倾斜、涟漪、进度线）
     ├── nav.js            导航指示条定位
-    └── font-picker.js    字体选择交互（首启弹出 + 页脚重开）
+    ├── font-picker.js    字体选择交互（首启弹出 + 页脚重开）
+    └── palette.js        Catppuccin 色板页数据与渲染（点击复制 Hex）
 
 源文件（编辑这些，再跑 build.py）：
 
@@ -54,6 +56,7 @@ python3 subset-font.py    # 按页面文本子集化字体(文案改动后重跑
     └── pages/
         ├── index.html        主页内容
         ├── projects.html     重点项目内容
+        ├── catppuccin.html   Catppuccin 色板页内容
         └── following.html    关注项目内容
 ```
 
