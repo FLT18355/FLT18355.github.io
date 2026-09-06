@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="mocha">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FLT18355 的 Bing 搜索页,含实时时钟。" />
+  <meta name="theme-color" content="#1e1e2e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="FLT18355" />
+  <meta property="og:title" content="FLT18355 - Search" />
+  <meta property="og:description" content="FLT18355 的 Bing 搜索页,含实时时钟。" />
+  <meta property="og:url" content="https://flt18355.github.io/" />
+  <meta property="og:image" content="https://flt18355.github.io/logo.svg" />
+  <meta name="twitter:card" content="summary" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "FLT18355",
+    "url": "https://flt18355.github.io/",
+    "sameAs": [
+      "https://github.com/FLT18355",
+      "https://space.bilibili.com/517296410"
+    ]
+  }
+  </script>
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <title>FLT18355 - Search</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/motion.css" />
+  <link rel="stylesheet" href="assets/nav.css" />
+  <link rel="stylesheet" href="assets/font-picker.css" />
+
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'latte' : 'mocha';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+    /* 字体选择:恢复已存选择,避免字体闪烁(选择界面显隐由 font-picker.js 处理) */
+    (function () {
+      var root = document.documentElement;
+      try {
+        var f = localStorage.getItem('site-font');
+        if (f === 'default' || f === 'maple') root.setAttribute('data-font', f);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+
+    <div class="font-picker" id="fontPicker" role="dialog" aria-modal="true" aria-labelledby="fontPickerTitle" hidden>
+    <div class="font-picker-card">
+      <h2 id="fontPickerTitle">选择字体</h2>
+      <p class="font-picker-sub">默认使用系统字体,秒开页面;Maple Mono 需下载字体文件。</p>
+      <p class="font-picker-note">如果选择完字体后页面没有自动刷新,请手动刷新网页。</p>
+      <div class="font-picker-options">
+        <button type="button" class="font-option" data-font-choice="default">
+          <span class="font-option-name">默认字体 <em>(国人推荐)</em></span>
+          <span class="font-option-desc">系统字体,无需下载,打开最快</span>
+        </button>
+        <button type="button" class="font-option" data-font-choice="maple">
+          <span class="font-option-name">Maple Mono NF CN</span>
+          <span class="font-option-desc">等宽终端风,需下载字体</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+    <header class="site-nav">
+    <div class="nav-inner">
+      <nav class="nav-list" aria-label="页面导航">
+        <a class="nav-item" href="index.html">Home</a>
+        <a class="nav-item" href="projects.html">Projects</a>
+        <a class="nav-item" href="catppuccin.html">Palette</a>
+        <a class="nav-item" href="following.html">Following</a>
+        <a class="nav-item" href="search.html" aria-current="page">Search</a>
+        <span class="nav-indicator" aria-hidden="true"></span>
+      </nav>
+    <span class="toggle-scale">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换 Latte / Mocha 配色" title="切换主题">
+        <span class="sun" aria-hidden="true"></span>
+        <span class="cloud cloud1" aria-hidden="true"></span>
+        <span class="cloud cloud2" aria-hidden="true"></span>
+        <span class="cloud cloud3" aria-hidden="true"></span>
+        <span class="cloud cloud4" aria-hidden="true"></span>
+        <span class="moon" aria-hidden="true"></span>
+        <span class="star s1" aria-hidden="true"></span>
+        <span class="star s2" aria-hidden="true"></span>
+        <span class="star s3" aria-hidden="true"></span>
+        <span class="star s4" aria-hidden="true"></span>
+        <span class="star s5" aria-hidden="true"></span>
+        <span class="star s6" aria-hidden="true"></span>
+        <span class="star s7" aria-hidden="true"></span>
+        <span class="star s8" aria-hidden="true"></span>
+        <span class="knob" aria-hidden="true"></span>
+      </button>
+    </span>
+    </div>
+  </header>
+
+  <div class="shell shell--bare">
+    
+    <!-- ============ Right column: content ============ -->
+    <main class="content">
+      <section class="block b-search">
+        <div class="search-clock" role="timer">
+          <div class="search-time" id="searchTime">--:--:--</div>
+          <div class="search-date" id="searchDate"></div>
+        </div>
+        <form class="search-form" action="https://www.bing.com/search" method="get" target="_blank" rel="noopener" role="search">
+          <input class="search-input" type="search" name="q" id="searchQ" placeholder="Search with Bing" aria-label="Search with Bing" autocomplete="off" spellcheck="false" />
+          <button class="search-go" type="submit">Search</button>
+        </form>
+        <p class="search-note">Results open in a new tab</p>
+      </section>
+      <script>
+        (function () {
+          var dateEl = document.getElementById('searchDate');
+          var timeEl = document.getElementById('searchTime');
+          if (!dateEl || !timeEl) return;
+          var WEEK = ['日', '一', '二', '三', '四', '五', '六'];
+          function pad(n) { return n < 10 ? '0' + n : '' + n; }
+          function tick() {
+            var d = new Date();
+            dateEl.textContent = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 星期' + WEEK[d.getDay()];
+            timeEl.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+          }
+          tick();
+          setInterval(tick, 1000);
+        })();
+      </script>
+
+      <footer class="footline">
+        <span>© 2026 FLT18355</span>
+        <a href="https://github.com/FLT18355/FLT18355.github.io" target="_blank" rel="noopener">Source on GitHub</a>
+        <button type="button" class="footline-btn" id="fontPickerReopen">字体</button>
+      </footer>
+    </main>
+  </div>
+  <script src="assets/app.js"></script>
+  <script src="assets/app-motion.js"></script>
+  <script src="assets/nav.js"></script>
+  <script src="assets/font-picker.js"></script>
+  <script src="assets/palette.js"></script>
+</body>
+</html>

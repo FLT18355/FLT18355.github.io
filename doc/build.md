@@ -6,7 +6,7 @@
 
 对 `src/` 下任何文件做了修改后:
 
-- 改了 `template.html` / 任一 `partials/` → 影响三页,**必须**重新 build
+- 改了 `template.html` / 任一 `partials/` → 影响所有页面,**必须**重新 build
 - 改了 `pages.json`(title/description/current 标记) → 必须重新 build
 - 改了 `pages/<name>.html`(某页内容) → 必须重新 build
 - 改了 `404.html` 或任何页面**文案**(新增字符)→ 重新 `subset-font.py`,否则新字符会缺字
@@ -18,7 +18,7 @@
 在仓库根目录:
 
 ```bash
-python3 build.py          # 渲染三个页面
+python3 build.py          # 渲染五个页面
 python3 subset-font.py    # 按页面文本子集化字体(文案含新字符时必跑)
 ```
 
@@ -37,11 +37,11 @@ done.
 
 ```bash
 # 1) 无残留占位符(任何 {{ }} 都不应该出现在产物里)
-grep -n '{{' index.html projects.html following.html   # 应无输出
+grep -n '{{' index.html projects.html catppuccin.html following.html search.html   # 应无输出
 
-# 2) 三页的 title / description / 导航高亮正确
-grep -o '<title>[^<]*</title>' index.html projects.html following.html
-grep -o 'aria-current="page"[^>]*>[A-Za-z]*' index.html projects.html following.html
+# 2) 五页的 title / description / 导航高亮正确
+grep -o '<title>[^<]*</title>' index.html projects.html catppuccin.html following.html search.html
+grep -o 'aria-current="page"[^>]*>[A-Za-z]*' index.html projects.html catppuccin.html following.html search.html
 ```
 
 手动抽查:
@@ -49,6 +49,7 @@ grep -o 'aria-current="page"[^>]*>[A-Za-z]*' index.html projects.html following.
 - 打开 index.html:导航高亮在 Home,右侧为 About/Interests/Tech
 - projects.html:高亮在 Projects,三张项目卡
 - following.html:高亮在 Following,两张卡
+- search.html:无左栏(无 300px 列),上方实时时钟、下方 Bing 搜索表单;提交后新标签打开 Bing 结果
 - 首次访问(清 localStorage)出现字体选择界面;选完自动刷新不再弹出;页脚「字体」按钮可重开
 - 双主题切换:拨钮拖拽/点击/键盘,主题持久化
 - 弱网/未选 Maple 时 Network 面板应**没有** font.woff2 请求;选 Maple 后才出现
@@ -60,7 +61,7 @@ grep -o 'aria-current="page"[^>]*>[A-Za-z]*' index.html projects.html following.
 | 加一个联系方式 | `src/partials/contacts.html` | 是 |
 | 改导航链接/标签 | `src/partials/nav.html` | 是 |
 | 改某页正文 | `src/pages/<name>.html` | 是 |
-| 加新页面 | 新增 `src/pages/x.html` + `pages.json` 加一项;若想加导航入口还要改 `nav.html` 与 `nav.css` | 是 |
+| 加新页面 | 新增 `src/pages/x.html` + `pages.json` 加一项;若想加导航入口还要改 `nav.html` 与 `nav.css`;无左栏页面加 `"rail": false` | 是 |
 | 改主题色/间距 | `assets/style.css` | 否 |
 | 换站点图标 | `logo.svg` | 否 |
 | 换字体文件 | 替换 `src/font-full.woff2` 后重跑 `subset-font.py` | 字体 |

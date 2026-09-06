@@ -2,5 +2,6 @@
   "index.html":     { "title": "FLT18355 - Home",     "description": "FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。", "current": "home",     "page": "index.html" },
   "projects.html":  { "title": "FLT18355 - Projects", "description": "FLT18355 的重点项目:终端配置、OpenTUI 音乐播放器 lxm 与 dotfiles。", "current": "projects",  "page": "projects.html" },
   "catppuccin.html":{ "title": "FLT18355 - Palette",  "description": "Catppuccin 四种风味 × 26 色的完整色板,点击复制 Hex。", "current": "palette",  "page": "catppuccin.html" },
-  "following.html": { "title": "FLT18355 - Following","description": "FLT18355 正在关注的项目:herdr / oh-my-pi / catppuccin / neovim。", "current": "following", "page": "following.html" }
+  "following.html": { "title": "FLT18355 - Following","description": "FLT18355 正在关注的项目:herdr / oh-my-pi / catppuccin / neovim。", "current": "following", "page": "following.html" },
+  "search.html":    { "title": "FLT18355 - Search",    "description": "FLT18355 的 Bing 搜索页,含实时时钟。", "current": "search",     "page": "search.html",    "rail": false }
 }

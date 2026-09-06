@@ -5,21 +5,21 @@
 ## 0. 第一原则
 
 - 改页面内容/公共结构 → 改 `src/` → `python3 build.py` → 验证。
-- **不要**直接编辑根目录 `index.html` / `projects.html` / `following.html`(下次 build 会覆盖丢改动)。
+- **不要**直接编辑根目录的生成产物(index / projects / catppuccin / following / search 五个 .html,下次 build 会覆盖丢改动)。
 - 改 `assets/*.css、*.js` 或 `logo.svg`、`font.woff2` → 不需要 build,刷新即可。
 
 ## 1. 快速上手
 
 ```bash
-python3 build.py            # 从 src/ 重新生成三页
+python3 build.py            # 从 src/ 重新生成五页
 ```
 
 改动前先看 `doc/architecture.md`(机制)与 `doc/source-map.md`(文件职责),再动手。
 
-## 2. 布局结构(三页一致)
+## 2. 布局结构(四页一致,search 页除外)
 
 ```
-[顶部导航]  Home | Projects | Following   [主题拨钮]
+[顶部导航]  Home | Projects | Palette | Following | Search   [主题拨钮]
 [左栏]            [内容区 <main>]
   头像/名号         每页自己的 block(s)
   联系方式
@@ -28,9 +28,12 @@ python3 build.py            # 从 src/ 重新生成三页
 
 公共片段全部在 `src/partials/`,改一处即所有页面生效。
 
+- 左栏(rail)默认注入,来自 `src/partials/rail.html`(内含 profile + contacts 两个占位)。
+- search 页**无左栏**(bare 模式):`src/pages.json` 里该页 `"rail": false` 即可。build.py 会跳过 rail 注入并给 `.shell` 加 ` shell--bare` 类(单列网格 + 内容限宽居中)。新增无左栏页面:复制该字段 + 确认 `.shell--bare` 样式满足需求。
+
 ## 3. 硬约束与易错点
 
-### 3.1 根目录三页是生成物
+### 3.1 根目录五页是生成物
 
 - `grep -n '{{' *.html` 有输出 = build 失败/占位没填,先修 src。
 
@@ -73,8 +76,8 @@ python3 build.py            # 从 src/ 重新生成三页
 改完提交前确认:
 
 - [ ] `python3 build.py` 成功,产物无 `{{`
-- [ ] 三页 title / aria-current 正确
-- [ ] 公共改动在三个页面都生效(抽查)
+- [ ] 五页 title / aria-current 正确
+- [ ] 公共改动在各页面都生效(抽查,含 rail 页面与 bare 页面)
 - [ ] 字体选择流程未破坏(首启弹窗 / 选后刷新 / 页脚重开)
 - [ ] 双主题未破坏
 - [ ] 没往产物 HTML 里手写内容

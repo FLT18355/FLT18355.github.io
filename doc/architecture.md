@@ -1,6 +1,6 @@
 # 架构与技术说明
 
-站点:FLT18355.github.io —— 个人主页(GitHub Pages),三页纯静态,零第三方依赖。
+站点:FLT18355.github.io —— 个人主页(GitHub Pages),五页纯静态,零第三方依赖。
 
 目标读者:后续维护此仓库的 AI / 开发者。
 
@@ -13,13 +13,16 @@ src/                   模板 + 片段(pages.json 清单)
   ▼
 index.html             产物:GitHub Pages 直接部署
 projects.html
+catppuccin.html
 following.html
+search.html
   │
   └── assets/           共用样式与脚本(编译产物,勿改)
 ```
 
-- 三页共享同一套布局:顶部导航(含主题拨钮)、左侧身份栏(头像/名号/标语/联系方式)、右侧内容区、页脚。
-- 所有公共结构在 `src/partials/` 只维护一份,由 `build.py` 渲染进三页。
+- 四页(index/projects/catppuccin/following)共享同一套布局:顶部导航(含主题拨钮)、左侧身份栏(头像/名号/标语/联系方式)、右侧内容区、页脚。
+- search 页是第一个无左栏页面(bare 模式):`pages.json` 里 `"rail": false` 时,`build.py` 不注入 rail partial,并给 `.shell` 加 ` shell--bare` 类(单列网格 + 内容限宽居中,见 `assets/style.css`)。导航与页脚仍保留。
+- 所有公共结构在 `src/partials/` 只维护一份,由 `build.py` 渲染进各页。
 - 页级差异只有 4 个点:`title`、`description`、导航 `aria-current`、`<main>` 内容,全部在 `src/pages.json` 与 `src/pages/` 定义。
 
 ## 2. 构建管线
@@ -27,14 +30,15 @@ following.html
 `build.py`(标准库 `json` + `pathlib`,零第三方依赖):
 
 1. 读 `src/template.html`(整页骨架,含 `{{占位}}`)。
-2. 按 `src/pages.json`(页清单:三页的 title / description / current 标记 / 内容页名)逐页:
+2. 按 `src/pages.json`(页清单:各页的 title / description / current 标记 / 内容页名 / 可选 `rail`)逐页:
    - 读对应 `src/pages/<name>.html` 作为 `<main>` 内容;
-   - 读四个 partial(font-picker / nav / profile / contacts);
-   - 按 `current` 给 nav 三个链接注入 ` aria-current="page"`(当前页),其余留空;
+   - 读五个 partial(font-picker / nav / profile / contacts / rail);
+   - 按 `current` 给 nav 五条链接注入 ` aria-current="page"`(当前页),其余留空;
+   - `rail` 字段缺省 true;为 false 时跳过 rail partial 注入并把 shell 类名换成 ` shell--bare`;
    - 用字符串替换填充 `{{...}}`,写出到仓库根。
 3. 产物是完整静态 HTML,无任何运行时模板依赖。
 
-**约束:根目录的三个 .html 是生成物,勿手改;改内容一律改 `src/` 后重新 build。**
+**约束:根目录的五个 .html 是生成物,勿手改;改内容一律改 `src/` 后重新 build。**
 
 ## 3. 关键机制
 
@@ -76,5 +80,6 @@ following.html
 | projects | `projects.html` | terminal / lxm / dotfiles 三卡 |
 | catppuccin | `catppuccin.html` | 色板页:4 风味 × 26 色（数据/渲染/复制逻辑在 `assets/palette.js`,含中文文案需进字体字符集） |
 | following | `following.html` | herdr / oh-my-pi / catppuccin（`f-catppuccin` 单色紫强调卡,线性猫 SVG 图标）/ neovim |
+| search | `search.html` | bare 模式(无左栏):实时时钟 + Bing 搜索表单(新标签打开结果),时钟刷新逻辑为页面内联脚本 |
 
 联系方式(partials/contacts.html):GitHub、QQ(wpa.qq.com 临时会话,w/ QQ-cm.svg 图标)、微信(weixin.qq.com)、B 站大号 / 小号。

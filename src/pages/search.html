@@ -1,0 +1,27 @@
+      <section class="block b-search">
+        <div class="search-clock" role="timer">
+          <div class="search-time" id="searchTime">--:--:--</div>
+          <div class="search-date" id="searchDate"></div>
+        </div>
+        <form class="search-form" action="https://www.bing.com/search" method="get" target="_blank" rel="noopener" role="search">
+          <input class="search-input" type="search" name="q" id="searchQ" placeholder="Search with Bing" aria-label="Search with Bing" autocomplete="off" spellcheck="false" />
+          <button class="search-go" type="submit">Search</button>
+        </form>
+        <p class="search-note">Results open in a new tab</p>
+      </section>
+      <script>
+        (function () {
+          var dateEl = document.getElementById('searchDate');
+          var timeEl = document.getElementById('searchTime');
+          if (!dateEl || !timeEl) return;
+          var WEEK = ['日', '一', '二', '三', '四', '五', '六'];
+          function pad(n) { return n < 10 ? '0' + n : '' + n; }
+          function tick() {
+            var d = new Date();
+            dateEl.textContent = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 星期' + WEEK[d.getDay()];
+            timeEl.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+          }
+          tick();
+          setInterval(tick, 1000);
+        })();
+      </script>
