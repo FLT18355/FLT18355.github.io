@@ -59,7 +59,7 @@
       --green-dim: rgba(166,227,161,0.15);
       --peach-dim: rgba(250,179,135,0.15);
       --teal-dim: rgba(148,226,213,0.15);
-      --radius: 12px;
+      --radius: 14px;
       --shadow: 0 1px 2px rgba(0,0,0,0.25), 0 4px 16px rgba(0,0,0,0.18);
       --shadow-lift: 0 2px 4px rgba(0,0,0,0.25), 0 12px 32px rgba(0,0,0,0.22);
       --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -107,7 +107,7 @@
       --border: #bcc0cc;
       --glass: rgba(255, 255, 255, 0.58);
       --glass-item: rgba(255, 255, 255, 0.72);
-      --glass-border: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(76, 79, 105, 0.16);
       --mauve: #8839ef;
       --pink: #ea76cb;
       --green: #40a02b;
@@ -380,7 +380,7 @@
       width: 12px; height: 12px;
       border-radius: 4px;
       background: var(--fb);
-      border: 1px solid rgba(127, 132, 156, 0.45);
+      border: 1px solid color-mix(in srgb, var(--text) 30%, transparent);
     }
     .flavor:hover { transform: translateY(-2px); border-color: var(--acc); color: var(--text); }
     .f-mocha { --fb: #1e1e2e; }
@@ -737,7 +737,6 @@
       }
       .avatar-logo { margin: 0; width: 66px; height: 66px; grid-row: 1 / 4; align-self: start; }
       .rail h1 { font-size: 1.45rem; }
-      .profile .tagline { justify-content: flex-start; margin-top: 8px; }
     }
     @media (max-width: 560px) {
       .shell { padding: 22px 16px 16px; }

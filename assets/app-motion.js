@@ -94,6 +94,19 @@
 
     spots.forEach(spotlight);
     cards.forEach(tilt);
+
+    /* 2.5 背景光斑视差:全局指针驱动 --mx/--my(-0.5..0.5) */
+    var gRaf = null, gx = 0, gy = 0;
+    function glowApply() {
+      gRaf = null;
+      root.style.setProperty('--mx', gx.toFixed(3));
+      root.style.setProperty('--my', gy.toFixed(3));
+    }
+    window.addEventListener('pointermove', function (e) {
+      gx = e.clientX / window.innerWidth - 0.5;
+      gy = e.clientY / window.innerHeight - 0.5;
+      if (!gRaf) gRaf = requestAnimationFrame(glowApply);
+    }, { passive: true });
   }
 
   /* ---------- 3. 阅读进度线 ---------- */

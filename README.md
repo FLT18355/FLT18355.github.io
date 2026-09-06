@@ -71,9 +71,10 @@ python3 build.py
 - **字体选择**：首启弹出选择界面（始终用系统字体渲染），默认字体免下载秒开（国人推荐）；选 Maple Mono 才加载 7.1MB 的 `font.woff2`（`@font-face` 仅在被引用渲染时触发下载）。选择后立即刷新页面生效，存 `localStorage`（`site-font`），页脚「字体」按钮可随时重开
 - **动效**（渐进增强）：
   - 区块滚动入场 + 筹码二级错峰（IntersectionObserver）
-  - 卡片指针光斑跟随、项目卡 3D 微倾斜
+  - 卡片指针光斑跟随、项目卡 3D 微倾斜、背景光斑指针视差
   - 主题切换涟漪过渡、阅读进度线
   - 全部规则挂在 `html.motion-js` 门控下：JS 不运行页面完全正常；尊重 `prefers-reduced-motion`
+- **社交分享**：每页含 Open Graph meta（标题 / 描述 / logo 图），分享到 IM / 社交平台时有预览卡片
 - **无障碍**：语义化 landmark、`aria-current`、键盘可操作（Tab + Enter/空格切换主题）、可见焦点环
 
 ## 本地预览
