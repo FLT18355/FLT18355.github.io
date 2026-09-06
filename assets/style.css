@@ -488,6 +488,8 @@
       -webkit-backdrop-filter: blur(10px) saturate(1.25);
       backdrop-filter: blur(10px) saturate(1.25);
       transition: background-color 0.15s, border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
+      /* 裁剪斜向扫光带：::after 静止时 translateX(-110%) 在卡片左外，必须裁掉，否则会画到左边邻居卡片上 */
+      overflow: hidden;
     }
     .project-card::after {
       content: "";
