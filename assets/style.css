@@ -453,28 +453,26 @@
       transition: transform 0.7s var(--ease-out);
       pointer-events: none;
     }
-    /* catppuccin 卡:彩色渐变边框 + 品牌色图标,与其他卡片区分(重点设计) */
+    /* catppuccin 卡:单一紫强调(主题令牌驱动,双主题自动),区别于其他卡的统一蓝 */
     .project-card.f-catppuccin {
-      border: 1px solid transparent;
-      background:
-        linear-gradient(var(--glass-item), var(--glass-item)) padding-box,
-        linear-gradient(120deg, #f5c2e7 0%, #cba6f7 28%, #89b4fa 52%, #94e2d5 76%, #a6e3a1 100%) border-box;
+      border-color: color-mix(in srgb, var(--mauve) 38%, transparent);
     }
-    :root[data-theme="latte"] .project-card.f-catppuccin {
-      background:
-        linear-gradient(var(--glass-item), var(--glass-item)) padding-box,
-        linear-gradient(120deg, #ea76cb 0%, #8839ef 28%, #1e66f5 52%, #179299 76%, #40a02b 100%) border-box;
+    .project-card.f-catppuccin:hover {
+      border-color: color-mix(in srgb, var(--mauve) 65%, transparent);
     }
-    .project-card.f-catppuccin:hover { border-color: transparent; }
     .project-card.f-catppuccin .project-icon {
-      background: linear-gradient(135deg, #f5c2e7 0%, #cba6f7 45%, #89b4fa 100%);
-      color: #1e1e2e;
+      background: var(--mauve-dim);
+      color: var(--mauve);
     }
-    .project-card.f-catppuccin:hover .project-icon { border-color: transparent; }
-    :root[data-theme="latte"] .project-card.f-catppuccin .project-icon {
-      background: linear-gradient(135deg, #ea76cb 0%, #8839ef 45%, #1e66f5 100%);
-      color: #eff1f5;
+    .project-card.f-catppuccin:hover .project-icon { border-color: var(--mauve); }
+    .project-card.f-catppuccin .project-title { color: var(--mauve); }
+    .project-card.f-catppuccin:hover .project-title { color: var(--mauve); }
+    .project-card.f-catppuccin .project-meta span {
+      background: var(--mauve-dim);
+      color: var(--mauve);
+      border-color: transparent;
     }
+    html.motion-js .project-card.f-catppuccin { --acc: var(--mauve); --acc-dim: var(--mauve-dim); }
     .project-card:hover {
       border-color: var(--primary);
       transform: translateY(-3px);

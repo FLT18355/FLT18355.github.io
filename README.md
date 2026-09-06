@@ -8,7 +8,7 @@
 |------|------|
 | [`index.html`](index.html) | 主页:关于我、兴趣、技术栈 |
 | [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles |
-| [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin（彩色重点卡）/ neovim |
+| [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin（紫色重点卡 + 猫图标）/ neovim |
 
 ## 构建
 

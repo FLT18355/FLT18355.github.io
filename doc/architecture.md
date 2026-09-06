@@ -73,6 +73,6 @@ following.html
 |---|---|---|
 | index | `index.html` | About Me / Interests / Tech Stack |
 | projects | `projects.html` | terminal / lxm / dotfiles 三卡 |
-| following | `following.html` | herdr / oh-my-pi / catppuccin（`f-catppuccin` 彩色渐变边框重点卡）/ neovim |
+| following | `following.html` | herdr / oh-my-pi / catppuccin（`f-catppuccin` 单色紫强调卡,线性猫 SVG 图标）/ neovim |
 
 联系方式(partials/contacts.html):GitHub、QQ(wpa.qq.com 临时会话,w/ QQ-cm.svg 图标)、微信(weixin.qq.com)、B 站大号 / 小号。
