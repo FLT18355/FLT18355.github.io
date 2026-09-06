@@ -37,8 +37,9 @@ python3 build.py            # 从 src/ 重新生成三页
 - 产物与 src 不一致时,优先怀疑有人手改了产物。
 
 ### 3.2 字体门控(site-font)
-- `font.woff2` 7.1MB,`@font-face` 声明不触发下载,只有 `html[data-font="maple"]` 规则下的元素实际引用才下载。
-- **改字体相关 CSS 时,不要**把 "Maple Mono NF CN" 写进无条件生效的规则(如默认 `body` 或 `:root` 的 `--mono`)。必须挂在 `html[data-font="maple"]` 下,否则弱网用户会被迫下载 7.1MB。
+- `font.woff2` 是**子集**(约 56KB,`subset-font.py` 从 `src/font-full.woff2` 全量裁剪),`@font-face` 声明不触发下载,只有 `html[data-font="maple"]` 规则下的元素实际引用才下载。
+- **改字体相关 CSS 时,不要**把 "Maple Mono NF CN" 写进无条件生效的规则(如默认 `body` 或 `:root` 的 `--mono`)。必须挂在 `html[data-font="maple"]` 下,否则默认用户也会加载字体。
+- 页面文案**新增字符**后必须重跑 `python3 subset-font.py`,否则子集缺字(显示豆腐块);全量字体保留在 `src/font-full.woff2`,子集化不会丢失字形。
 - 新增字体族/字重:在 `assets/style.css` 顶部 `@font-face` 区声明,并按现有模式做条件化。
 - 用户若反馈「字体不生效」:先查 `localStorage.site-font` 是否为 `'maple'`,以及 `data-font` 属性是否存在;再查 Network 是否有 woff2 请求。
 

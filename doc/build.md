@@ -1,14 +1,15 @@
 # 构建流程与验证
 
-站点通过 `build.py` 从 `src/` 生成静态 HTML。纯 Python 标准库,无第三方依赖,无本地服务器/生成器。
+站点通过 `build.py` 从 `src/` 生成静态 HTML,字体子集化由独立 `subset-font.py` 处理。均纯 Python 标准库 + fonttools/brotli(仅字体步骤需要)。
 
-## 1. 什么时候需要 build
+## 1. 什么时候需要 build / 子集化
 
 对 `src/` 下任何文件做了修改后:
 
 - 改了 `template.html` / 任一 `partials/` → 影响三页,**必须**重新 build
 - 改了 `pages.json`(title/description/current 标记) → 必须重新 build
 - 改了 `pages/<name>.html`(某页内容) → 必须重新 build
+- 改了 `404.html` 或任何页面**文案**(新增字符)→ 重新 `subset-font.py`,否则新字符会缺字
 
 只改 `assets/`(CSS/JS)或 `logo.svg` 等静态资源 → **不需要** build,产物直接引用这些资源,刷新即可。
 
@@ -17,10 +18,11 @@
 在仓库根目录:
 
 ```bash
-python3 build.py
+python3 build.py          # 渲染三个页面
+python3 subset-font.py    # 按页面文本子集化字体(文案含新字符时必跑)
 ```
 
-预期输出:
+`build.py` 预期输出:
 
 ```
   built  index.html
@@ -61,11 +63,11 @@ grep -o 'aria-current="page"[^>]*>[A-Za-z]*' index.html projects.html following.
 | 加新页面 | 新增 `src/pages/x.html` + `pages.json` 加一项;若想加导航入口还要改 `nav.html` 与 `nav.css` | 是 |
 | 改主题色/间距 | `assets/style.css` | 否 |
 | 换站点图标 | `logo.svg` | 否 |
-| 换字体文件 | 替换 `font.woff2`(更新 `@font-face` 只在 style.css) | 否 |
+| 换字体文件 | 替换 `src/font-full.woff2` 后重跑 `subset-font.py` | 字体 |
 
 ## 5. 产物覆盖安全
 
-`build.py` 每次全量重写三个产物,保证产物与 `src/` 严格一致。不要手动编辑产物,否则下次 build 会被覆盖丢失。
+`build.py` 每次全量重写三个产物;`subset-font.py` 覆盖 `font.woff2`,保证产物与 `src/` 严格一致。不要手动编辑产物,否则下次构建会被覆盖丢失。
 
 ## 6. 部署
 

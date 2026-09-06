@@ -15,7 +15,8 @@
 页面由 `build.py` 从 `src/` 下的模板与片段渲染生成,公共部分(font-picker / nav / profile / contacts)只维护一份,避免三页重复。改完公共部分或某页内容后跑一次重新生成:
 
 ```bash
-python3 build.py
+python3 build.py          # 渲染三个页面
+python3 subset-font.py    # 按页面文本子集化字体(文案改动后重跑)
 ```
 
 ## 文件结构
@@ -24,9 +25,11 @@ python3 build.py
 ├── index.html            主页（build.py 生成，勿手改）
 ├── projects.html         重点项目（同上）
 ├── following.html        关注项目（同上）
+├── 404.html              品牌化 404 页（猫 + 返回首页）
 ├── logo.svg              站点 logo（头像）
-├── font.woff2            Maple Mono NF CN（等宽 + Nerd Font + 中文，7.1MB，按需加载）
+├── font.woff2            Maple Mono NF CN 子集（约 56KB，按页面文本裁剪，按需加载）
 ├── build.py              模板渲染脚本
+├── subset-font.py        字体子集化脚本
 └── assets/
     ├── style.css         设计令牌（双主题）+ 全部基础样式 + 主题拨钮
     ├── motion.css        增量动效层（html.motion-js 门控）
@@ -41,6 +44,7 @@ python3 build.py
 
 └── src/
     ├── template.html        页面骨架（{{占位}} 由 build.py 填充）
+    ├── font-full.woff2      Maple Mono 全量字体（7.1MB，subset-font.py 的子集化输入源）
     ├── pages.json            三页的 title / description / 当前页标记 / 内容页
     ├── partials/
     │   ├── font-picker.html  首启字体选择界面

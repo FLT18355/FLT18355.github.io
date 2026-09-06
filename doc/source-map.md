@@ -7,11 +7,13 @@
 | 路径 | 类型 | 说明 |
 |---|---|---|
 | `build.py` | 构建脚本 | Python3 标准库,零依赖。模板渲染 + 页清单 |
+| `subset-font.py` | 子集化脚本 | 按页面文本裁剪 `src/font-full.woff2` → 根 `font.woff2`(需 fonttools/brotli) |
 | `index.html` | 产物 | 主页(勿手改,由 src/ 生成) |
 | `projects.html` | 产物 | 重点项目(勿手改) |
 | `following.html` | 产物 | 关注项目(勿手改) |
+| `404.html` | 静态页 | 品牌化 404(猫 SVG + 返回首页,引用站点样式) |
 | `logo.svg` | 静态资源 | 站点 logo / 头像 |
-| `font.woff2` | 静态资源 | Maple Mono NF CN(等宽 + Nerd Font + 中文,7.1MB,按需下载) |
+| `font.woff2` | 产物 | Maple Mono 子集(约 56KB,按页面文本裁剪,按需下载;由 subset-font.py 覆盖) |
 | `images/QQ-cm.svg` | 静态资源 | QQ 品牌图标(contact 区使用,fill 固定色) |
 
 ## `assets/`(共用样式与脚本,已编译)
@@ -31,7 +33,8 @@
 
 | 路径 | 说明 |
 |---|---|
-| `template.html` | 整页骨架:`{{title}}` `{{description}}` `{{font-picker}}` `{{nav}}` `{{profile}}` `{{contacts}}` `{{content}}` `{{home/projects/following}}`(nav aria-current 标记) |
+| `template.html` | 整页骨架:`{{title}}` `{{description}}` `{{font-picker}}` `{{nav}}` `{{profile}}` `{{contacts}}` `{{content}}` `{{home/projects/following}}`(nav aria-current 标记);含 OG / twitter / JSON-LD Person meta |
+| `font-full.woff2` | Maple Mono 全量字体(7.1MB,subset-font.py 子集化输入源,勿删) |
 | `pages.json` | 页清单:每页 title / description / current(导航高亮页)/ page(内容页文件名) |
 | `partials/font-picker.html` | 字体选择 overlay(默认 hidden,JS 控制显隐) |
 | `partials/nav.html` | 顶部导航,三个链接带 `{{home}}` `{{projects}}` `{{following}}` 占位(当前页注入 ` aria-current="page"`) |
@@ -39,7 +42,7 @@
 | `partials/contacts.html` | 左栏联系方式列表(GitHub / QQ / 微信 / B 站大号 / B 站小号) |
 | `pages/index.html` | 主页 `<main>` 内容(About / Interests / Tech Stack) |
 | `pages/projects.html` | 项目页 `<main>` 内容(terminal / lxm / dotfiles) |
-| `pages/following.html` | 关注页 `<main>` 内容(herdr / oh-my-pi) |
+| `pages/following.html` | 关注页 `<main>` 内容(herdr / oh-my-pi / catppuccin 彩色卡 / neovim) |
 
 ## 页面差异速查
 

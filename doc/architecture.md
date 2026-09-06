@@ -45,8 +45,9 @@ following.html
 - `assets/app.js` 维护 `meta[name="theme-color"]` 随主题切换。
 
 ### 3.2 字体选择(首启门控)
-- 目的:默认不下载 7.1MB 的 `font.woff2`(Maple Mono NF CN),弱网也能秒开。
+- 目的:默认不下载 Maple Mono 字体,弱网也能秒开。`font.woff2` 是**子集**(约 56KB,由 `subset-font.py` 按页面文本裁剪自 `src/font-full.woff2` 全量 7.1MB),仅选 Maple 的用户按需加载。
 - **`@font-face` 声明本身不触发下载**,只有实际被渲染引用才下载。因此默认模式下 body 与 `--mono` 都不引用 Maple Mono,woff2 零请求。
+- 子集化注意:源字体是 ExtraBold 单轮廓,且 preferred family 只在 nameID 16;`subset-font.py` 会修正子集 name 表(补回 `Maple Mono NF CN`),否则 CSS 匹配失败。页面文案新增字符后需重跑 `subset-font.py`,否则新字缺失。
 - 选择存 `localStorage('site-font')`,`'default' | 'maple'`。head 内联脚本在渲染前恢复 `data-font` 属性:CSS 中 `html[data-font="maple"]` 才启用 Maple(正文 + `--mono`)。
 - 首启界面 `#fontPicker`(默认 `hidden`),`assets/font-picker.js` 在 DOM 就绪后判断:未存选择则显示,已存则保持隐藏;点击选项 → 写 `localStorage` → 先即时设 `data-font`,再 `location.reload()`。
 - 页脚「字体」按钮(`#fontPickerReopen`)随时重开选择界面。选择界面自身强制系统字体渲染。

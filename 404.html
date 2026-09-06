@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="mocha">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="404 - 页面不存在" />
+  <meta name="theme-color" content="#1e1e2e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="FLT18355" />
+  <meta property="og:title" content="404 - FLT18355" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <title>404 - FLT18355</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <link rel="stylesheet" href="assets/font-picker.css" />
+
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'latte' : 'mocha';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+    (function () {
+      var root = document.documentElement;
+      try {
+        var f = localStorage.getItem('site-font');
+        if (f === 'default' || f === 'maple') root.setAttribute('data-font', f);
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    .err404 {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .err404-card {
+      max-width: 400px;
+      text-align: center;
+    }
+    .err404-cat {
+      width: 64px;
+      height: 64px;
+      color: var(--mauve);
+      margin: 0 auto 16px;
+    }
+    .err404-code {
+      font-family: var(--mono);
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .err404-card p {
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    .err404-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+      background: var(--primary-dim);
+      color: var(--primary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s, transform 0.15s var(--ease-out), box-shadow 0.15s;
+    }
+    .err404-back:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .err404-back:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div class="glow glow-a" aria-hidden="true"></div>
+  <div class="glow glow-b" aria-hidden="true"></div>
+
+  <div class="err404">
+    <div class="font-picker-card err404-card">
+      <svg class="err404-cat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 9.4 4.8 3.2l6 2.6"/><path d="M17.4 9.4l1.8-6.2-6 2.6"/><path d="M12 3.4c-4.6 0-7.8 3-7.8 7 0 4.4 3.3 7.2 7.8 7.2s7.8-2.8 7.8-7.2c0-4-3.2-7-7.8-7Z"/><circle cx="9.3" cy="11.2" r="1.1"/><circle cx="14.7" cy="11.2" r="1.1"/><path d="M12 13.4v2.2"/></svg>
+      <div class="err404-code">404</div>
+      <p>页面不存在,或者被移到别处了喵~</p>
+      <a class="err404-back" href="index.html">返回首页</a>
+    </div>
+  </div>
+</body>
+</html>

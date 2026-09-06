@@ -419,6 +419,8 @@
     .tech-tag.main { font-weight: 600; font-family: var(--mono); }
     .tech-tag.t-blue { background: var(--primary-dim); color: var(--primary); border-color: transparent; }
     .tech-tag.t-green { background: var(--green-dim); color: var(--green); border-color: transparent; }
+    .tech-tag.t-teal { background: var(--teal-dim); color: var(--teal); border-color: transparent; }
+    .tech-tag.t-pink { background: var(--pink-dim); color: var(--pink); border-color: transparent; }
     .tech-tag.t-peach { background: var(--peach-dim); color: var(--peach); border-color: transparent; }
     .tech-tag.t-mauve { background: var(--mauve-dim); color: var(--mauve); border-color: transparent; }
     .tech-tag:hover { border-color: currentColor; color: var(--text); transform: translateY(-2px); }
