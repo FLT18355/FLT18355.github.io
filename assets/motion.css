@@ -131,6 +131,22 @@ html.motion-js .footline {
 }
 html.motion-js .footline.in { opacity: 1; transform: none; }
 
+/* ---------- 8. Search 页背景光斑：缓慢漂浮 + 呼吸(仅 search 页有 .search-bg) ---------- */
+html.motion-js .search-bg::before {
+  animation: sbDriftA 26s var(--ease-out) infinite alternate;
+}
+html.motion-js .search-bg::after {
+  animation: sbDriftB 34s var(--ease-out) infinite alternate;
+}
+@keyframes sbDriftA {
+  from { transform: translate3d(0, 0, 0) scale(1);   opacity: 0.55; }
+  to   { transform: translate3d(6vw, -4vh, 0) scale(1.18); opacity: 0.9; }
+}
+@keyframes sbDriftB {
+  from { transform: translate3d(0, 0, 0) scale(1);   opacity: 0.5; }
+  to   { transform: translate3d(-5vw, 3vh, 0) scale(1.22); opacity: 0.85; }
+}
+
 /* ---------- 减弱动效：整体熄火 ---------- */
 @media (prefers-reduced-motion: reduce) {
   html.motion-js .block,
@@ -148,4 +164,6 @@ html.motion-js .footline.in { opacity: 1; transform: none; }
   html.motion-js .project-card { transform: none !important; }
   html.motion-js .block::after,
   html.motion-js .project-card::before { display: none; }
+  html.motion-js .search-bg::before,
+  html.motion-js .search-bg::after { animation: none; opacity: 0.5; }
 }

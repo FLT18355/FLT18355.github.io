@@ -812,6 +812,36 @@
       .block-header { flex-direction: column; gap: 2px; align-items: flex-start; }
     }
 
+    /* ============ Search 页:背景光斑(漂浮动画在 motion.css,门控 html.motion-js) ============ */
+    .search-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+      background:
+        radial-gradient(46vw 46vw at 18% 22%, var(--primary-glow) 0%, transparent 70%),
+        radial-gradient(40vw 40vw at 84% 28%, var(--mauve-dim) 0%, transparent 72%),
+        radial-gradient(52vw 52vw at 66% 88%, var(--teal-dim) 0%, transparent 70%);
+    }
+    .search-bg::before,
+    .search-bg::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      will-change: transform, opacity;
+    }
+    .search-bg::before {
+      width: 42vw; height: 42vw;
+      left: -8vw; bottom: -12vw;
+      background: radial-gradient(circle, var(--primary-dim) 0%, transparent 62%);
+    }
+    .search-bg::after {
+      width: 34vw; height: 34vw;
+      right: -6vw; top: -10vw;
+      background: radial-gradient(circle, var(--pink-dim) 0%, transparent 62%);
+    }
+
     /* ============ Search 页:时钟 + Bing 搜索 ============ */
     .b-search { text-align: center; padding: 40px 28px; }
     .search-clock { margin-bottom: 26px; }

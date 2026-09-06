@@ -50,6 +50,7 @@ grep -o 'aria-current="page"[^>]*>[A-Za-z]*' index.html projects.html catppuccin
 - projects.html:高亮在 Projects,三张项目卡
 - following.html:高亮在 Following,两张卡
 - search.html:无左栏(无 300px 列),上方实时时钟、下方 Bing 搜索表单;提交后新标签打开 Bing 结果
+- search.html 背景光斑:内容下方有 `.search-bg`(其它页面 grep 应为 0 处);开启动效时两个光斑缓慢漂浮,系统开「减弱动效」后静止
 - 首次访问(清 localStorage)出现字体选择界面;选完自动刷新不再弹出;页脚「字体」按钮可重开
 - 双主题切换:拨钮拖拽/点击/键盘,主题持久化
 - 弱网/未选 Maple 时 Network 面板应**没有** font.woff2 请求;选 Maple 后才出现

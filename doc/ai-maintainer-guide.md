@@ -30,6 +30,7 @@ python3 build.py            # 从 src/ 重新生成五页
 
 - 左栏(rail)默认注入,来自 `src/partials/rail.html`(内含 profile + contacts 两个占位)。
 - search 页**无左栏**(bare 模式):`src/pages.json` 里该页 `"rail": false` 即可。build.py 会跳过 rail 注入并给 `.shell` 加 ` shell--bare` 类(单列网格 + 内容限宽居中)。新增无左栏页面:复制该字段 + 确认 `.shell--bare` 样式满足需求。
+- search 页另有**专属背景光斑动效**:`src/pages/search.html` 里的 `.search-bg` 空容器(仅此页存在),静态柔光层在 `assets/style.css`,漂浮动画在 `assets/motion.css` 第 8 节(`html.motion-js` 门控 + reduce 熄火)。它靠页面内容注入而不是 build 条件,所以其它页面天然不受影响。
 
 ## 3. 硬约束与易错点
 
