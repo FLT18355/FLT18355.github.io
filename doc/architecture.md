@@ -64,8 +64,11 @@ search.html
 - 云朵动画 `@keyframes drift`(style.css):`translateX(270px)` → `-90px`,即右侧外飘入、穿出左侧外循环;云朵静态回退在右侧外(不遮挡太阳),`z-index` 高于太阳(云遮日)。四朵云用负 `animation-delay` 错峰,相位分布保证任意时刻有一朵正从右侧进入。
 - 现有动效均为 CSS + IntersectionObserver / rAF,无 GSAP 依赖、无 scroll 监听。
 
-### 3.4 导航指示条
+### 3.4 导航指示条与窄屏滑动
 - `assets/nav.js`:加载时把指示条定位到当前页链接下方(`aria-current="page"`),resize / 字体加载完成后重算;点击其它链接先滑过去再跳转。
+- 指示条定位用 `offsetLeft` / `offsetWidth`(相对 `.nav-list` padding box),**不用 `getBoundingClientRect()` 差值**:窄屏下 `.nav-list` 是横向滚动容器,rect 差值不含 `scrollLeft`,一滑动就错位。
+- 手机适配(`nav.css`):`.nav-list` 为 `flex:1; min-width:0; overflow-x:auto`,链接 `flex-shrink:0` 保持原宽,总宽超出屏幕即整体左右滑动;滚动条隐藏(`scrollbar-width:none` + `::-webkit-scrollbar{display:none}`),`overscroll-behavior-x:none` 阻断安卓边缘返回手势。主题拨钮 `.toggle-scale` 在滚动容器外,`flex-shrink:0` 固定右侧。
+- `nav.js` 的 `bringIntoView()`:当前页落在视口外时(如手机上 Search 在最右)把它滚到中间,避免用户进页面看不到自己在哪。
 - 依赖 partial 中的 nav 结构不变(`.nav-list` / `.nav-item[aria-current]` / `.nav-indicator`)。
 
 ### 3.5 无障碍

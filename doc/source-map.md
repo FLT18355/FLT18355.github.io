@@ -22,11 +22,11 @@
 |---|---|
 | `style.css` | 设计令牌(Mocha/Latte 双主题)+ 全部基础样式 + 主题拨钮 + 云朵动画 |
 | `motion.css` | 增量动效层,全部规则挂 `html.motion-js` 门控 |
-| `nav.css` | 顶部导航条 + 滑动指示条 |
+| `nav.css` | 顶部导航条 + 滑动指示条;窄屏链接区横向滚动 |
 | `font-picker.css` | 首启字体选择界面 + 页脚「字体」按钮 |
 | `app.js` | 主题拨钮(拖拽/点击/键盘切换)+ 切换圆形揭示(View Transition)+ theme-color 同步 |
 | `app-motion.js` | 动效编排:滚动入场、光斑、倾斜、进度线 |
-| `nav.js` | 导航指示条定位 |
+| `nav.js` | 导航指示条定位(offsetLeft 系,滚动安全)+ 窄屏当前页滚入视野 |
 | `font-picker.js` | 字体选择:首启显隐、选项绑定、页脚重开 |
 | `palette.js` | 色板页:4×26 色数据渲染 + 点击复制 Hex(含可见中文文案,需进字体字符集) |
 

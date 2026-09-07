@@ -57,6 +57,7 @@ grep -o 'aria-current="page"[^>]*>[A-Za-z]*' index.html projects.html catppuccin
 - 页面隔离:`grep -c 'quicklink\|search-bg'` 在其它四页应全为 0;`assets/search.js` 仅 search.html 引用
 - 首次访问(清 localStorage)出现字体选择界面;选完自动刷新不再弹出;页脚「字体」按钮可重开
 - 双主题切换:拨钮拖拽/点击/键盘,主题持久化;切换瞬间新主题从拨钮中心圆形扩散,扩散全程不遮挡文字/卡片(旧涟漪遮罩已删,若切换时出现整屏色块盖住内容即为回归)
+- 手机窄屏(≤390px):导航链接区可左右滑动、无滚动条,主题拨钮固定右侧;当前页若在屏幕外加载时自动滚到中间,指示条跟随不错位
 - 弱网/未选 Maple 时 Network 面板应**没有** font.woff2 请求;选 Maple 后才出现
 
 ## 4. 常见修改场景

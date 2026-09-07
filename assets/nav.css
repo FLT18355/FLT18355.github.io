@@ -31,7 +31,16 @@
   align-items: center;
   gap: 4px;
   height: 100%;
+  /* 手机适配：链接总宽超出屏幕时横向滑动（flex:1 + min-width:0 允许被压缩出滚动），
+     拨钮在滚动容器外、固定右侧；内容不超时（桌面）无滚动条、表现不变 */
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  /* 安卓上阻止滑动到边缘后触发系统返回手势 */
+  overscroll-behavior-x: none;
+  scrollbar-width: none;
 }
+.nav-list::-webkit-scrollbar { display: none; }
 .nav-item {
   position: relative;
   z-index: 1;
@@ -44,6 +53,9 @@
   color: var(--text-muted);
   text-decoration: none;
   border-radius: 10px;
+  /* 滚动容器内不许压缩，保持原始宽度才能整体滑动 */
+  flex-shrink: 0;
+  white-space: nowrap;
   transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
 }
 .nav-item:hover { color: var(--text); }
@@ -67,7 +79,7 @@ html.motion-js .nav-indicator {
 }
 .nav-indicator.ready { opacity: 1; }
 
-.toggle-scale { margin: auto 0; }
+.toggle-scale { margin: auto 0; } /* flex-shrink:0 由 style.css 统一声明 */
 
 /* ---------- 窄屏 ---------- */
 @media (max-width: 560px) {

@@ -1,4 +1,4 @@
-  /* nav.js - 指示条定位：加载时滑到当前页下方 */
+  /* nav.js - 指示条定位：加载时滑到当前页下方；窄屏溢出时把当前页滚进视野 */
 (function () {
   'use strict';
   var list = document.querySelector('.nav-list');
@@ -8,11 +8,12 @@
   if (!bar || !current) return;
 
   function place(animate) {
-    var lr = list.getBoundingClientRect();
-    var cr = current.getBoundingClientRect();
     if (!animate) bar.style.transition = 'none';
-    bar.style.setProperty('--x', (cr.left - lr.left).toFixed(1) + 'px');
-    bar.style.setProperty('--w', cr.width.toFixed(1) + 'px');
+    /* 横向滚动容器里 rect 差值不含 scrollLeft，会随滑动错位；
+       改用 offsetLeft（相对 .nav-list padding box，与指示条 left:0 同一原点，不受滚动影响）。
+       宽度用 offsetWidth：nav-item 有 flex-shrink:0，布局宽即视觉宽 */
+    bar.style.setProperty('--x', current.offsetLeft.toFixed(1) + 'px');
+    bar.style.setProperty('--w', current.offsetWidth.toFixed(1) + 'px');
     bar.classList.add('ready');
     if (!animate) {
       void bar.offsetWidth; // flush
@@ -20,6 +21,16 @@
     }
   }
 
+  /* 当前页在屏幕外时（手机溢出）把它滚进视野，居中显示 */
+  function bringIntoView() {
+    var lr = list.getBoundingClientRect();
+    var cr = current.getBoundingClientRect();
+    if (cr.left < lr.left || cr.right > lr.right) {
+      list.scrollLeft += cr.left - lr.left - (lr.width - cr.width) / 2;
+    }
+  }
+
+  bringIntoView();
   place(false);
   window.addEventListener('resize', function () { place(false); }, { passive: true });
   if (document.fonts && document.fonts.ready) {
@@ -31,7 +42,7 @@
   Array.prototype.forEach.call(items, function (a) {
     if (a === current) return;
     a.addEventListener('click', function () {
-      bar.style.setProperty('--x', (a.offsetLeft).toFixed(1) + 'px');
+      bar.style.setProperty('--x', a.offsetLeft.toFixed(1) + 'px');
       bar.style.setProperty('--w', a.offsetWidth.toFixed(1) + 'px');
     });
   });
