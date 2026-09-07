@@ -91,12 +91,13 @@ html.motion-js .project-card.hot::before { opacity: 1; }
 html.motion-js .project-card:hover { --ty: -3px; }
 html.motion-js .project-card:active { --ty: 0px; --rx: 0deg; --ry: 0deg; }
 
-/* 主题涟漪遮罩（定位类，动画由 app-motion.js 驱动） */
-.theme-ripple {
-  position: fixed;
-  inset: 0;
-  z-index: 55;
-  pointer-events: none;
+/* 主题切换圆形揭示：关掉 View Transition 默认交叉淡化，
+   扩散动画由 app.js 用 clip-path 施加在 ::view-transition-new(root) 上。
+   不能挂 .motion-js 门控：拨钮逻辑在 app.js，与动效层无关。 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 /* ---------- 5. 阅读进度线：页面最顶上的主色细线 ---------- */

@@ -36,8 +36,8 @@ python3 subset-font.py    # 按页面文本子集化字体(文案改动后重跑
     ├── motion.css        增量动效层（html.motion-js 门控）
     ├── nav.css           顶部导航条 + 滑动指示条
     ├── font-picker.css   首启字体选择界面样式
-    ├── app.js            主题拨钮（拖拽 / 点击 / 键盘切换）
-    ├── app-motion.js     动效编排（滚动入场、光斑、倾斜、涟漪、进度线）
+    ├── app.js            主题拨钮（拖拽 / 点击 / 键盘切换 + 切换圆形揭示）
+    ├── app-motion.js     动效编排（滚动入场、光斑、倾斜、进度线）
     ├── nav.js            导航指示条定位
     ├── font-picker.js    字体选择交互（首启弹出 + 页脚重开）
     └── palette.js        Catppuccin 色板页数据与渲染（点击复制 Hex）
@@ -79,8 +79,8 @@ python3 subset-font.py    # 按页面文本子集化字体(文案改动后重跑
 - **动效**（渐进增强）：
   - 区块滚动入场 + 筹码二级错峰（IntersectionObserver）
   - 卡片指针光斑跟随、项目卡 3D 微倾斜、背景光斑指针视差
-  - 主题切换涟漪过渡、阅读进度线
-  - 全部规则挂在 `html.motion-js` 门控下：JS 不运行页面完全正常；尊重 `prefers-reduced-motion`
+  - 主题切换圆形揭示（View Transition API，新主题从拨钮中心向外扩散，不遮挡页面内容）、阅读进度线
+  - 除主题圆形揭示（`app.js` 内，自带 reduced-motion 判断）外，其余规则挂在 `html.motion-js` 门控下：JS 不运行页面完全正常；尊重 `prefers-reduced-motion`
 - **社交分享**：每页含 Open Graph meta（标题 / 描述 / logo 图），分享到 IM / 社交平台时有预览卡片
 - **无障碍**：语义化 landmark、`aria-current`、键盘可操作（Tab + Enter/空格切换主题）、可见焦点环
 

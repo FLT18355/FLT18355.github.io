@@ -19,12 +19,36 @@
 
   function commitTheme(prevTheme, nextTheme) {
     if (prevTheme === nextTheme) return;
-    root.setAttribute('data-theme', nextTheme);
-    syncMetaTheme();
-    try { localStorage.setItem('theme', nextTheme); } catch (err) {}
-    window.dispatchEvent(new CustomEvent('themechange', {
-      detail: { from: prevTheme, to: nextTheme, via: btn }
-    }));
+    var apply = function () {
+      root.setAttribute('data-theme', nextTheme);
+      syncMetaTheme();
+      try { localStorage.setItem('theme', nextTheme); } catch (err) {}
+    };
+    /* 圆形揭示：新主题快照从拨钮中心向外扩散盖过旧快照。
+       用原生 View Transition API，扩散的是新主题画面本身，不存在遮罩层，
+       切换全程不遮挡任何内容；不支持或减弱动效时直接瞬切。 */
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (document.startViewTransition && !reduce) {
+      var r = btn.getBoundingClientRect();
+      var ox = r.left + r.width / 2;
+      var oy = r.top + r.height / 2;
+      var radius = Math.hypot(
+        Math.max(ox, window.innerWidth - ox),
+        Math.max(oy, window.innerHeight - oy)
+      ) + 2;
+      var vt = document.startViewTransition(apply);
+      vt.ready.then(function () {
+        document.documentElement.animate(
+          [
+            { clipPath: 'circle(0px at ' + ox + 'px ' + oy + 'px)' },
+            { clipPath: 'circle(' + radius + 'px at ' + ox + 'px ' + oy + 'px)' }
+          ],
+          { duration: 540, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' }
+        );
+      }, function () { /* 过渡被浏览器跳过时静默 */ });
+    } else {
+      apply();
+    }
   }
 
   /* 场景交叉淡化由 CSS --p 驱动（#themeToggle.dragging 规则），JS 只写变量 */

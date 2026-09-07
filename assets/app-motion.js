@@ -127,37 +127,4 @@
   }, { passive: true });
   window.addEventListener('resize', updateProgress, { passive: true });
   updateProgress();
-
-  /* ---------- 4. 主题切换涟漪：新主题色以拨钮为中心向外扩散铺满全屏 ---------- */
-  var BASE = { mocha: '#1e1e2e', latte: '#eff1f5' };
-  window.addEventListener('themechange', function (e) {
-    var to = (e.detail && e.detail.to) || 'mocha';
-    var via = e.detail && e.detail.via;
-    if (!via) return;
-    var r = via.getBoundingClientRect();
-    var ox = r.left + r.width / 2;
-    var oy = r.top + r.height / 2;
-    var radius = Math.hypot(
-      Math.max(ox, window.innerWidth - ox),
-      Math.max(oy, window.innerHeight - oy)
-    ) + 2;
-
-    var veil = document.createElement('div');
-    veil.className = 'theme-ripple';
-    veil.setAttribute('aria-hidden', 'true');
-    veil.style.setProperty('--ox', ox.toFixed(0) + 'px');
-    veil.style.setProperty('--oy', oy.toFixed(0) + 'px');
-    veil.style.setProperty('--or', radius.toFixed(0) + 'px');
-    veil.style.background = BASE[to] || BASE.mocha;
-    document.body.appendChild(veil);
-
-    var anim = veil.animate(
-      [
-        { clipPath: 'circle(0px at var(--ox) var(--oy))', opacity: 1 },
-        { clipPath: 'circle(var(--or) at var(--ox) var(--oy))', opacity: 1 }
-      ],
-      { duration: 540, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
-    );
-    anim.onfinish = function () { veil.remove(); };
-  });
 })();

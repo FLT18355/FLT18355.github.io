@@ -45,7 +45,7 @@ search.html
 ### 3.1 双主题(Mocha / Latte)
 - 令牌在 `assets/style.css`:`:root`(Mocha 默认)+ `:root[data-theme="latte"]` 覆盖;`@property` 注册颜色变量实现平滑过渡。
 - 首屏无闪烁:head 内联脚本读 `localStorage('theme')`(缺省按 `prefers-color-scheme`),在 body 解析前设 `data-theme`。
-- 切换 UI:导航右侧拨钮,`assets/app.js` 处理拖拽 / 点击 / 键盘(Enter/空格),`themechange` 事件触发涟漪(app-motion.js)。
+- 切换 UI:导航右侧拨钮,`assets/app.js` 处理拖拽 / 点击 / 键盘(Enter/空格),切换瞬间用原生 View Transition API 做圆形揭示:新主题快照从拨钮中心向外扩散,无遮罩层、不遮挡任何内容(app.js `commitTheme`)。
 - `assets/app.js` 维护 `meta[name="theme-color"]` 随主题切换。
 
 ### 3.2 字体选择(首启门控)
@@ -59,7 +59,7 @@ search.html
 
 ### 3.3 动效(渐进增强层)
 - `assets/app-motion.js` 仅在支持 IntersectionObserver 且用户未开启 reduced-motion 时给 `<html>` 加 `.motion-js`,`assets/motion.css` 全部动效规则挂在该类下;JS 不跑或不支持时页面完全正常。
-- 功能:区块滚动入场 + 筹码错峰、指针光斑、项目卡 3D 微倾斜、主题涟漪、阅读进度线、页脚浮现、Search 页背景光斑(仅 search 页有 `.search-bg`,两个伪元素光斑缓慢漂浮 + 呼吸,26s/34s 错峰,挂 `html.motion-js` 门控,reduced-motion 熄火)、Search 页快捷链接悬停微浮起 + 最近搜索 chips 错峰入场(第 9 节)。
+- 功能:区块滚动入场 + 筹码错峰、指针光斑、项目卡 3D 微倾斜、阅读进度线、页脚浮现、Search 页背景光斑(仅 search 页有 `.search-bg`,两个伪元素光斑缓慢漂浮 + 呼吸,26s/34s 错峰,挂 `html.motion-js` 门控,reduced-motion 熄火)、Search 页快捷链接悬停微浮起 + 最近搜索 chips 错峰入场(第 9 节)。主题切换圆形揭示在 `app.js` 内(View Transition API,非 `.motion-js` 门控,自带 reduced-motion 判断)。
 - **主题拨钮场景动画(云朵/太阳/星星)刻意不随 reduced-motion 关闭**(产品决策,README 有记录),其余动效遵守 reduced-motion。
 - 云朵动画 `@keyframes drift`(style.css):`translateX(270px)` → `-90px`,即右侧外飘入、穿出左侧外循环;云朵静态回退在右侧外(不遮挡太阳),`z-index` 高于太阳(云遮日)。四朵云用负 `animation-delay` 错峰,相位分布保证任意时刻有一朵正从右侧进入。
 - 现有动效均为 CSS + IntersectionObserver / rAF,无 GSAP 依赖、无 scroll 监听。

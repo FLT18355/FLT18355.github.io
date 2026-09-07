@@ -51,6 +51,7 @@ python3 build.py            # 从 src/ 重新生成五页
 
 ### 3.3 主题切换
 - 拨钮行为是刻意还原的 demo 效果,场景动画(云朵/太阳/星星)**不随 `prefers-reduced-motion` 关闭**,README 有记录,勿「修」回去。
+- 切换过渡是 `app.js` `commitTheme` 里的 View Transition 圆形揭示:新主题快照从拨钮中心 clip-path 扩散,盖过旧快照。**不要退回全屏遮罩层方案**(旧 `.theme-ripple` veil 会遮住页面内容,已删)。`motion.css` 的 `::view-transition-old/new(root) { animation: none }` 是关掉 VT 默认交叉淡化,必需。
 - 拖动由 `--p` 变量驱动交叉淡化,CSJS 只写变量,别把拖动逻辑改成 React/状态机(本项目无框架)。
 - `data-theme` 由 head 内联脚本在渲染前恢复:`localStorage('theme')`,缺省按系统偏好。改主题时保持同样的无闪烁时序。
 
