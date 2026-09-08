@@ -16,7 +16,7 @@ src/styles/               SCSS 模块(global.scss 汇总)
    │
    │  npm run build (astro build)
    ▼
-dist/                    产物:GitHub Pages 直接部署
+dist/                    产物:经 GitHub Actions 自动部署,或用 scripts/deploy.sh 同步到仓库根
   index.html / projects.html / catppuccin.html / following.html / search.html / 404.html
   _astro/(打包后的 CSS/JS) + public/ 原样拷入的资源
 ```

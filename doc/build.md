@@ -90,4 +90,16 @@ x ls dist/font.woff2 dist/logo.svg dist/.nojekyll dist/images/QQ-cm.svg
 
 ## 6. 部署
 
-产物就是 `dist/` 内容(GitHub Pages 的静态文件):把 `dist/` 里的文件推到 Pages 分支/目录即可,`.nojekyll` 已随 public/ 拷入。推送前先 `npm run build` 保证 dist 与 src 一致。
+GitHub Pages 从仓库根目录服务 HTML,而 Astro 产物在 `dist/`。二选一:
+
+**方式 A:GitHub Actions 自动部署(推荐)**
+`.github/workflows/deploy.yml` 已提供:push 到 `main` 后自动 `npm ci` → `npm run build` → 上传 `dist/` 部署。首次需要在 仓库 Settings → Pages → Build and deployment → Source 选 **GitHub Actions**;默认分支不是 `main` 时改工作流开头的 `branches`。
+
+**方式 B:同步到根目录(沿用旧工作流)**
+```bash
+bash scripts/deploy.sh
+git add -A && git commit -m 'deploy' && git push
+```
+`deploy.sh` 把 6 个 HTML、`_astro/`、`font.woff2`、`logo.svg`、`images/`、`.nojekyll` 同步到仓库根(自动跳过 `font-full.woff2` 大文件、清理已删除页面的旧产物),Pages 直接从根目录服务。**每次改动后都要重新跑一次 deploy.sh 再推送**,否则根目录产物过期。
+
+两种方式下 `.nojekyll` 都会随产物就位(跳过 Jekyll 处理)。推送前先 `npm run build` 保证产物与 src 一致。

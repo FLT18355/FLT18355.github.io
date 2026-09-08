@@ -82,6 +82,21 @@ npm run dev        # 开发模式(热更新)
 npm run preview    # 预览 dist 构建产物
 ```
 
+## 部署
+
+GitHub Pages 从仓库根目录服务 HTML,而 Astro 产物在 `dist/`。二选一:
+
+**方式 A:自动部署(推荐,配一次一劳永逸)**
+`.github/workflows/deploy.yml` 已就位:push 到 main 后自动 `npm ci && npm run build` 并上传 `dist/`。
+首次需在 仓库 Settings → Pages → Build and deployment → Source 选 **GitHub Actions**。若默认分支是 `master`,把工作流里的 `main` 改掉。
+
+**方式 B:同步到根目录(沿用旧工作流,零配置)**
+```bash
+bash scripts/deploy.sh    # 构建 + 把产物同步到仓库根
+git add -A && git commit -m 'deploy' && git push
+```
+`deploy.sh` 会同步 6 个 HTML、`_astro/`、`font.woff2`、`logo.svg`、`images/`、`.nojekyll` 到根目录(自动跳过 6.7MB 的 `font-full.woff2`),并清理已删除页面的旧文件。
+
 ## 许可
 
 本站点代码基于 [MIT License](LICENSE) 开源。

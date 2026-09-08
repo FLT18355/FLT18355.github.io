@@ -11,6 +11,8 @@
 | `tsconfig.json` | TS 配置 | 继承 `astro/tsconfigs/strict`,排除 dist / legacy / node_modules |
 | `subset-font.py` | 子集化脚本 | 按 `src/**/*.{astro,vue,ts}` 文本裁剪 `public/font-full.woff2` → `public/font.woff2`(需 fonttools/brotli) |
 | `.gitignore` | 忽略清单 | dist / node_modules / .astro / .cache / bug / .omp |
+| `.github/workflows/deploy.yml` | 部署工作流 | push 到 main 后自动构建并上传 dist/ 到 GitHub Pages(需在 Pages 设置选 GitHub Actions 源) |
+| `scripts/deploy.sh` | 部署脚本 | 不用 Actions 时:构建 + 同步产物到仓库根,推根目录即可部署 |
 | `README.md` | 站点说明 | 页面表 + 构建用法 + 设计机制 |
 | `doc/` | 文档 | architecture(机制)/ build(构建验证)/ ai-maintainer-guide(硬约束)/ source-map(本清单) |
 | `legacy/` | 旧版归档 | 迁移前的模板渲染 + 手写 JS/CSS 全量快照,仅供对照,不参与构建 |
