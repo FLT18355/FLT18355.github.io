@@ -6,10 +6,22 @@ import { onMounted, ref } from 'vue';
 
 const hidden = ref(true);
 
+/* 必须在 setup 顶层定义:模板 @click 只能引用顶层绑定,onMounted 闭包内的函数不可见 */
+function choose(font: string): void {
+  try {
+    localStorage.setItem('site-font', font);
+  } catch (err) {
+    /* 写入失败忽略,页面仍即时切换 */
+  }
+  /* 先即时切换,再刷新:重载时 head 内联脚本同样恢复 data-font;
+     若浏览器拦截刷新,字体也已立即生效,手动刷新确认即可 */
+  document.documentElement.setAttribute('data-font', font);
+  location.reload();
+}
+
 onMounted(() => {
   const overlay = document.getElementById('fontPicker');
   if (!overlay) return;
-  const root = document.documentElement;
 
   let saved: string | null = null;
   try {
@@ -29,18 +41,6 @@ onMounted(() => {
     document.body.style.overflow = 'hidden';
     const first = overlay.querySelector('.font-option') as HTMLElement | null;
     if (first) first.focus();
-  };
-
-  const choose = (font: string) => {
-    try {
-      localStorage.setItem('site-font', font);
-    } catch (err) {
-      /* 写入失败忽略,页面仍即时切换 */
-    }
-    /* 先即时切换,再刷新:重载时 head 内联脚本同样恢复 data-font;
-       若浏览器拦截刷新,字体也已立即生效,手动刷新确认即可 */
-    root.setAttribute('data-font', font);
-    location.reload();
   };
 
   const reopen = document.getElementById('fontPickerReopen');
