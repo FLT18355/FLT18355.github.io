@@ -1,0 +1,77 @@
+/* _responsive.scss - 响应式断点与减弱动效 */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    transition: none;
+  }
+  .block,
+  .rail,
+  .avatar-logo {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+  .glow {
+    transition: none;
+    animation: none;
+  }
+  .project-card::after {
+    display: none;
+  }
+}
+
+/* ============ Responsive collapse ============ */
+@media (max-width: 920px) {
+  .shell {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-top: 28px;
+  }
+  .rail {
+    position: static;
+  }
+  .profile {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 2px 20px;
+    text-align: left;
+    padding: 20px;
+  }
+  .avatar-logo {
+    margin: 0;
+    width: 66px;
+    height: 66px;
+    grid-row: 1 / 4;
+    align-self: start;
+  }
+  .rail h1 {
+    font-size: 1.45rem;
+  }
+}
+@media (max-width: 560px) {
+  .shell {
+    padding: 22px 16px 16px;
+  }
+  .block {
+    padding: 18px;
+  }
+  .profile {
+    display: block;
+    text-align: center;
+    padding: 24px 16px 20px;
+  }
+  .avatar-logo {
+    margin: 0 auto 12px;
+    width: 76px;
+    height: 76px;
+  }
+  .profile .tagline {
+    justify-content: center;
+  }
+  .block-header {
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+  }
+}

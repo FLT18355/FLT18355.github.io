@@ -1,0 +1,290 @@
+/* _toggle.scss - 主题拨钮(demo/button.html 一比一还原:200×90 原布局,
+   wrapper 统一缩放;配色换 Catppuccin) */
+
+@use 'sass:map';
+
+.toggle-scale {
+  --tgl-s: 0.5;
+  position: relative;
+  flex-shrink: 0;
+  width: calc(200px * var(--tgl-s));
+  height: calc(90px * var(--tgl-s));
+}
+.theme-toggle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 90px;
+  border-radius: 90px;
+  cursor: grab;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  outline: none;
+  padding: 0;
+  overflow: hidden;
+  transform-origin: top left;
+  transform: scale(var(--tgl-s));
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  background: linear-gradient(135deg, #74c7ec 0%, #89b4fa 55%, #b4befe 100%);
+  transition: background 0.7s ease, box-shadow 0.5s ease, border-color 0.5s ease, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 0 40px rgba(137, 180, 250, 0.22), 0 10px 28px rgba(116, 199, 236, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+:root[data-theme="mocha"] .theme-toggle {
+  background: linear-gradient(135deg, #11111b 0%, #181825 55%, #313244 100%);
+  border-color: rgba(205, 214, 244, 0.08);
+  box-shadow: 0 0 40px rgba(180, 190, 254, 0.07), 0 10px 28px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.theme-toggle:hover {
+  transform: scale(calc(var(--tgl-s) * 1.07));
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 60px rgba(137, 180, 250, 0.3), 0 12px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: background 0.7s ease, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease, border-color 0.3s ease;
+}
+:root[data-theme="mocha"] .theme-toggle:hover {
+  border-color: rgba(205, 214, 244, 0.18);
+  box-shadow: 0 0 70px rgba(180, 190, 254, 0.14), 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.theme-toggle:active {
+  transform: scale(calc(var(--tgl-s) * 1.03));
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 25px rgba(137, 180, 250, 0.12), 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+/* ---------- 太阳 ---------- */
+.theme-toggle .sun {
+  position: absolute;
+  top: 14px;
+  right: 26px;
+  width: 28px;
+  height: 28px;
+  z-index: 3;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fdf6d8 0%, #f9e2af 70%, #e8a53a 100%);
+  box-shadow: 0 0 14px rgba(249, 226, 175, 0.85), 0 0 30px rgba(223, 182, 29, 0.55), 0 0 50px rgba(223, 142, 29, 0.3);
+  animation: sunGlow 3s ease-in-out infinite;
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+@keyframes sunGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 14px rgba(249, 226, 175, 0.85), 0 0 30px rgba(223, 182, 29, 0.55), 0 0 50px rgba(223, 142, 29, 0.3);
+  }
+  50% {
+    transform: scale(1.07);
+    box-shadow: 0 0 20px rgba(249, 226, 175, 1), 0 0 42px rgba(223, 182, 29, 0.7), 0 0 68px rgba(223, 142, 29, 0.4);
+  }
+}
+:root[data-theme="mocha"] .theme-toggle .sun {
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+/* ---------- 云 ---------- */
+.theme-toggle .cloud {
+  position: absolute;
+  left: 0;
+  background: #eff1f5;
+  border-radius: 999px;
+  /* 静态回退停在右侧外,动画不运行时不可见、不遮挡太阳 */
+  transform: translateX(270px);
+  transition: opacity 0.55s ease;
+  /* 云朵从太阳前方飘过(云遮日),避免实心白云与太阳光晕糊在一起 */
+  z-index: 4;
+  pointer-events: none;
+}
+.theme-toggle .cloud::before,
+.theme-toggle .cloud::after {
+  content: "";
+  position: absolute;
+  background: #eff1f5;
+  border-radius: 50%;
+}
+.theme-toggle .cloud1 {
+  width: 40px;
+  height: 18px;
+  top: 12%;
+  animation: drift 20s linear infinite;
+  animation-delay: -2s;
+}
+.theme-toggle .cloud1::before {
+  width: 22px;
+  height: 22px;
+  top: -11px;
+  left: 4px;
+}
+.theme-toggle .cloud1::after {
+  width: 28px;
+  height: 28px;
+  top: -14px;
+  right: 4px;
+}
+.theme-toggle .cloud2 {
+  width: 32px;
+  height: 14px;
+  top: 52%;
+  animation: drift 28s linear infinite;
+  animation-delay: -7s;
+}
+.theme-toggle .cloud2::before {
+  width: 18px;
+  height: 18px;
+  top: -9px;
+  left: 3px;
+}
+.theme-toggle .cloud2::after {
+  width: 22px;
+  height: 22px;
+  top: -11px;
+  right: 3px;
+}
+.theme-toggle .cloud3 {
+  width: 46px;
+  height: 20px;
+  top: 32%;
+  animation: drift 24s linear infinite;
+  animation-delay: -12s;
+}
+.theme-toggle .cloud3::before {
+  width: 26px;
+  height: 26px;
+  top: -13px;
+  left: 5px;
+}
+.theme-toggle .cloud3::after {
+  width: 32px;
+  height: 32px;
+  top: -16px;
+  right: 5px;
+}
+.theme-toggle .cloud4 {
+  width: 28px;
+  height: 12px;
+  top: 64%;
+  animation: drift 16s linear infinite;
+  animation-delay: -17s;
+}
+.theme-toggle .cloud4::before {
+  width: 16px;
+  height: 16px;
+  top: -8px;
+  left: 3px;
+}
+.theme-toggle .cloud4::after {
+  width: 20px;
+  height: 20px;
+  top: -10px;
+  right: 3px;
+}
+@keyframes drift {
+  0%   { transform: translateX(270px); }
+  100% { transform: translateX(-90px); }
+}
+:root[data-theme="mocha"] .theme-toggle .cloud {
+  opacity: 0;
+}
+
+/* ---------- 月亮 ---------- */
+.theme-toggle .moon {
+  position: absolute;
+  top: 12px;
+  left: 22px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 32%, #eff1f5 0%, #cdd6f4 55%, #a6adc8 100%);
+  box-shadow: 0 0 12px rgba(205, 214, 244, 0.95), 0 0 26px rgba(180, 190, 254, 0.6), inset 0 0 6px rgba(110, 115, 141, 0.25);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+:root[data-theme="mocha"] .theme-toggle .moon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ---------- 星星 ---------- */
+.theme-toggle .star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #cdd6f4;
+  border-radius: 50%;
+  opacity: 0;
+  animation: twinkle 2.2s ease-in-out infinite;
+  transition: opacity 0.5s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+:root[data-theme="mocha"] .theme-toggle .star {
+  opacity: 1;
+}
+$stars: (
+  1: (top: 20px, left: 64px, delay: 0s),
+  2: (top: 38px, left: 104px, delay: 0.4s),
+  3: (top: 16px, left: 134px, delay: 0.8s),
+  4: (top: 46px, left: 52px, delay: 1.2s),
+  5: (top: 28px, left: 162px, delay: 0.6s),
+  6: (top: 54px, left: 124px, delay: 1.6s),
+  7: (top: 22px, left: 90px, delay: 1.0s),
+  8: (top: 50px, left: 158px, delay: 0.3s),
+);
+@each $n, $s in $stars {
+  .theme-toggle .star.s#{$n} {
+    top: map.get($s, top);
+    left: map.get($s, left);
+    animation-delay: map.get($s, delay);
+  }
+}
+@keyframes twinkle {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%      { transform: scale(1.7); opacity: 0.35; }
+}
+
+/* ---------- 滑钮 ---------- */
+.theme-toggle .knob {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #fde7c8 0%, #f5c07d 60%, #e8a24b 100%);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.26), inset 0 -3px 6px rgba(0, 0, 0, 0.09), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+  transition: transform 0.55s cubic-bezier(0.68, -0.1, 0.265, 1.2), background 0.55s ease, box-shadow 0.55s ease;
+  z-index: 10;
+}
+:root[data-theme="mocha"] .theme-toggle .knob {
+  transform: translateX(110px);
+  background: linear-gradient(160deg, #cdd6f4 0%, #b4befe 60%, #8fa3e8 100%);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.42), inset 0 -3px 6px rgba(0, 0, 0, 0.12), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+}
+
+/* 拖动态:场景随 --p 交叉淡化,滑钮实时跟手
+   (id 选择器压过 :root[data-theme] 规则,拖动时主题不生效) */
+#themeToggle.dragging,
+#themeToggle.dragging .sun,
+#themeToggle.dragging .cloud,
+#themeToggle.dragging .moon,
+#themeToggle.dragging .knob {
+  transition: none;
+}
+#themeToggle.dragging .sun {
+  opacity: calc(1 - var(--p));
+  transform: scale(calc(0.5 + 0.5 * var(--p)));
+}
+#themeToggle.dragging .cloud {
+  opacity: calc(1 - var(--p));
+}
+#themeToggle.dragging .moon {
+  opacity: var(--p);
+  transform: scale(calc(0.5 + 0.5 * var(--p)));
+}

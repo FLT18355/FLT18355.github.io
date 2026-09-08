@@ -1,0 +1,26 @@
+---
+// ProjectCard.astro - 项目卡(重点项目 / 关注项目共用)
+import type { Project } from '../data/projects';
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+---
+
+<a href={project.href} target="_blank" rel="noopener" class:list={['project-card', project.cls]}>
+  <span class="project-go" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9" /></svg>
+  </span>
+  <div class="project-top">
+    <div class="project-icon" set:html={project.icon}></div>
+    <div>
+      <div class="project-title">{project.title}</div>
+      <div class="project-sub">{project.sub}</div>
+    </div>
+  </div>
+  <div class="project-desc">{project.desc}</div>
+  <div class="project-meta">
+    {project.tags.map((tag) => <span>{tag}</span>)}
+  </div>
+</a>

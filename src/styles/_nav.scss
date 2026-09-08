@@ -1,0 +1,123 @@
+/* _nav.scss - 顶部导航条(主页 / 重点项目 / 色板 / 关注 / 搜索)
+   五条链接 + 滑动指示条;主题拨钮收纳在右侧。 */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  transition: background-color 240ms var(--ease-out), border-color 240ms var(--ease-out);
+}
+.nav-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 28px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ---------- 导航列表与滑动指示条 ---------- */
+.nav-list {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  /* 手机适配:链接总宽超出屏幕时横向滑动(flex:1 + min-width:0 允许被压缩出滚动),
+     拨钮在滚动容器外、固定右侧;内容不超时(桌面)无滚动条、表现不变 */
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  /* 安卓上阻止滑动到边缘后触发系统返回手势 */
+  overscroll-behavior-x: none;
+  scrollbar-width: none;
+}
+.nav-list::-webkit-scrollbar {
+  display: none;
+}
+.nav-item {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 10px;
+  /* 滚动容器内不许压缩,保持原始宽度才能整体滑动 */
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+.nav-item:hover {
+  color: var(--text);
+}
+.nav-item:active {
+  transform: scale(0.96);
+}
+.nav-item:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -4px;
+}
+.nav-item[aria-current="page"] {
+  color: var(--text);
+}
+
+.nav-indicator {
+  position: absolute;
+  left: 0;
+  bottom: 9px;
+  height: 2.5px;
+  width: var(--w, 0);
+  transform: translateX(var(--x, 0));
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary-hover), var(--primary));
+  opacity: 0;
+  pointer-events: none;
+}
+html.motion-js .nav-indicator {
+  transition: transform 0.42s var(--ease-out), width 0.42s var(--ease-out), opacity 0.3s;
+}
+.nav-indicator.ready {
+  opacity: 1;
+}
+
+.toggle-scale {
+  margin: auto 0;
+} /* flex-shrink:0 由 _toggle.scss 统一声明 */
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 560px) {
+  .nav-inner {
+    padding: 0 14px;
+    gap: 8px;
+  }
+  .nav-item {
+    padding: 0 9px;
+    font-size: 0.82rem;
+  }
+  .toggle-scale {
+    --tgl-s: 0.4;
+  }
+}
+@media (max-width: 430px) {
+  .nav-inner {
+    padding: 0 10px;
+  }
+  .nav-item {
+    padding: 0 6px;
+    font-size: 0.78rem;
+  }
+  .toggle-scale {
+    --tgl-s: 0.34;
+  }
+}

@@ -1,0 +1,19 @@
+---
+// catppuccin.astro - Catppuccin 色板页
+import Base from '../layouts/Base.astro';
+import PaletteGrid from '../components/PaletteGrid.vue';
+---
+
+<Base
+  title="FLT18355 - Palette"
+  description="Catppuccin 四种风味 × 26 色的完整色板,点击复制 Hex。"
+  current="palette"
+>
+  <section class="block b-palette">
+    <div class="block-header">
+      <h2>Catppuccin Palette</h2>
+    </div>
+    <p class="about-lead">四种风味 × 26 色,<strong>点击色块</strong>复制 Hex。</p>
+    <PaletteGrid client:load />
+  </section>
+</Base>

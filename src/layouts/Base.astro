@@ -1,0 +1,98 @@
+---
+// Base.astro - 全站骨架:head 元信息 + 主题/字体恢复内联脚本 + 导航 + 两栏壳
+import '../styles/global.scss';
+import Nav from '../components/Nav.astro';
+import Rail from '../components/Rail.astro';
+import Footline from '../components/Footline.astro';
+import FontPicker from '../components/FontPicker.vue';
+import { SITE } from '../data/site';
+import type { PageKey } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  current: PageKey;
+  /** false 时去掉左栏并居中限宽(search 页) */
+  rail?: boolean;
+}
+
+const { title, description, current, rail = true } = Astro.props;
+
+const ldJson = JSON.stringify(
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'FLT18355',
+    url: 'https://flt18355.github.io/',
+    sameAs: ['https://github.com/FLT18355', 'https://space.bilibili.com/517296410'],
+  },
+  null,
+  2
+);
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="mocha">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1e1e2e" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={SITE.url} />
+    <meta property="og:image" content={SITE.ogImage} />
+    <meta name="twitter:card" content="summary" />
+    <script type="application/ld+json" set:html={ldJson}></script>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <title>{title}</title>
+
+    <!-- 主题恢复:head 内执行,防主题闪烁 -->
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'latte' : 'mocha';
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    <!-- 字体选择:恢复已存选择,避免字体闪烁(选择界面显隐由 FontPicker.vue 处理) -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        try {
+          var f = localStorage.getItem('site-font');
+          if (f === 'default' || f === 'maple') root.setAttribute('data-font', f);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="glow glow-a" aria-hidden="true"></div>
+    <div class="glow glow-b" aria-hidden="true"></div>
+
+    <FontPicker client:load />
+
+    <Nav current={current} />
+
+    <div class:list={['shell', !rail && 'shell--bare']}>
+      {rail && <Rail />}
+      <!-- ============ Right column: content ============ -->
+      <main class="content">
+        <slot />
+
+        <Footline />
+      </main>
+    </div>
+
+    <slot name="body-end" />
+
+    <script>
+      import '../scripts/motion.ts';
+      import '../scripts/nav.ts';
+    </script>
+  </body>
+</html>

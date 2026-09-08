@@ -1,0 +1,27 @@
+---
+// Nav.astro - 顶部导航条:五条链接 + 滑动指示条 + 主题拨钮
+import ThemeToggle from './ThemeToggle.vue';
+import { NAV } from '../data/site';
+import type { PageKey } from '../data/site';
+
+interface Props {
+  current: PageKey;
+}
+const { current } = Astro.props;
+---
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <nav class="nav-list" aria-label="页面导航">
+      {NAV.map((item) => (
+        <a class="nav-item" href={item.href} aria-current={item.key === current ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+      <span class="nav-indicator" aria-hidden="true"></span>
+    </nav>
+    <span class="toggle-scale">
+      <ThemeToggle client:load />
+    </span>
+  </div>
+</header>

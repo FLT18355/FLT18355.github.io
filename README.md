@@ -1,6 +1,6 @@
 # FLT18355.github.io
 
-个人主页，基于 [Catppuccin](https://catppuccin.com/) 配色（Mocha / Latte 双主题），零依赖纯静态。
+个人主页，基于 [Catppuccin](https://catppuccin.com/) 配色（Mocha / Latte 双主题），Astro + Vue + SCSS 构建的纯静态站。
 
 ## 页面
 
@@ -8,87 +8,78 @@
 |------|------|
 | [`index.html`](index.html) | 主页:关于我、兴趣、技术栈 |
 | [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles |
-| [`catppuccin.html`](catppuccin.html) | Catppuccin 色板:4 风味 × 26 色,点击复制 Hex |
-| [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin（紫色重点卡 + 猫图标）/ neovim |
+| [`catppuccin.html`](catppuccin.html) | Catppuccin 色板:4 风味 × 26 色,点击复制 Hex(SSR 直出,无 JS 也可见) |
+| [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin(紫色重点卡 + 猫图标)/ neovim |
+| [`search.html`](search.html) | Bing 搜索页:实时时钟 / 快捷链接 / 最近搜索(无左栏单列布局) |
+| [`404.html`](404.html) | 品牌化 404 页(猫 + 返回首页) |
 
 ## 构建
 
-页面由 `build.py` 从 `src/` 下的模板与片段渲染生成,公共部分(font-picker / nav / profile / contacts)只维护一份,避免三页重复。改完公共部分或某页内容后跑一次重新生成:
-
 ```bash
-python3 build.py          # 渲染三个页面
-python3 subset-font.py    # 按页面文本子集化字体(文案改动后重跑)
+npm install        # 首次:安装 astro / vue / sass
+npm run dev        # 开发预览 http://localhost:4321
+npm run build      # 产出 dist/ 六个 HTML + 资源
+npm run preview    # 预览构建产物
+python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,约 3.5 分钟)
 ```
+
+构建产物在 `dist/`,把 `dist/` 内容部署到 GitHub Pages 即可(public/ 里的 `.nojekyll` 会自动拷入)。
 
 ## 文件结构
 
 ```
-├── index.html            主页（build.py 生成，勿手改）
-├── projects.html         重点项目（同上）
-├── following.html        关注项目（同上）
-├── 404.html              品牌化 404 页（猫 + 返回首页）
-├── logo.svg              站点 logo（头像）
-├── font.woff2            Maple Mono NF CN 子集（约 56KB，按页面文本裁剪，按需加载）
-├── build.py              模板渲染脚本
+├── package.json / astro.config.mjs / tsconfig.json
 ├── subset-font.py        字体子集化脚本
-└── assets/
-    ├── style.css         设计令牌（双主题）+ 全部基础样式 + 主题拨钮
-    ├── motion.css        增量动效层（html.motion-js 门控）
-    ├── nav.css           顶部导航条 + 滑动指示条
-    ├── font-picker.css   首启字体选择界面样式
-    ├── app.js            主题拨钮（拖拽 / 点击 / 键盘切换 + 切换圆形揭示）
-    ├── app-motion.js     动效编排（滚动入场、光斑、倾斜、进度线）
-    ├── nav.js            导航指示条定位 + 窄屏当前页滚入视野
-    ├── font-picker.js    字体选择交互（首启弹出 + 页脚重开）
-    └── palette.js        Catppuccin 色板页数据与渲染（点击复制 Hex）
-
-源文件（编辑这些，再跑 build.py）：
-
+├── public/               静态资源(原样拷入 dist 根)
+│   ├── font.woff2        Maple Mono NF CN 子集(按源码文本裁剪,按需加载)
+│   ├── font-full.woff2   Maple Mono 全量字体(7.1MB,子集化输入源)
+│   ├── logo.svg / images/ / bug/
+│   └── .nojekyll
 └── src/
-    ├── template.html        页面骨架（{{占位}} 由 build.py 填充）
-    ├── font-full.woff2      Maple Mono 全量字体（7.1MB，subset-font.py 的子集化输入源）
-    ├── pages.json            三页的 title / description / 当前页标记 / 内容页
-    ├── partials/
-    │   ├── font-picker.html  首启字体选择界面
-    │   ├── nav.html          顶部导航（含主题拨钮）
-    │   ├── profile.html       左栏头像 / 名号 / 标语
-    │   └── contacts.html      联系方式列表
-    └── pages/
-        ├── index.html        主页内容
-        ├── projects.html     重点项目内容
-        ├── catppuccin.html   Catppuccin 色板页内容
-        └── following.html    关注项目内容
+    ├── styles/           SCSS 模块(global.scss 为汇总入口)
+    │   ├── _tokens.scss  双主题令牌(map 驱动,含 @property 注册)
+    │   ├── _layout.scss  两栏壳 / 左栏身份卡 / 联系方式 / 页脚
+    │   ├── _cards.scss   标签筹码 / 色板 / 项目卡
+    │   ├── _toggle.scss  主题拨钮(拖拽 / 键盘 / 圆形揭示)
+    │   ├── _search.scss  search 页样式
+    │   ├── _motion.scss  动效层(html.motion-js 门控)
+    │   ├── _nav.scss / _font-picker.scss / _responsive.scss
+    ├── layouts/Base.astro   页面骨架(head 元信息 + 主题/字体恢复内联脚本)
+    ├── components/
+    │   ├── Nav.astro / Rail.astro / Contacts.astro / Footline.astro / ProjectCard.astro
+    │   └── ThemeToggle.vue / FontPicker.vue / PaletteGrid.vue / SearchPanel.vue
+    ├── data/
+    │   ├── site.ts       站点元信息 + 导航配置
+    │   ├── projects.ts   项目卡数据(projects / following 共用)
+    │   └── palette.ts    Catppuccin 色板数据(4 风味 × 26 色)
+    ├── scripts/
+    │   ├── motion.ts     动效编排(滚动入场、光斑、倾斜、进度线)
+    │   └── nav.ts        导航指示条定位
+    └── pages/            index / projects / catppuccin / following / search / 404
 ```
 
-无框架、无外部 CDN 资源，跑 `build.py` 生成纯静态 HTML，直接部署到 GitHub Pages。
+`legacy/` 是迁移前的旧版(模板渲染 + 手写 JS/CSS),仅供对照,不再参与构建。
+
+## 设计机制
+
+- **主题**：Mocha(深)/ Latte(浅)双 Catppuccin 风味,`@property` 注册实现颜色平滑过渡;系统偏好自动适配,`localStorage` 持久化;切换用 View Transition 圆形揭示(ThemeToggle.vue)
+- **Vue 岛**(client:load)：主题拨钮、首启字体选择、色板复制、搜索页(时钟/历史)——SSR 直出全部静态内容,JS 不运行页面仍完整可用
+- **字体选择**：首启弹出(默认字体免下载秒开),选 Maple Mono 才触发 `font.woff2` 下载;`localStorage`(`site-font`)持久化,页脚「字体」按钮重开
+- **动效**(渐进增强)：区块滚动入场 + 筹码二级错峰、卡片指针光斑、3D 微倾斜、背景视差、阅读进度线;全部挂 `html.motion-js` 门控,尊重 `prefers-reduced-motion`
+- **无障碍**：语义化 landmark、`aria-current`、键盘可操作(Enter/空格切换主题)、可见焦点环
 
 ## 技术文档
 
-- [`doc/architecture.md`](doc/architecture.md) 架构与关键机制（主题 / 字体门控 / 动效 / 无障碍）
-- [`doc/source-map.md`](doc/source-map.md) 源文件职责清单（改哪里）
+- [`doc/architecture.md`](doc/architecture.md) 架构与关键机制(主题 / 字体门控 / 动效 / 无障碍)
+- [`doc/source-map.md`](doc/source-map.md) 源文件职责清单(改哪里)
 - [`doc/build.md`](doc/build.md) 构建流程与构建后验证清单
-- [`doc/ai-maintainer-guide.md`](doc/ai-maintainer-guide.md) AI 维护手册（硬约束与易错点，改动前必读）
-
-## 设计与技术细节
-
-- **主题**：Mocha（深，黑夜）/ Latte（浅，白天）两套 Catppuccin 风味，通过 `@property` 注册的自定义属性实现主题间颜色平滑过渡；系统偏好自动适配，选择持久化在 `localStorage`
-- **主题拨钮**：demo/button.html 一比一还原（200×90 原布局 + wrapper 统一缩放适配导航条，仅配色换 Catppuccin 色板）。Latte 下蓝天白云 + 太阳呼吸光，云朵从右侧外飘入、穿出左侧外循环；Mocha 下星空闪烁 + 月亮浮现；滑钮可拖拽（场景随 `--p` 交叉淡化），松手 overshoot 回弹；场景动画与 demo 一致永转，不随 `prefers-reduced-motion` 关闭
-- **卡片**：毛玻璃质感（`backdrop-filter: blur + saturate`），不支持的浏览器自动退化为半透明纯色
-- **导航**：sticky 毛玻璃导航条，当前页指示条在页面间滑动切换；手机上链接区超出屏幕宽度时可横向滑动（隐藏滚动条），主题拨钮固定在右侧不参与滑动
-- **字体选择**：首启弹出选择界面（始终用系统字体渲染），默认字体免下载秒开（国人推荐）；选 Maple Mono 才加载 7.1MB 的 `font.woff2`（`@font-face` 仅在被引用渲染时触发下载）。选择后立即刷新页面生效，存 `localStorage`（`site-font`），页脚「字体」按钮可随时重开
-- **动效**（渐进增强）：
-  - 区块滚动入场 + 筹码二级错峰（IntersectionObserver）
-  - 卡片指针光斑跟随、项目卡 3D 微倾斜、背景光斑指针视差
-  - 主题切换圆形揭示（View Transition API，新主题从拨钮中心向外扩散，不遮挡页面内容）、阅读进度线
-  - 除主题圆形揭示（`app.js` 内，自带 reduced-motion 判断）外，其余规则挂在 `html.motion-js` 门控下：JS 不运行页面完全正常；尊重 `prefers-reduced-motion`
-- **社交分享**：每页含 Open Graph meta（标题 / 描述 / logo 图），分享到 IM / 社交平台时有预览卡片
-- **无障碍**：语义化 landmark、`aria-current`、键盘可操作（Tab + Enter/空格切换主题）、可见焦点环
+- [`doc/ai-maintainer-guide.md`](doc/ai-maintainer-guide.md) AI 维护手册(硬约束与易错点,改动前必读)
 
 ## 本地预览
 
 ```bash
-# 任意静态服务器均可，例如
-python3 -m http.server 8000
+npm run dev        # 开发模式(热更新)
+npm run preview    # 预览 dist 构建产物
 ```
 
 ## 许可

@@ -1,0 +1,21 @@
+---
+// following.astro - 关注项目
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { followingProjects } from '../data/projects';
+---
+
+<Base
+  title="FLT18355 - Following"
+  description="FLT18355 正在关注的项目:herdr / oh-my-pi / catppuccin / neovim。"
+  current="following"
+>
+  <section class="block b-following">
+    <div class="block-header">
+      <h2>Recently Following</h2>
+    </div>
+    <div class="project-grid">
+      {followingProjects.map((p) => <ProjectCard project={p} />)}
+    </div>
+  </section>
+</Base>

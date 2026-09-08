@@ -1,0 +1,125 @@
+/* _tokens.scss - 设计令牌
+   双主题颜色集中在一个 map 里:重复值消除,新增/调整只改一处。
+   @property 注册使颜色变量在主题切换时可插值过渡(未注册的自定义属性无法过渡)。 */
+
+@use 'sass:map';
+@use 'sass:list';
+
+/* 可动画颜色令牌(mocha 基准;latte 覆盖于 :root[data-theme="latte"])。
+   注意:glass 三项不注册 @property,但同样进 :root 与 transition 列表(与原 CSS 一致)。 */
+$anim-tokens: (
+  'primary': #89b4fa,
+  'primary-hover': #b4befe,
+  'primary-dim': rgba(137, 180, 250, 0.15),
+  'primary-glow': rgba(137, 180, 250, 0.08),
+  'text': #cdd6f4,
+  'text-secondary': #bac2de,
+  'text-muted': #9399b2,
+  'bg': #1e1e2e,
+  'bg-card': #313244,
+  'bg-input': #45475a,
+  'border': #45475a,
+  'mauve': #cba6f7,
+  'pink': #f5c2e7,
+  'green': #a6e3a1,
+  'peach': #fab387,
+  'teal': #94e2d5,
+  'mauve-dim': rgba(203, 166, 247, 0.15),
+  'pink-dim': rgba(245, 194, 231, 0.15),
+  'green-dim': rgba(166, 227, 161, 0.15),
+  'peach-dim': rgba(250, 179, 135, 0.15),
+  'teal-dim': rgba(148, 226, 213, 0.15),
+);
+
+$glass-tokens: (
+  'glass': rgba(49, 50, 68, 0.62),
+  'glass-item': rgba(69, 71, 90, 0.48),
+  'glass-border': rgba(203, 214, 244, 0.1),
+);
+
+/* latte 覆盖:只列与 mocha 不同的值(含 glass 三项) */
+$latte-tokens: (
+  'primary': #1e66f5,
+  'primary-hover': #7287fd,
+  'primary-dim': rgba(30, 102, 245, 0.12),
+  'primary-glow': rgba(30, 102, 245, 0.08),
+  'text': #4c4f69,
+  'text-secondary': #5c5f77,
+  'text-muted': #6c6f85,
+  'bg': #eff1f5,
+  'bg-card': #ccd0da,
+  'bg-input': #bcc0cc,
+  'border': #bcc0cc,
+  'glass': rgba(255, 255, 255, 0.58),
+  'glass-item': rgba(255, 255, 255, 0.72),
+  'glass-border': rgba(76, 79, 105, 0.16),
+  'mauve': #8839ef,
+  'pink': #ea76cb,
+  'green': #40a02b,
+  'peach': #fe640b,
+  'teal': #179299,
+  'mauve-dim': rgba(136, 57, 239, 0.12),
+  'pink-dim': rgba(234, 118, 203, 0.14),
+  'green-dim': rgba(64, 160, 43, 0.14),
+  'peach-dim': rgba(254, 100, 11, 0.14),
+  'teal-dim': rgba(23, 146, 153, 0.14),
+);
+
+/* ---------- 字体 ---------- */
+@font-face {
+  font-family: "Maple Mono NF CN";
+  src: url("/font.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Maple Mono NF CN";
+  src: url("/font.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* ---------- @property 注册(仅可动画颜色令牌,与原 CSS 一致) ---------- */
+@each $name, $val in $anim-tokens {
+  @property --#{$name} {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #{$val};
+  }
+}
+
+/* ---------- 主题切换 transition 列表(24 项,含未注册的 glass 三项) ---------- */
+$transition-keys: map.keys($anim-tokens) + map.keys($glass-tokens);
+$transitions: ();
+@each $k in $transition-keys {
+  $transitions: list.append($transitions, '--#{$k} 240ms var(--ease-out)', comma);
+}
+
+/* ---------- 默认主题 mocha ---------- */
+:root {
+  color-scheme: dark;
+  @each $name, $val in $anim-tokens {
+    --#{$name}: #{$val};
+  }
+  @each $name, $val in $glass-tokens {
+    --#{$name}: #{$val};
+  }
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.18);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.22);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --surface: color-mix(in srgb, var(--text) 5%, var(--bg-card));
+  --surface-strong: color-mix(in srgb, var(--text) 9%, var(--bg-card));
+  --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+  transition: $transitions;
+}
+
+/* ---------- 浅色主题 latte ---------- */
+:root[data-theme="latte"] {
+  color-scheme: light;
+  @each $name, $val in $latte-tokens {
+    --#{$name}: #{$val};
+  }
+  --shadow: 0 1px 2px rgba(76, 79, 105, 0.06), 0 4px 16px rgba(76, 79, 105, 0.08);
+  --shadow-lift: 0 2px 4px rgba(76, 79, 105, 0.08), 0 12px 32px rgba(76, 79, 105, 0.14);
+}

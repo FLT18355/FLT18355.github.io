@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""subset-font.py - 按站点实际文本子集化字体(Astro 版)
+"""subset-font.py - 按站点实际文本子集化字体
 
-从 src/ 下所有页面/组件/数据源文件(.astro/.vue/.ts)收集字符,
-对 public/font-full.woff2(全量 7.1MB)子集化并修正 name 表,覆盖输出 public/font.woff2。
+从根目录生成页面(index/projects/following.html)与 404.html 收集所有字符,
+对 src/font-full.woff2(全量 7.1MB)子集化并修正 name 表,覆盖输出 font.woff2。
 
 用法:
-    python3 subset-font.py                 # 默认从源码收集字符
+    python3 subset-font.py                 # 默认从页面收集字符
     python3 subset-font.py --text "新增字" # 额外保留指定字符
     python3 subset-font.py --keep-cache    # 不清理中间产物
 
-字符集变化后重新运行即可;全量字体保留在 public/,子集化不会丢失字形。
+字符集变化后重新运行即可;全量字体保留在 src/,子集化不会丢失字形。
 依赖:fonttools + brotli(pip install fonttools brotli)。
 """
 import argparse
@@ -19,19 +19,21 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
-PUBLIC = ROOT / "public"
 CACHE = ROOT / ".cache"
-FULL_FONT = PUBLIC / "font-full.woff2"
-OUT_FONT = PUBLIC / "font.woff2"
+FULL_FONT = SRC / "font-full.woff2"
+OUT_FONT = ROOT / "font.woff2"
 
-# 源码字符收集范围:页面/组件/数据/脚本里的可见中文文案都须进字符集
-SOURCE_EXTENSIONS = {".astro", ".vue", ".ts"}
+# 页面字符收集来源(生成产物 + 独立 404 页;新增页面需同步加入)
+PAGE_SOURCES = ["index.html", "projects.html", "catppuccin.html", "following.html", "search.html", "404.html"]
+# JS 内可见文案(如 palette.js 的 flavor 说明、Copied!、search.js 的时钟中文)也需进字符集
+JS_SOURCES = ["assets/palette.js", "assets/search.js"]
 
 
 def collect_charset(extra: str) -> str:
     chars = set(" \n")
-    for p in SRC.rglob("*"):
-        if p.is_file() and p.suffix in SOURCE_EXTENSIONS:
+    for name in PAGE_SOURCES + JS_SOURCES:
+        p = ROOT / name
+        if p.is_file():
             chars.update(p.read_text(encoding="utf-8"))
     if extra:
         chars.update(extra)
@@ -76,7 +78,7 @@ def main() -> None:
     tmp.replace(OUT_FONT)
 
     size_kb = OUT_FONT.stat().st_size / 1024
-    print(f"subset done: public/font.woff2 ({size_kb:.0f} KB, {len(charset)} unique chars)")
+    print(f"subset done: font.woff2 ({size_kb:.0f} KB, {len(charset)} unique chars)")
     if not args.keep_cache:
         (CACHE / "chars.txt").unlink(missing_ok=True)
         tmp.unlink(missing_ok=True)

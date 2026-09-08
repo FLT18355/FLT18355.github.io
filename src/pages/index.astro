@@ -1,0 +1,53 @@
+---
+// index.astro - 首页:关于 / 兴趣 / 技术栈
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="FLT18355 - Home"
+  description="FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。"
+  current="home"
+>
+  <section class="block b-about">
+    <div class="block-header">
+      <h2>About Me</h2>
+    </div>
+    <p class="about-lead">
+      A <strong>Catppuccin</strong> enjoyer. Python user tinkering with dotfiles and TUI tools on
+      Arch Linux.
+    </p>
+    <div class="flavors" role="img" aria-label="Catppuccin 四种风味">
+      <span class="flavor f-mocha"><i></i>Mocha</span>
+      <span class="flavor f-latte"><i></i>Latte</span>
+      <span class="flavor f-frappe"><i></i>Frappé</span>
+      <span class="flavor f-macchiato"><i></i>Macchiato</span>
+    </div>
+  </section>
+
+  <section class="block b-interests">
+    <div class="block-header">
+      <h2>Interests</h2>
+    </div>
+    <div class="interest-list">
+      <span class="interest">Terminal &amp; dotfiles</span>
+      <span class="interest">Catppuccin theming</span>
+      <span class="interest">Music</span>
+      <span class="interest">Open source</span>
+      <span class="interest">TUI tools</span>
+    </div>
+  </section>
+
+  <section class="block b-tech">
+    <div class="block-header">
+      <h2>Tech Stack</h2>
+    </div>
+    <div class="tech-grid">
+      <span class="tech-tag main t-blue">Python</span>
+      <span class="tech-tag main t-teal">TypeScript</span>
+      <span class="tech-tag t-green">Node.js</span>
+      <span class="tech-tag t-pink">Shell</span>
+      <span class="tech-tag t-peach">HTML</span>
+      <span class="tech-tag t-mauve">Lua</span>
+    </div>
+  </section>
+</Base>

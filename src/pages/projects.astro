@@ -1,0 +1,21 @@
+---
+// projects.astro - 重点项目
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { featuredProjects } from '../data/projects';
+---
+
+<Base
+  title="FLT18355 - Projects"
+  description="FLT18355 的重点项目:终端配置、OpenTUI 音乐播放器 lxm 与 dotfiles。"
+  current="projects"
+>
+  <section class="block b-projects">
+    <div class="block-header">
+      <h2>Featured Projects</h2>
+    </div>
+    <div class="project-grid">
+      {featuredProjects.map((p) => <ProjectCard project={p} />)}
+    </div>
+  </section>
+</Base>

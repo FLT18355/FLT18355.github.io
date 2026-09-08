@@ -1,0 +1,88 @@
+# 架构与技术说明
+
+站点:FLT18355.github.io —— 个人主页(GitHub Pages),五页纯静态,零第三方依赖。
+
+目标读者:后续维护此仓库的 AI / 开发者。
+
+## 1. 总览
+
+```
+src/                   模板 + 片段(pages.json 清单)
+  │
+  │  python3 build.py
+  ▼
+index.html             产物:GitHub Pages 直接部署
+projects.html
+catppuccin.html
+following.html
+search.html
+  │
+  └── assets/           共用样式与脚本(编译产物,勿改)
+```
+
+- 四页(index/projects/catppuccin/following)共享同一套布局:顶部导航(含主题拨钮)、左侧身份栏(头像/名号/标语/联系方式)、右侧内容区、页脚。
+- search 页是第一个无左栏页面(bare 模式):`pages.json` 里 `"rail": false` 时,`build.py` 不注入 rail partial,并给 `.shell` 加 ` shell--bare` 类(单列网格 + 内容限宽居中,见 `assets/style.css`)。导航与页脚仍保留。
+- 所有公共结构在 `src/partials/` 只维护一份,由 `build.py` 渲染进各页。
+- 页级差异只有 4 个点:`title`、`description`、导航 `aria-current`、`<main>` 内容,全部在 `src/pages.json` 与 `src/pages/` 定义。
+
+## 2. 构建管线
+
+`build.py`(标准库 `json` + `pathlib`,零第三方依赖):
+
+1. 读 `src/template.html`(整页骨架,含 `{{占位}}`)。
+2. 按 `src/pages.json`(页清单:各页的 title / description / current 标记 / 内容页名 / 可选 `rail`)逐页:
+   - 读对应 `src/pages/<name>.html` 作为 `<main>` 内容;
+   - 读五个 partial(font-picker / nav / profile / contacts / rail);
+   - 按 `current` 给 nav 五条链接注入 ` aria-current="page"`(当前页),其余留空;
+   - `rail` 字段缺省 true;为 false 时跳过 rail partial 注入并把 shell 类名换成 ` shell--bare`;
+   - 用字符串替换填充 `{{...}}`,写出到仓库根。
+3. 产物是完整静态 HTML,无任何运行时模板依赖。
+
+**约束:根目录的五个 .html 是生成物,勿手改;改内容一律改 `src/` 后重新 build。**
+
+## 3. 关键机制
+
+### 3.1 双主题(Mocha / Latte)
+- 令牌在 `assets/style.css`:`:root`(Mocha 默认)+ `:root[data-theme="latte"]` 覆盖;`@property` 注册颜色变量实现平滑过渡。
+- 首屏无闪烁:head 内联脚本读 `localStorage('theme')`(缺省按 `prefers-color-scheme`),在 body 解析前设 `data-theme`。
+- 切换 UI:导航右侧拨钮,`assets/app.js` 处理拖拽 / 点击 / 键盘(Enter/空格),切换瞬间用原生 View Transition API 做圆形揭示:新主题快照从拨钮中心向外扩散,无遮罩层、不遮挡任何内容(app.js `commitTheme`)。
+- `assets/app.js` 维护 `meta[name="theme-color"]` 随主题切换。
+
+### 3.2 字体选择(首启门控)
+- 目的:默认不下载 Maple Mono 字体,弱网也能秒开。`font.woff2` 是**子集**(约 56KB,由 `subset-font.py` 按页面文本裁剪自 `src/font-full.woff2` 全量 7.1MB),仅选 Maple 的用户按需加载。
+- **`@font-face` 声明本身不触发下载**,只有实际被渲染引用才下载。因此默认模式下 body 与 `--mono` 都不引用 Maple Mono,woff2 零请求。
+- 子集化注意:源字体是 ExtraBold 单轮廓,且 preferred family 只在 nameID 16;`subset-font.py` 会修正子集 name 表(补回 `Maple Mono NF CN`),否则 CSS 匹配失败。页面文案新增字符后需重跑 `subset-font.py`,否则新字缺失。
+- 选择存 `localStorage('site-font')`,`'default' | 'maple'`。head 内联脚本在渲染前恢复 `data-font` 属性:CSS 中 `html[data-font="maple"]` 才启用 Maple(正文 + `--mono`)。
+- 首启界面 `#fontPicker`(默认 `hidden`),`assets/font-picker.js` 在 DOM 就绪后判断:未存选择则显示,已存则保持隐藏;点击选项 → 写 `localStorage` → 先即时设 `data-font`,再 `location.reload()`。
+- 页脚「字体」按钮(`#fontPickerReopen`)随时重开选择界面。选择界面自身强制系统字体渲染。
+- 提示:若用户浏览器拦截了自动刷新,选择界面内有「请手动刷新网页」提示行。
+
+### 3.3 动效(渐进增强层)
+- `assets/app-motion.js` 仅在支持 IntersectionObserver 且用户未开启 reduced-motion 时给 `<html>` 加 `.motion-js`,`assets/motion.css` 全部动效规则挂在该类下;JS 不跑或不支持时页面完全正常。
+- 功能:区块滚动入场 + 筹码错峰、指针光斑、项目卡 3D 微倾斜、阅读进度线、页脚浮现、Search 页背景光斑(仅 search 页有 `.search-bg`,两个伪元素光斑缓慢漂浮 + 呼吸,26s/34s 错峰,挂 `html.motion-js` 门控,reduced-motion 熄火)、Search 页快捷链接悬停微浮起 + 最近搜索 chips 错峰入场(第 9 节)。主题切换圆形揭示在 `app.js` 内(View Transition API,非 `.motion-js` 门控,自带 reduced-motion 判断)。
+- **主题拨钮场景动画(云朵/太阳/星星)刻意不随 reduced-motion 关闭**(产品决策,README 有记录),其余动效遵守 reduced-motion。
+- 云朵动画 `@keyframes drift`(style.css):`translateX(270px)` → `-90px`,即右侧外飘入、穿出左侧外循环;云朵静态回退在右侧外(不遮挡太阳),`z-index` 高于太阳(云遮日)。四朵云用负 `animation-delay` 错峰,相位分布保证任意时刻有一朵正从右侧进入。
+- 现有动效均为 CSS + IntersectionObserver / rAF,无 GSAP 依赖、无 scroll 监听。
+
+### 3.4 导航指示条与窄屏滑动
+- `assets/nav.js`:加载时把指示条定位到当前页链接下方(`aria-current="page"`),resize / 字体加载完成后重算;点击其它链接先滑过去再跳转。
+- 指示条定位用 `offsetLeft` / `offsetWidth`(相对 `.nav-list` padding box),**不用 `getBoundingClientRect()` 差值**:窄屏下 `.nav-list` 是横向滚动容器,rect 差值不含 `scrollLeft`,一滑动就错位。
+- 手机适配(`nav.css`):`.nav-list` 为 `flex:1; min-width:0; overflow-x:auto`,链接 `flex-shrink:0` 保持原宽,总宽超出屏幕即整体左右滑动;滚动条隐藏(`scrollbar-width:none` + `::-webkit-scrollbar{display:none}`),`overscroll-behavior-x:none` 阻断安卓边缘返回手势。主题拨钮 `.toggle-scale` 在滚动容器外,`flex-shrink:0` 固定右侧。
+- `nav.js` 的 `bringIntoView()`:当前页落在视口外时(如手机上 Search 在最右)把它滚到中间,避免用户进页面看不到自己在哪。
+- 依赖 partial 中的 nav 结构不变(`.nav-list` / `.nav-item[aria-current]` / `.nav-indicator`)。
+
+### 3.5 无障碍
+- 语义化 landmark、`aria-current`、可见焦点环、按钮可键盘操作。
+- 字体选择界面:role=dialog / aria-modal / aria-labelledby。
+
+## 4. 当前页面与数据
+
+| 页 | `src/pages/` | 内容 |
+|---|---|---|
+| index | `index.html` | About Me / Interests / Tech Stack |
+| projects | `projects.html` | terminal / lxm / dotfiles 三卡 |
+| catppuccin | `catppuccin.html` | 色板页:4 风味 × 26 色（数据/渲染/复制逻辑在 `assets/palette.js`,含中文文案需进字体字符集） |
+| following | `following.html` | herdr / oh-my-pi / catppuccin（`f-catppuccin` 单色紫强调卡,线性猫 SVG 图标）/ neovim |
+| search | `search.html` | bare 模式(无左栏):实时时钟 + Bing 搜索表单(新标签打开结果) + 快捷站点链接(GitHub/Bilibili/YouTube/MDN) + 最近搜索历史(localStorage 5 条);交互逻辑在 `assets/search.js`(`/` 或 Ctrl+K 聚焦,Esc 清空);背景光斑漂浮动效(静态层 `.search-bg` 在 style.css,动画在 motion.css 第 8 节) |
+
+联系方式(partials/contacts.html):GitHub、QQ(wpa.qq.com 临时会话,w/ QQ-cm.svg 图标)、微信(weixin.qq.com)、B 站大号 / 小号。

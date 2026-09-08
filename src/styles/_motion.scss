@@ -1,0 +1,225 @@
+/* _motion.scss - 增量动效层(规则需要 html.motion-js 门控)
+   由 motion.ts 在「支持 IntersectionObserver 且用户未要求减弱动效」时
+   给 <html> 加上该类;否则本文件内动效规则均为惰性。 */
+
+/* ---------- 1. 区块标题下方的强调线:入场时从左画出来 ---------- */
+html.motion-js .block-header {
+  position: relative;
+}
+html.motion-js .block-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 64px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--acc), transparent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+html.motion-js .block.in .block-header::after {
+  animation: lineDraw 0.55s var(--ease-out) forwards;
+  animation-delay: calc(var(--d, 0s) + 0.3s);
+}
+@keyframes lineDraw {
+  to { transform: scaleX(1); }
+}
+
+/* ---------- 2. 标签/筹码跟随区块做二级错峰入场 ---------- */
+html.motion-js .block.in .interest,
+html.motion-js .block.in .tech-tag,
+html.motion-js .block.in .flavor {
+  animation: chipIn 0.5s var(--ease-out) backwards;
+}
+@for $i from 1 through 4 {
+  html.motion-js .block.in .interest:nth-child(#{$i}),
+  html.motion-js .block.in .tech-tag:nth-child(#{$i}),
+  html.motion-js .block.in .flavor:nth-child(#{$i}) {
+    animation-delay: calc(var(--d, 0s) + #{0.18s + ($i - 1) * 0.06s});
+  }
+}
+html.motion-js .block.in .interest:nth-child(n+5),
+html.motion-js .block.in .tech-tag:nth-child(n+5),
+html.motion-js .block.in .flavor:nth-child(n+5) {
+  animation-delay: calc(var(--d, 0s) + 0.42s);
+}
+@keyframes chipIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 3. 大卡片的指针光斑(跟随鼠标的柔光) ---------- */
+html.motion-js .block {
+  position: relative;
+}
+html.motion-js .block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    320px circle at var(--sx, 50%) var(--sy, 50%),
+    color-mix(in srgb, var(--acc) 7%, transparent),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-out);
+}
+html.motion-js .block.hot::after {
+  opacity: 1;
+}
+
+/* ---------- 4. 项目卡片 3D 微倾斜 + 主色光斑 ---------- */
+html.motion-js .project-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --ty: 0px;
+  will-change: transform;
+  transform: perspective(760px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--ty));
+}
+html.motion-js .project-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    260px circle at var(--sx, 50%) var(--sy, 50%),
+    color-mix(in srgb, var(--acc) 16%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+  z-index: 1;
+}
+html.motion-js .project-card.hot::before {
+  opacity: 1;
+}
+html.motion-js .project-card:hover {
+  --ty: -3px;
+}
+html.motion-js .project-card:active {
+  --ty: 0px;
+  --rx: 0deg;
+  --ry: 0deg;
+}
+
+/* 主题切换圆形揭示:关掉 View Transition 默认交叉淡化,
+   扩散动画由 ThemeToggle.vue 用 clip-path 施加在 ::view-transition-new(root) 上。
+   不能挂 .motion-js 门控:拨钮逻辑在 ThemeToggle.vue,与动效层无关。 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ---------- 5. 阅读进度线:页面最顶上的主色细线 ---------- */
+.progress-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 60;
+  pointer-events: none;
+  background: var(--primary);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left center;
+  opacity: 0.85;
+}
+
+/* ---------- 6. 联系方式图标:悬停时轻轻抖一下 ---------- */
+html.motion-js .contact-item:hover .contact-ico {
+  animation: iconPop 0.45s var(--ease-out);
+}
+@keyframes iconPop {
+  0%   { transform: scale(1) rotate(0deg); }
+  35%  { transform: scale(1.18) rotate(-6deg); }
+  65%  { transform: scale(1.08) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ---------- 7. 页脚:滚动到附近时浮现 ---------- */
+html.motion-js .footline {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+html.motion-js .footline.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- 8. Search 页背景光斑:缓慢漂浮 + 呼吸(仅 search 页有 .search-bg) ---------- */
+html.motion-js .search-bg::before {
+  animation: sbDriftA 26s var(--ease-out) infinite alternate;
+}
+html.motion-js .search-bg::after {
+  animation: sbDriftB 34s var(--ease-out) infinite alternate;
+}
+@keyframes sbDriftA {
+  from { transform: translate3d(0, 0, 0) scale(1);      opacity: 0.55; }
+  to   { transform: translate3d(6vw, -4vh, 0) scale(1.18); opacity: 0.9; }
+}
+@keyframes sbDriftB {
+  from { transform: translate3d(0, 0, 0) scale(1);      opacity: 0.5; }
+  to   { transform: translate3d(-5vw, 3vh, 0) scale(1.22); opacity: 0.85; }
+}
+
+/* ---------- 9. Search 页快捷链接:悬停微浮起;最近搜索 chips 入场 ---------- */
+html.motion-js .quicklink:hover {
+  transform: translateY(-3px);
+}
+html.motion-js .quicklink {
+  transition: border-color 0.15s, color 0.15s, background-color 0.2s var(--ease-out), transform 0.25s var(--ease-out);
+}
+html.motion-js .search-chip {
+  animation: chipIn 0.4s var(--ease-out) backwards;
+}
+@for $i from 1 through 4 {
+  html.motion-js .search-chip:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.05s};
+  }
+}
+html.motion-js .search-chip:nth-child(n+5) {
+  animation-delay: 0.25s;
+}
+
+/* ---------- 减弱动效:整体熄火 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html.motion-js .block,
+  html.motion-js .block-header::after,
+  html.motion-js .footline,
+  html.motion-js .interest,
+  html.motion-js .tech-tag,
+  html.motion-js .flavor,
+  html.motion-js .contact-ico {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  html.motion-js .project-card {
+    transform: none !important;
+  }
+  html.motion-js .block::after,
+  html.motion-js .project-card::before {
+    display: none;
+  }
+  html.motion-js .search-bg::before,
+  html.motion-js .search-bg::after {
+    animation: none;
+    opacity: 0.5;
+  }
+  html.motion-js .quicklink {
+    transform: none;
+    transition: none;
+  }
+  html.motion-js .search-chip {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

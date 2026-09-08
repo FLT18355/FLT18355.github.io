@@ -1,0 +1,23 @@
+{
+  "name": "flt18355.github.io",
+  "version": "1.0.0",
+  "description": "个人主页，基于 [Catppuccin](https://catppuccin.com/) 配色（Mocha / Latte 双主题），零依赖纯静态。",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "dependencies": {
+    "@astrojs/vue": "^7.0.2",
+    "astro": "^7.3.1",
+    "sass": "^1.104.0",
+    "vue": "^3.5.42"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

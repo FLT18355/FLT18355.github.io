@@ -1,0 +1,15 @@
+---
+// search.astro - Bing 搜索页(无左栏,单列居中)
+import Base from '../layouts/Base.astro';
+import SearchPanel from '../components/SearchPanel.vue';
+---
+
+<Base
+  title="FLT18355 - Search"
+  description="FLT18355 的 Bing 搜索页,含实时时钟。"
+  current="search"
+  rail={false}
+>
+  <SearchPanel client:load />
+  <div slot="body-end" class="search-bg" aria-hidden="true"></div>
+</Base>
