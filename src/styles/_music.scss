@@ -1,14 +1,60 @@
-/* _music.scss - 首页 Test 音乐播放器 */
+/* _music.scss - 首页 Music Player - Test 音乐播放器 */
 
 .music-player {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+}
+.music-cover {
+  flex: none;
+  width: 96px;
+  height: 96px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.music-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.music-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.music-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.music-title {
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.music-artist {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .music-toggle {
   flex: none;
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--surface-strong);
@@ -32,34 +78,14 @@
   height: 20px;
   fill: currentColor;
 }
-.music-meta {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.music-title {
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 0.92rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.music-status {
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-family: var(--mono);
-}
 .music-eq {
   flex: none;
   display: inline-flex;
   align-items: flex-end;
   gap: 3px;
   height: 14px;
+  align-self: flex-end;
+  margin-bottom: 4px;
 }
 .music-eq i {
   width: 3px;
@@ -73,7 +99,9 @@
 
 /* 进度条 */
 .music-bar {
-  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .music-seek {
   width: 100%;
@@ -109,8 +137,12 @@
 .music-time {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
+  gap: 10px;
   font-family: var(--mono);
   font-size: 0.72rem;
   color: var(--text-muted);
+}
+.music-status {
+  flex: 1;
+  text-align: center;
 }
