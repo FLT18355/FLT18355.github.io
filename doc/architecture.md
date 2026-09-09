@@ -9,7 +9,7 @@
 ```
 src/pages/*.astro         页面(每页一个组件树)
 src/layouts/Base.astro    骨架(head 元信息 + 主题/字体恢复内联脚本)
-src/components/           .astro 组件 + 四个 .vue 交互岛
+src/components/           .astro 组件 + 五个 .vue 交互岛
 src/data/                 站点/项目/色板数据(TS 模块)
 src/scripts/              motion.ts / nav.ts(打包进页面)
 src/styles/               SCSS 模块(global.scss 汇总)
@@ -25,7 +25,7 @@ dist/                    产物:经 GitHub Actions 自动部署,或用 scripts/d
 - 五页(index/projects/catppuccin/following)共享 `Base.astro`:顶部导航(含主题拨钮)、左侧身份栏(头像/名号/标语/联系方式)、右侧内容区、页脚。
 - search 页是无左栏页面(bare 模式):页面传 `rail={false}`,`Base.astro` 不渲染 `<Rail />` 并给 `.shell` 加 `shell--bare` 类(单列网格 + 内容限宽居中,见 `src/styles/_layout.scss`)。
 - 页级差异只有 4 个点:`title`、`description`、导航 `aria-current`、`<main>` 内容,由各页面文件与 `src/data/site.ts` 定义。
-- 交互逻辑收敛为四个 Vue 岛(`client:load`):主题拨钮、首启字体选择、色板复制、搜索页。**全部 SSR 直出静态内容,JS 不加载页面仍完整可用**(旧版色板页是 JS 渲染,无 JS 空白)。
+- 交互逻辑收敛为五个 Vue 岛(`client:load`):主题拨钮、首启字体选择、色板复制、搜索页、首页 Test 音乐播放器。**全部 SSR 直出静态内容,JS 不加载页面仍完整可用**(旧版色板页是 JS 渲染,无 JS 空白)。
 
 ## 2. 构建管线
 

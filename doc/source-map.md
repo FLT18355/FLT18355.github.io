@@ -34,7 +34,7 @@
 
 | 文件 | 内容 |
 |---|---|
-| `index.astro` | 主页:About / Interests / Tech Stack 三 block |
+| `index.astro` | 主页:About / Interests / Tech Stack 三 block + Test 音乐播放器 |
 | `projects.astro` | 重点项目:terminal / lxm / dotfiles 三卡(`data/projects.ts`) |
 | `catppuccin.astro` | 色板页:渲染容器 + `PaletteGrid.vue` |
 | `following.astro` | 关注项目:herdr / oh-my-pi / catppuccin / neovim 四卡 |
@@ -55,6 +55,7 @@
 | `components/FontPicker.vue` | 首启字体选择:显隐判断、选项绑定、页脚重开 |
 | `components/PaletteGrid.vue` | 色板:SSR 直出 104 色块 + 水合后点击复制 Hex |
 | `components/SearchPanel.vue` | 搜索页:实时时钟 / Bing 表单 / 快捷链接 / 最近搜索历史 |
+| `components/MusicPlayer.vue` | 首页 Test 播放器:gh-proxy 直链音频 / 播放暂停 / 进度跳转(preload=auto 自动下载,不入仓库) |
 
 ### 数据 `src/data/`
 
@@ -63,6 +64,7 @@
 | `site.ts` | 站点元信息 + NAV 导航数组(改导航/标题/描述在这里) |
 | `projects.ts` | 项目卡数据(改项目在这里) |
 | `palette.ts` | Catppuccin 色板数据(4 风味 × 26 色,含中文说明文案) |
+| `music.ts` | 音乐播放器曲目(gh-proxy 直链 + 标题,浏览器端自动下载) |
 
 ### 脚本 `src/scripts/`
 
@@ -82,6 +84,7 @@
 | `_cards.scss` | flavor 筹码 / 兴趣 / 技术标签 / 色板 / 项目卡 |
 | `_toggle.scss` | 主题拨钮(太阳/云/月亮/星星/滑钮 + 拖动态) |
 | `_search.scss` | search 页:背景光斑 / 时钟 / 表单 / 快捷链接 / 历史 chips |
+| `_music.scss` | 首页音乐播放器:按钮 / 均衡条 / 进度条 |
 | `_motion.scss` | 增量动效层(`html.motion-js` 门控) |
 | `_nav.scss` | 顶部导航 + 滑动指示条 + 窄屏横向滚动 |
 | `_font-picker.scss` | 首启字体选择界面 + 页脚按钮 |

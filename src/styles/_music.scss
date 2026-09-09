@@ -1,0 +1,116 @@
+/* _music.scss - 首页 Test 音乐播放器 */
+
+.music-player {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.music-toggle {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s var(--ease-out), border-color 0.15s, background 0.15s, color 0.15s;
+}
+.music-toggle:hover {
+  border-color: var(--acc);
+  transform: translateY(-2px);
+}
+.music-toggle:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+}
+.music-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+.music-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.music-title {
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.music-status {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: var(--mono);
+}
+.music-eq {
+  flex: none;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 14px;
+}
+.music-eq i {
+  width: 3px;
+  height: 5px;
+  border-radius: 2px;
+  background: var(--text-muted);
+}
+.music-player.is-playing .music-eq i {
+  background: var(--acc);
+}
+
+/* 进度条 */
+.music-bar {
+  margin-top: 16px;
+}
+.music-seek {
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--surface-strong);
+  cursor: pointer;
+}
+.music-seek::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--acc);
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 0 0 1px var(--border);
+}
+.music-seek::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--acc);
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 0 0 1px var(--border);
+}
+.music-seek:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.music-time {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}

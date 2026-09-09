@@ -187,6 +187,20 @@ html.motion-js .search-chip:nth-child(n+5) {
   animation-delay: 0.25s;
 }
 
+/* ---------- 10. 音乐播放器:播放时均衡条跳动(仅 html.motion-js 门控) ---------- */
+html.motion-js .music-player.is-playing .music-eq i {
+  animation: eqBounce 0.9s ease-in-out infinite alternate;
+}
+@for $i from 1 through 3 {
+  html.motion-js .music-player.is-playing .music-eq i:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.15s};
+  }
+}
+@keyframes eqBounce {
+  from { height: 4px; }
+  to   { height: 14px; }
+}
+
 /* ---------- 减弱动效:整体熄火 ---------- */
 @media (prefers-reduced-motion: reduce) {
   html.motion-js .block,
@@ -221,5 +235,8 @@ html.motion-js .search-chip:nth-child(n+5) {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+  html.motion-js .music-player.is-playing .music-eq i {
+    animation: none;
   }
 }

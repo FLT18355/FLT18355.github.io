@@ -71,7 +71,7 @@ npm run build          # 产出 dist/
 
 ## 5. 技术栈约束
 
-- 框架:Astro 7 + Vue 3(仅四个交互岛,`client:load`)+ SCSS。交互逻辑优先放 Vue 岛;纯 DOM 增强(指示条/动效编排)用 `src/scripts/*.ts` 由 Base.astro 打包。
+- 框架:Astro 7 + Vue 3(仅五个交互岛,`client:load`)+ SCSS。交互逻辑优先放 Vue 岛;纯 DOM 增强(指示条/动效编排)用 `src/scripts/*.ts` 由 Base.astro 打包。
 - 不要引入外部 CDN / 运行时框架依赖;动效零第三方库。
 - 修改公共结构后用 `doc/build.md` 的验证清单(self-check)。
 
