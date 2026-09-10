@@ -18,4 +18,25 @@ import { featuredProjects } from '../data/projects';
       {featuredProjects.map((p) => <ProjectCard project={p} />)}
     </div>
   </section>
+
+  <section class="block b-download">
+    <div class="block-header">
+      <h2>Download</h2>
+    </div>
+    <a
+      class="download-card"
+      href="https://v4.gh-proxy.org/https://github.com/FLT18355/dsh-pet-inAndroid/releases/download/1.0.1/app-release.apk"
+      target="_blank"
+      rel="noopener"
+    >
+      <span class="download-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 5-5m-5 5-5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      </span>
+      <span class="download-info">
+        <span class="download-title">app-release.apk</span>
+        <span class="download-sub">dsh-pet-inAndroid · v1.0.1</span>
+      </span>
+      <span class="download-go">Download</span>
+    </a>
+  </section>
 </Base>

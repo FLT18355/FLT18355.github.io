@@ -39,6 +39,14 @@ export const featuredProjects: Project[] = [
     desc: 'Configured dev environment with Catppuccin theming, deployed with GNU Stow.',
     tags: ['shell', 'stow', 'catppuccin'],
   },
+  {
+    href: 'https://github.com/FLT18355/dsh-pet-inAndroid',
+    icon: 'P',
+    title: 'dsh-pet',
+    sub: 'FLT18355/dsh-pet-inAndroid',
+    desc: 'dsh-pet desktop pet, native Android port. Kotlin + Compose MD3 with Catppuccin Mocha theming.',
+    tags: ['android', 'kotlin', 'catppuccin'],
+  },
 ];
 
 export const followingProjects: Project[] = [

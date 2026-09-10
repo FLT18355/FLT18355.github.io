@@ -339,3 +339,85 @@ html.motion-js .project-card.f-catppuccin {
   transform: translate(0, 0);
   color: var(--acc);
 }
+
+/* ---------- Download section (projects 页) ---------- */
+.download-card {
+  --acc: var(--primary);
+  --acc-dim: var(--primary-dim);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--glass-item);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(10px) saturate(1.25);
+  backdrop-filter: blur(10px) saturate(1.25);
+  transition: background-color 0.15s, border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
+}
+.download-card:hover {
+  border-color: var(--acc);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+}
+.download-card:active { transform: translateY(0) scale(0.985); }
+.download-card:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.download-icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--acc-dim);
+  color: var(--acc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.download-card:hover .download-icon {
+  border: 1px solid var(--acc);
+}
+.download-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.download-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.download-sub {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  transition: color 0.15s;
+}
+.download-card:hover .download-title { color: var(--acc); }
+.download-card:hover .download-sub { color: var(--text-secondary); }
+.download-go {
+  flex: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--mono);
+  background: var(--acc-dim);
+  color: var(--acc);
+  border: 1px solid transparent;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s, transform 0.15s var(--ease-out);
+}
+.download-card:hover .download-go {
+  background: var(--acc);
+  color: var(--bg);
+  transform: translateY(-1px);
+}
