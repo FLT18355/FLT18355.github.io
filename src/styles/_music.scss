@@ -3,16 +3,61 @@
 .music-player {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+}
+.music-cover-wrap {
+  flex: none;
 }
 .music-cover {
-  flex: none;
   width: 96px;
   height: 96px;
   border-radius: 12px;
   object-fit: cover;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+}
+.music-cover--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-strong);
+  color: var(--text-muted);
+}
+.music-cover--placeholder svg {
+  width: 40px;
+  height: 40px;
+}
+.music-nav {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s, transform 0.15s var(--ease-out), background 0.15s;
+}
+.music-nav:hover:not(:disabled) {
+  border-color: var(--acc);
+  color: var(--acc);
+  transform: translateY(-2px);
+}
+.music-nav:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: 2px;
+}
+.music-nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.music-nav svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
 }
 .music-body {
   flex: 1;

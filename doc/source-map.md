@@ -55,7 +55,7 @@
 | `components/FontPicker.vue` | 首启字体选择:显隐判断、选项绑定、页脚重开 |
 | `components/PaletteGrid.vue` | 色板:SSR 直出 104 色块 + 水合后点击复制 Hex |
 | `components/SearchPanel.vue` | 搜索页:实时时钟 / Bing 表单 / 快捷链接 / 最近搜索历史 |
-| `components/MusicPlayer.vue` | 首页 Test 播放器:gh-proxy 直链音频 / 播放暂停 / 进度跳转(preload=auto 自动下载,不入仓库) |
+| `components/MusicPlayer.vue` | 首页 Test 播放器:3 曲目(gh-proxy 直链)/ 播放暂停 / 左右键切歌 / 进度跳转 / localStorage 保存上次播放 |
 
 ### 数据 `src/data/`
 
@@ -64,7 +64,7 @@
 | `site.ts` | 站点元信息 + NAV 导航数组(改导航/标题/描述在这里) |
 | `projects.ts` | 项目卡数据(改项目在这里) |
 | `palette.ts` | Catppuccin 色板数据(4 风味 × 26 色,含中文说明文案) |
-| `music.ts` | 音乐播放器曲目(gh-proxy 直链 + 标题,浏览器端自动下载) |
+| `music.ts` | 音乐播放器曲目列表(3 首,gh-proxy 直链 + 标题/作者;仅首曲含封面) |
 
 ### 脚本 `src/scripts/`
 
