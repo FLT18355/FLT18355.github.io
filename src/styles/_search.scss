@@ -310,3 +310,54 @@
     padding: 12px 14px;
   }
 }
+
+/* ---------- 搜索引擎切换 chips + 时钟制式 ---------- */
+.search-engines {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.search-engine,
+.clock-toggle {
+  border: none;
+  background: none;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
+}
+.search-engine:hover,
+.clock-toggle:hover {
+  color: var(--text);
+}
+.search-engine:active,
+.clock-toggle:active {
+  transform: scale(0.96);
+}
+.search-engine:focus-visible,
+.clock-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.search-engine.is-active {
+  background: var(--primary);
+  color: var(--bg);
+}
+.clock-toggle {
+  margin-left: 4px;
+  border-left: 1px solid var(--border);
+  border-radius: 0 999px 999px 0;
+  padding-left: 12px;
+}
+.clock-toggle[aria-pressed="true"] {
+  color: var(--primary);
+}

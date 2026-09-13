@@ -4,11 +4,18 @@
 import { ACCENTS, NEUTRALS, FLAVORS } from '../data/palette';
 import type { Flavor } from '../data/palette';
 
-function swatchHtml(name: string, hex: string): string {
+/** 色名 → Catppuccin CSS 变量名:小写、空格转连字符,如 "Subtext 1" → --subtext-1 */
+function toVarName(name: string): string {
+  return '--' + name.toLowerCase().replace(/ /g, '-');
+}
+
+function swatchHtml(name: string, hex: string, varName?: string): string {
   return (
     '<button type="button" class="swatch" data-hex="' +
     hex +
-    '" title="复制 ' +
+    '"' +
+    (varName ? ' data-var="' + varName + '"' : '') +
+    ' title="复制 ' +
     hex +
     '">' +
     '<span class="swatch-chip" style="background:' +
@@ -25,8 +32,8 @@ function swatchHtml(name: string, hex: string): string {
 }
 
 function flavorHtml(f: Flavor): string {
-  const accents = ACCENTS.map((n) => swatchHtml(n, f.hex[n])).join('');
-  const neutrals = NEUTRALS.map((n) => swatchHtml(n, f.hex[n])).join('');
+  const accents = ACCENTS.map((n) => swatchHtml(n, f.hex[n], toVarName(n))).join('');
+  const neutrals = NEUTRALS.map((n) => swatchHtml(n, f.hex[n], toVarName(n))).join('');
   return (
     '<div class="palette-flavor">' +
     '<div class="palette-head"><h3>' +
@@ -57,16 +64,18 @@ function onRootClick(e: Event): void {
   const label = sw.querySelector('.swatch-hex');
   if (!label) return;
   const old = label.textContent || '';
+  /* 优先复制 CSS 变量名(更有用),按钮 title 展示 Hex */
+  const copyText = sw.getAttribute('data-var') || hex;
   const done = () => {
     sw.classList.add('copied');
-    label.textContent = 'Copied!';
+    label.textContent = copyText;
     setTimeout(() => {
       sw.classList.remove('copied');
       label.textContent = old;
     }, 900);
   };
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(hex).then(done, done);
+    navigator.clipboard.writeText(copyText).then(done, done);
   } else {
     done();
   }

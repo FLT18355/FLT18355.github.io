@@ -1,17 +1,27 @@
 <script setup lang="ts">
 // SearchPanel.vue - search 页专属:实时时钟 + Bing 搜索 + 快捷链接 + 最近搜索
 // 对应原 assets/search.js;时钟/搜索表单 SSR 直出,历史由 localStorage 水合。
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const WEEK = ['日', '一', '二', '三', '四', '五', '六'];
 const KEY = 'search-history';
 const MAX = 5;
+
+const ENGINES = [
+  { key: 'bing', label: 'Bing', action: 'https://www.bing.com/search' },
+  { key: 'google', label: 'Google', action: 'https://www.google.com/search' },
+  { key: 'ddg', label: 'DuckDuckGo', action: 'https://duckduckgo.com/' },
+];
+const ENGINE_KEY = 'search-engine';
+const CLOCK_KEY = 'clock-24h';
 
 const now = ref(new Date());
 const timeMain = ref('--:--');
 const timeSec = ref('');
 const dateText = ref('');
 const query = ref('');
+const engineIdx = ref(0);
+const use24h = ref(true);
 const history = ref<string[]>([]);
 const hasHistory = ref(false);
 
@@ -25,7 +35,15 @@ function tick(): void {
   const d = now.value;
   dateText.value =
     d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 星期' + WEEK[d.getDay()];
-  timeMain.value = pad(d.getHours()) + ':' + pad(d.getMinutes());
+  let h = d.getHours();
+  if (!use24h.value) {
+    const am = h < 12;
+    h = h % 12;
+    if (h === 0) h = 12;
+    timeMain.value = pad(h) + ':' + pad(d.getMinutes()) + (am ? ' AM' : ' PM');
+  } else {
+    timeMain.value = pad(h) + ':' + pad(d.getMinutes());
+  }
   timeSec.value = ':' + pad(d.getSeconds());
 }
 
@@ -69,8 +87,26 @@ function onInputKeydown(e: KeyboardEvent): void {
   }
 }
 
+function selectEngine(i: number): void {
+  engineIdx.value = i;
+  try { localStorage.setItem(ENGINE_KEY, ENGINES[i].key); } catch (e) { /* 静默 */ }
+}
+function toggleClock(): void {
+  use24h.value = !use24h.value;
+  try { localStorage.setItem(CLOCK_KEY, use24h.value ? '24' : '12'); } catch (e) { /* 静默 */ }
+  tick();
+}
+const engineAction = computed(() => ENGINES[engineIdx.value].action);
+
 onMounted(() => {
   now.value = new Date();
+  /* 从 localStorage 恢复引擎与时钟偏好 */
+  try {
+    const ek = localStorage.getItem(ENGINE_KEY);
+    if (ek) { const idx = ENGINES.findIndex((e) => e.key === ek); if (idx >= 0) engineIdx.value = idx; }
+    const ck = localStorage.getItem(CLOCK_KEY);
+    if (ck === '12') use24h.value = false;
+  } catch (e) { /* 静默 */ }
   tick();
   timer = window.setInterval(() => {
     now.value = new Date();
@@ -122,7 +158,7 @@ onUnmounted(() => {
     </div>
     <form
       class="search-form"
-      action="https://www.bing.com/search"
+      :action="engineAction"
       method="get"
       target="_blank"
       rel="noopener"
@@ -138,8 +174,8 @@ onUnmounted(() => {
         name="q"
         id="searchQ"
         v-model="query"
-        placeholder="Search with Bing"
-        aria-label="Search with Bing"
+        :placeholder="'Search with ' + ENGINES[engineIdx].label"
+        :aria-label="'Search with ' + ENGINES[engineIdx].label"
         autocomplete="off"
         spellcheck="false"
         @keydown="onInputKeydown"
@@ -182,11 +218,25 @@ onUnmounted(() => {
           v-for="q in history"
           :key="q"
           class="search-chip"
-          :href="'https://www.bing.com/search?q=' + encodeURIComponent(q)"
+          :href="engineAction + '?q=' + encodeURIComponent(q)"
           target="_blank"
           rel="noopener"
         >{{ q }}</a>
       </div>
+    </div>
+    <div class="search-engines" role="group" aria-label="Search engine">
+      <button
+        v-for="(e, i) in ENGINES"
+        :key="e.key"
+        type="button"
+        class="search-engine"
+        :class="{ 'is-active': engineIdx === i }"
+        :aria-pressed="engineIdx === i"
+        @click="selectEngine(i)"
+      >{{ e.label }}</button>
+      <button type="button" class="clock-toggle" :aria-pressed="use24h" @click="toggleClock">
+        {{ use24h ? '24h' : '12h' }}
+      </button>
     </div>
     <p class="search-note">Press <kbd>/</kbd> to focus, results open in a new tab</p>
   </section>
