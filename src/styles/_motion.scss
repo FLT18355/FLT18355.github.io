@@ -29,19 +29,22 @@ html.motion-js .block.in .block-header::after {
 /* ---------- 2. 标签/筹码跟随区块做二级错峰入场 ---------- */
 html.motion-js .block.in .interest,
 html.motion-js .block.in .tech-tag,
-html.motion-js .block.in .flavor {
+html.motion-js .block.in .flavor,
+html.motion-js .block.in .stat-card {
   animation: chipIn 0.5s var(--ease-out) backwards;
 }
 @for $i from 1 through 4 {
   html.motion-js .block.in .interest:nth-child(#{$i}),
   html.motion-js .block.in .tech-tag:nth-child(#{$i}),
-  html.motion-js .block.in .flavor:nth-child(#{$i}) {
+  html.motion-js .block.in .flavor:nth-child(#{$i}),
+  html.motion-js .block.in .stat-card:nth-child(#{$i}) {
     animation-delay: calc(var(--d, 0s) + #{0.18s + ($i - 1) * 0.06s});
   }
 }
 html.motion-js .block.in .interest:nth-child(n+5),
 html.motion-js .block.in .tech-tag:nth-child(n+5),
-html.motion-js .block.in .flavor:nth-child(n+5) {
+html.motion-js .block.in .flavor:nth-child(n+5),
+html.motion-js .block.in .stat-card:nth-child(n+5) {
   animation-delay: calc(var(--d, 0s) + 0.42s);
 }
 @keyframes chipIn {
@@ -195,6 +198,7 @@ html.motion-js .search-chip:nth-child(n+5) {
   html.motion-js .interest,
   html.motion-js .tech-tag,
   html.motion-js .flavor,
+  html.motion-js .stat-card,
   html.motion-js .contact-ico {
     animation: none !important;
     opacity: 1;

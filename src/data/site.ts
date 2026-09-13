@@ -19,6 +19,19 @@ export interface PageMeta {
   rail?: boolean;
 }
 
+export interface Stat {
+  value: number;
+  label: string;
+}
+
+/** 首页 By the Numbers 统计(真实数据,来自各数据源) */
+export const STATS: Stat[] = [
+  { value: 4, label: 'Featured Projects' },
+  { value: 104, label: 'Palette Swatches' },
+  { value: 3, label: 'Music Tracks' },
+  { value: 6, label: 'Pages' },
+];
+
 export const NAV: { key: PageKey; href: string; label: string }[] = [
   { key: 'home', href: '/index.html', label: 'Home' },
   { key: 'projects', href: '/projects.html', label: 'Projects' },
