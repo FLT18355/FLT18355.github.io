@@ -46,20 +46,21 @@
   z-index: 1;
   display: inline-flex;
   align-items: center;
-  height: 100%;
-  padding: 0 16px;
+  height: 34px;
+  padding: 0 14px;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-muted);
   text-decoration: none;
-  border-radius: 10px;
+  border-radius: 999px;
   /* 滚动容器内不许压缩,保持原始宽度才能整体滑动 */
   flex-shrink: 0;
   white-space: nowrap;
-  transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  transition: color 0.2s var(--ease-out), background-color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
 }
 .nav-item:hover {
   color: var(--text);
+  background: var(--surface-strong);
 }
 .nav-item:active {
   transform: scale(0.96);
@@ -69,7 +70,8 @@
   outline-offset: -4px;
 }
 .nav-item[aria-current="page"] {
-  color: var(--text);
+  color: var(--primary);
+  background: var(--primary-dim);
 }
 
 .nav-indicator {
