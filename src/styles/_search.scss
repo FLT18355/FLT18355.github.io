@@ -48,6 +48,7 @@
   line-height: 1.15;
   color: var(--text);
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 32px var(--primary-glow);
 }
 .search-date {
   margin-top: 8px;
@@ -61,8 +62,11 @@
   margin: 0 auto;
   padding: 8px;
   border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
-  background: var(--primary-dim);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border-radius: 999px;
+  box-shadow: 0 6px 28px var(--primary-glow), 0 1px 3px rgba(0, 0, 0, 0.18);
   transition: border-color 0.15s, box-shadow 0.2s var(--ease-out);
 }
 .search-form:focus-within {
@@ -137,9 +141,12 @@
   transition: border-color 0.15s, color 0.15s, background-color 0.2s var(--ease-out);
 }
 .quicklink:hover {
-  border-color: var(--primary);
+  border-color: var(--ql, var(--primary));
   color: var(--text);
-  background: var(--primary-dim);
+  background: color-mix(in srgb, var(--ql, var(--primary)) 14%, var(--glass-item));
+}
+.quicklink:hover .quicklink-ico {
+  color: var(--ql, var(--primary));
 }
 .quicklink:focus-visible {
   outline: 2px solid var(--primary);
@@ -160,6 +167,11 @@
   font-size: 0.78rem;
   font-weight: 600;
 }
+/* 快捷链接品牌色:多色仅在语义处(品牌入口),与联系方式一致 */
+.q-github { --ql: var(--text); }
+.q-bilibili { --ql: var(--pink); }
+.q-youtube { --ql: var(--peach); }
+.q-mdn { --ql: var(--teal); }
 
 /* ---------- 最近搜索:标题行 + chips ---------- */
 .search-history {

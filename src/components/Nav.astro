@@ -12,6 +12,10 @@ const { current } = Astro.props;
 
 <header class="site-nav">
   <div class="nav-inner">
+    <a class="nav-brand" href="/index.html" aria-label="FLT18355 - Home">
+      <img class="nav-brand-logo" src="/logo.svg" alt="" width="26" height="26" loading="lazy" />
+      <span class="nav-brand-name">FLT18355</span>
+    </a>
     <nav class="nav-list" aria-label="页面导航">
       {NAV.map((item) => (
         <a class="nav-item" href={item.href} aria-current={item.key === current ? 'page' : undefined}>

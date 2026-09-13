@@ -22,6 +22,44 @@
   gap: 16px;
 }
 
+/* ---------- 品牌区:logo + 站点名,点击回首页 ---------- */
+.nav-brand {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  color: var(--text);
+  padding-right: 4px;
+  transition: color 0.2s var(--ease-out), opacity 0.2s var(--ease-out);
+}
+.nav-brand:hover {
+  color: var(--primary);
+}
+.nav-brand:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+.nav-brand-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: block;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s var(--ease-out);
+}
+.nav-brand:hover .nav-brand-logo {
+  transform: rotate(-8deg) scale(1.06);
+}
+.nav-brand-name {
+  font-family: var(--mono);
+  font-size: 0.94rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
 /* ---------- 导航列表与滑动指示条 ---------- */
 .nav-list {
   position: relative;
@@ -109,6 +147,9 @@ html.motion-js .nav-indicator {
   }
   .toggle-scale {
     --tgl-s: 0.4;
+  }
+  .nav-brand-name {
+    display: none;
   }
 }
 @media (max-width: 430px) {
