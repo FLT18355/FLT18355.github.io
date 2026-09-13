@@ -44,11 +44,16 @@
 .nav-brand-logo {
   width: 26px;
   height: 26px;
-  border-radius: 7px;
-  display: block;
+  border-radius: 50%;
+  display: none;
   box-shadow: var(--shadow);
   transition: transform 0.2s var(--ease-out);
 }
+/* 双 logo:Mocha(深)显示黑猫,Latte(浅)显示白猫,随主题切换 */
+.nav-brand-logo.logo-mocha { display: block; }
+.nav-brand-logo.logo-latte { display: none; }
+:root[data-theme="latte"] .nav-brand-logo.logo-mocha { display: none; }
+:root[data-theme="latte"] .nav-brand-logo.logo-latte { display: block; }
 .nav-brand:hover .nav-brand-logo {
   transform: rotate(-8deg) scale(1.06);
 }

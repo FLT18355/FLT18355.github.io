@@ -8,7 +8,8 @@ const KEY = 'search-history';
 const MAX = 5;
 
 const now = ref(new Date());
-const timeText = ref('--:--:--');
+const timeMain = ref('--:--');
+const timeSec = ref('');
 const dateText = ref('');
 const query = ref('');
 const history = ref<string[]>([]);
@@ -24,7 +25,8 @@ function tick(): void {
   const d = now.value;
   dateText.value =
     d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 星期' + WEEK[d.getDay()];
-  timeText.value = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  timeMain.value = pad(d.getHours()) + ':' + pad(d.getMinutes());
+  timeSec.value = ':' + pad(d.getSeconds());
 }
 
 function load(): string[] {
@@ -108,8 +110,15 @@ onUnmounted(() => {
 <template>
   <section class="block b-search">
     <div class="search-clock" role="timer">
-      <div class="search-time" id="searchTime">{{ timeText }}</div>
+      <div class="search-time" id="searchTime">
+        <span class="search-time-main">{{ timeMain }}</span><span class="search-time-sec">{{ timeSec }}</span>
+      </div>
       <div class="search-date" id="searchDate">{{ dateText }}</div>
+    </div>
+    <div class="search-greeting" aria-hidden="true">
+      <span class="search-greeting-line"></span>
+      <span class="search-greeting-text">Search the web</span>
+      <span class="search-greeting-line"></span>
     </div>
     <form
       class="search-form"
@@ -120,6 +129,9 @@ onUnmounted(() => {
       role="search"
       @submit="onSubmit"
     >
+      <span class="search-form-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </span>
       <input
         class="search-input"
         type="search"
