@@ -15,7 +15,7 @@ function swatchHtml(name: string, hex: string, varName?: string): string {
     hex +
     '"' +
     (varName ? ' data-var="' + varName + '"' : '') +
-    ' title="复制 ' +
+    ' title="Copy ' +
     hex +
     '">' +
     '<span class="swatch-chip" style="background:' +

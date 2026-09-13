@@ -7,18 +7,18 @@ import { FLAVORS } from '../data/palette';
 
 <Base
   title="FLT18355 - Palette"
-  description="Catppuccin 四种风味 × 26 色的完整色板,点击复制 CSS 变量。"
+  description="Catppuccin full palette: 4 flavors × 26 colors, click a swatch to copy the CSS variable."
   current="palette"
 >
   <section class="block b-palette">
     <div class="block-header">
       <h2>Catppuccin Palette</h2>
     </div>
-    <p class="about-lead">四种风味 × 26 色,<strong>点击色块</strong>复制 CSS 变量名。</p>
+    <p class="about-lead">4 flavors × 26 colors, <strong>click a swatch</strong> to copy the CSS variable name.</p>
 
     <div class="palette-preview">
       <h3 class="palette-preview-title">Live Preview</h3>
-      <p class="palette-preview-note">跟随当前站点主题(Mocha / Latte),切换右上角拨钮试试。</p>
+      <p class="palette-preview-note">Tracks the current site theme (Mocha / Latte). Try the toggle in the top-right corner.</p>
       <div class="preview-card">
         <div class="preview-top">
           <span class="preview-avatar" aria-hidden="true"></span>
@@ -28,13 +28,13 @@ import { FLAVORS } from '../data/palette';
           </div>
         </div>
         <p class="preview-text">
-          Catppuccin 主题下的卡片预览:按钮、输入框、标签都在用站点令牌渲染。
+          A card preview under the Catppuccin theme: buttons, inputs and tags all render with the site tokens.
         </p>
         <div class="preview-actions">
           <button type="button" class="preview-btn">Primary</button>
           <button type="button" class="preview-btn preview-btn--ghost">Ghost</button>
         </div>
-        <div class="preview-input" role="img" aria-label="输入框预览">Search...</div>
+        <div class="preview-input" role="img" aria-label="Input preview">Search...</div>
         <div class="preview-tags">
           <span class="preview-tag">Python</span>
           <span class="preview-tag preview-tag--mauve">Lua</span>
@@ -45,7 +45,7 @@ import { FLAVORS } from '../data/palette';
 
     <div class="palette-compare">
       <h3 class="palette-compare-title">Flavor Compare</h3>
-      <p class="palette-compare-note">同一组色的四种风味并列,一眼看清明暗差异。</p>
+      <p class="palette-compare-note">The same colors across the 4 flavors side by side, so the lightness differences are obvious at a glance.</p>
       <div class="compare-rows">
         {['Red', 'Green', 'Blue', 'Mauve', 'Base', 'Surface 1'].map((c) => (
           <div class="compare-row">

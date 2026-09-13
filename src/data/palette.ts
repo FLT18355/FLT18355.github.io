@@ -19,7 +19,7 @@ export interface Flavor {
 export const FLAVORS: Flavor[] = [
   {
     name: 'Latte',
-    note: '唯一的浅色风味',
+    note: 'The only light flavor',
     hex: {
       Rosewater: '#dc8a78', Flamingo: '#dd7878', Pink: '#ea76cb', Mauve: '#8839ef',
       Red: '#d20f39', Maroon: '#e64553', Peach: '#fe640b', Yellow: '#df8e1d',
@@ -33,7 +33,7 @@ export const FLAVORS: Flavor[] = [
   },
   {
     name: 'Frappé',
-    note: '柔和低对比',
+    note: 'Soft, low contrast',
     hex: {
       Rosewater: '#f2d5cf', Flamingo: '#eebebe', Pink: '#f4b8e4', Mauve: '#ca9ee6',
       Red: '#e78284', Maroon: '#ea999c', Peach: '#ef9f76', Yellow: '#e5c890',
@@ -47,7 +47,7 @@ export const FLAVORS: Flavor[] = [
   },
   {
     name: 'Macchiato',
-    note: '中等对比',
+    note: 'Medium contrast',
     hex: {
       Rosewater: '#f4dbd6', Flamingo: '#f0c6c6', Pink: '#f5bde6', Mauve: '#c6a0f6',
       Red: '#ed8796', Maroon: '#ee99a0', Peach: '#f5a97f', Yellow: '#eed49f',
@@ -61,7 +61,7 @@ export const FLAVORS: Flavor[] = [
   },
   {
     name: 'Mocha',
-    note: '原版,最深',
+    note: 'Original, darkest',
     hex: {
       Rosewater: '#f5e0dc', Flamingo: '#f2cdcd', Pink: '#f5c2e7', Mauve: '#cba6f7',
       Red: '#f38ba8', Maroon: '#eba0ac', Peach: '#fab387', Yellow: '#f9e2af',
