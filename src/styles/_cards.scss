@@ -656,3 +656,119 @@ html.motion-js .project-card.f-catppuccin {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ---------- AI Coding Leaderboard (following 页底部) ---------- */
+.leaderboard-note {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 4px 0 12px;
+}
+.leaderboard-state {
+  padding: 18px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-family: var(--mono);
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+.leaderboard-list {
+  max-height: calc(3 * 52px + 2 * 8px); /* 3 行 + 2 间距,超出滚动 */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 4px;
+}
+.leaderboard-list::-webkit-scrollbar {
+  width: 6px;
+}
+.leaderboard-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--glass-item);
+  border: 1px solid var(--glass-border);
+  min-height: 52px;
+  transition: border-color 0.15s, transform 0.15s var(--ease-out);
+}
+.leaderboard-row:hover {
+  border-color: var(--primary);
+  transform: translateX(2px);
+}
+.leaderboard-rank {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--surface-strong);
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.leaderboard-rank:nth-child(1),
+.leaderboard-row:nth-child(1) .leaderboard-rank {
+  background: color-mix(in srgb, var(--peach) 22%, transparent);
+  color: var(--peach);
+}
+.leaderboard-row:nth-child(2) .leaderboard-rank {
+  background: color-mix(in srgb, var(--text) 18%, transparent);
+  color: var(--text);
+}
+.leaderboard-row:nth-child(3) .leaderboard-rank {
+  background: color-mix(in srgb, var(--peach) 14%, transparent);
+  color: var(--peach);
+}
+.leaderboard-name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.leaderboard-model {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.leaderboard-creator {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.leaderboard-score {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.leaderboard-score-num {
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+.leaderboard-score-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}

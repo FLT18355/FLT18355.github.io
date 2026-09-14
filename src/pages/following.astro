@@ -2,6 +2,7 @@
 // following.astro - 关注项目
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import Leaderboard from '../components/Leaderboard.vue';
 import { followingProjects } from '../data/projects';
 ---
 
@@ -18,4 +19,6 @@ import { followingProjects } from '../data/projects';
       {followingProjects.map((p) => <ProjectCard project={p} />)}
     </div>
   </section>
+
+  <Leaderboard client:load />
 </Base>
