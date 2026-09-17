@@ -24,6 +24,22 @@ function fmt(n: number | null | undefined): string {
   return n % 1 === 0 ? String(n) : n.toFixed(2);
 }
 
+/** 相对最高分的条形宽度(百分比),用于可视化分数对比 */
+function barWidth(m: Model): string {
+  const max = Math.max(
+    1,
+    ...rows.value.map((r) => (r.categoryScores && r.categoryScores.coding) || 0)
+  );
+  const score = (m.categoryScores && m.categoryScores.coding) || 0;
+  return Math.max(8, Math.round((score / max) * 100)) + '%';
+}
+
+const MEDALS = [
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8z"/></svg>',
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8z"/></svg>',
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8z"/></svg>',
+];
+
 onMounted(async () => {
   try {
     const res = await fetch(API_URL);
@@ -50,22 +66,34 @@ onMounted(async () => {
 
     <div v-if="failed" class="leaderboard-state" role="alert">Failed to load leaderboard.</div>
     <div v-else-if="!loaded" class="leaderboard-state">Loading...</div>
-    <div v-else class="leaderboard-list" role="list">
-      <div
-        v-for="m in visible"
-        :key="m.rank"
-        class="leaderboard-row"
-        role="listitem"
-      >
-        <span class="leaderboard-rank">{{ m.rank }}</span>
-        <span class="leaderboard-name">
-          <span class="leaderboard-model">{{ m.model }}</span>
-          <span class="leaderboard-creator">{{ m.creator }}</span>
-        </span>
-        <span class="leaderboard-score">
-          <span class="leaderboard-score-num">{{ fmt(m.categoryScores && m.categoryScores.coding) }}</span>
-          <span class="leaderboard-score-label">coding</span>
-        </span>
+    <div v-else>
+      <div class="leaderboard-head" aria-hidden="true">
+        <span class="leaderboard-head-rank">#</span>
+        <span class="leaderboard-head-model">Model</span>
+        <span class="leaderboard-head-score">Coding</span>
+      </div>
+      <div class="leaderboard-list" role="list">
+        <div
+          v-for="m in visible"
+          :key="m.rank"
+          class="leaderboard-row"
+          :class="'leaderboard-row--' + m.rank"
+          role="listitem"
+        >
+          <span class="leaderboard-rank">
+            <span v-if="m.rank <= 3" class="leaderboard-medal" v-html="MEDALS[m.rank - 1]"></span>
+            <span v-else>{{ m.rank }}</span>
+          </span>
+          <span class="leaderboard-name">
+            <span class="leaderboard-model">{{ m.model }}</span>
+            <span class="leaderboard-creator">{{ m.creator }}</span>
+          </span>
+          <span class="leaderboard-score">
+            <span class="leaderboard-score-bar" :style="{ width: barWidth(m) }"></span>
+            <span class="leaderboard-score-num">{{ fmt(m.categoryScores && m.categoryScores.coding) }}</span>
+            <span class="leaderboard-score-label">coding</span>
+          </span>
+        </div>
       </div>
     </div>
   </section>
