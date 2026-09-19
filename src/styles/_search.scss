@@ -8,9 +8,10 @@
   overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(46vw 46vw at 18% 22%, var(--primary-glow) 0%, transparent 70%),
-    radial-gradient(40vw 40vw at 84% 28%, var(--mauve-dim) 0%, transparent 72%),
-    radial-gradient(52vw 52vw at 66% 88%, var(--teal-dim) 0%, transparent 70%);
+    radial-gradient(46vw 46vw at 18% 22%, color-mix(in srgb, var(--primary) 19%, transparent) 0%, transparent 70%),
+    radial-gradient(40vw 40vw at 84% 28%, color-mix(in srgb, var(--mauve) 19%, transparent) 0%, transparent 72%),
+    radial-gradient(52vw 52vw at 66% 88%, color-mix(in srgb, var(--teal) 17%, transparent) 0%, transparent 70%),
+    radial-gradient(36vw 36vw at 26% 74%, color-mix(in srgb, var(--pink) 15%, transparent) 0%, transparent 72%);
 }
 .search-bg::before,
 .search-bg::after {
@@ -46,12 +47,18 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
-  color: var(--text);
+  /* 时钟用品牌渐变裁字:与 rail 标题同一套色 */
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 32px var(--primary-glow);
+  filter: drop-shadow(0 6px 26px color-mix(in srgb, var(--primary) 32%, transparent));
 }
 .search-time-sec {
-  color: var(--primary);
+  color: color-mix(in srgb, var(--pink), var(--text) var(--hue-fg-mix));
+  -webkit-text-fill-color: color-mix(in srgb, var(--pink), var(--text) var(--hue-fg-mix));
   font-size: 0.55em;
   vertical-align: 0.5em;
   margin-left: 2px;
@@ -211,7 +218,7 @@
   text-underline-offset: 3px;
   transition: color 0.15s;
 }
-.search-clear:hover { color: var(--primary); }
+.search-clear:hover { color: var(--mauve); }
 .search-clear:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
@@ -228,9 +235,9 @@
   max-width: 220px;
   padding: 6px 14px;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
-  background: var(--primary-dim);
-  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--mauve) 40%, transparent);
+  background: color-mix(in srgb, var(--mauve) 10%, var(--glass-item));
+  color: color-mix(in srgb, var(--mauve), var(--text) var(--hue-fg-mix));
   font-size: 0.82rem;
   text-decoration: none;
   white-space: nowrap;
@@ -239,8 +246,8 @@
   transition: border-color 0.15s, background-color 0.15s, color 0.15s;
 }
 .search-chip:hover {
-  border-color: var(--primary);
-  background: var(--primary);
+  border-color: var(--mauve);
+  background: var(--mauve);
   color: var(--bg);
 }
 .search-chip:focus-visible {
@@ -259,14 +266,14 @@
 .search-greeting-line {
   flex: 0 1 80px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--mauve) 55%, transparent), transparent);
 }
 .search-greeting-text {
   font-size: 0.72rem;
   font-family: var(--mono);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--mauve) 55%, var(--text-muted));
 }
 
 /* ---------- 搜索表单内图标 ---------- */

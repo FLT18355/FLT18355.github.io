@@ -66,7 +66,13 @@ npm run build          # 产出 dist/
 
 - 文案语言:页面 UI 以英文为主(About Me / Interests / Tech Stack / Featured Projects …),中文仅用于面向用户的提示(字体选择界面、联系方式里纯中文标签等)。新增文案按此惯例。
 - 不要用 em-dash `—`(刻意禁用,替换为逗号/句号/冒号)。
-- 渲染出的颜色强调统一用 `--primary`;多色只出现在有语义处(flavor 色板、tech 语言标签、联系方式品牌色)。新增区块不要各自换 accent 色。
+- 多色强调是**刻意设计**(「Catppuccin 光谱」),但要按既有位置落色,不要在页面里随手写死颜色:
+  - 色相令牌在 `src/styles/_tokens.scss`(`--mauve` / `--pink` / `--red` / `--maroon` / `--peach` / `--yellow` / `--green` / `--teal` / `--sky` / `--sapphire` / `--lavender` / `--rosewater` / `--flamingo`,各带 `-dim`);渐变令牌 `--grad-brand` / `--grad-spectrum` 也在该文件。
+  - 区块色相:每个 `.b-*` 类在自己的选择器上设 `--acc` / `--acc-dim`(`_layout.scss` 的 `$block-hues` 表),区块描边、标题菱形、指针光斑、入场强调线自动跟随。新增区块 → 在 `$block-hues` 补一行,不要另起一套。
+  - 导航色相:`_nav.scss` 的 `$nav-hues` 按 NAV 数组顺序给每条链接 `--nc`;`nav.ts` 把当前页色相写进指示条的 `--ni`。
+  - 卡片色相:数据驱动(`src/data/projects.ts` 的 `hue` 字段 → `.h-<hue>` 类,见 `_cards.scss`)。特殊卡 `.f-catppuccin` 固定 mauve。
+  - 动作类控件与键盘焦点环**固定用 `--primary`**(蓝):按钮、输入框聚焦、所有 `:focus-visible`。新增交互元素沿用 `--primary`,不要换成区块色相。
+  - 彩色文字一律用 `color-mix(in srgb, var(--hue) N%, var(--text))`,深浅主题各自动向背景方向收敛,避免浅色主题下黄/桃色对比度不足。
 - 项目/色板/导航等数据集中在 `src/data/*.ts`,不要散落在页面里。
 
 ## 5. 技术栈约束

@@ -34,7 +34,7 @@
   transition: color 0.2s var(--ease-out), opacity 0.2s var(--ease-out);
 }
 .nav-brand:hover {
-  color: var(--primary);
+  color: var(--mauve);
 }
 .nav-brand:focus-visible {
   outline: 2px solid var(--primary);
@@ -101,9 +101,28 @@
   white-space: nowrap;
   transition: color 0.2s var(--ease-out), background-color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
 }
+/* 每条导航有自己的色相(与对应页面的区块同色),悬停与当前页指示都用它。
+   索引顺序即 NAV 数组顺序:Home / Projects / Palette / Following / Search。 */
+.nav-item {
+  --nc: var(--primary);
+  --nc-dim: var(--primary-dim);
+}
+$nav-hues: (
+  1: 'primary',
+  2: 'green',
+  3: 'mauve',
+  4: 'pink',
+  5: 'teal',
+);
+@each $i, $tok in $nav-hues {
+  .nav-list .nav-item:nth-child(#{$i}) {
+    --nc: var(--#{$tok});
+    --nc-dim: var(--#{$tok}-dim);
+  }
+}
 .nav-item:hover {
-  color: var(--text);
-  background: var(--surface-strong);
+  color: color-mix(in srgb, var(--nc), var(--text) var(--hue-fg-mix));
+  background: color-mix(in srgb, var(--nc) 16%, transparent);
 }
 .nav-item:active {
   transform: scale(0.96);
@@ -113,8 +132,8 @@
   outline-offset: -4px;
 }
 .nav-item[aria-current="page"] {
-  color: var(--primary);
-  background: var(--primary-dim);
+  color: color-mix(in srgb, var(--nc), var(--text) var(--hue-fg-mix));
+  background: var(--nc-dim);
 }
 
 .nav-indicator {
@@ -125,7 +144,8 @@
   width: var(--w, 0);
   transform: translateX(var(--x, 0));
   border-radius: 2px;
-  background: linear-gradient(90deg, var(--primary-hover), var(--primary));
+  /* --ni 由 nav.ts 按当前页色相写入;未写入时回退到渐变 */
+  background: var(--ni, var(--grad-spectrum));
   opacity: 0;
   pointer-events: none;
 }

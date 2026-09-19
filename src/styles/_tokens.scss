@@ -19,16 +19,33 @@ $anim-tokens: (
   'bg-card': #313244,
   'bg-input': #45475a,
   'border': #45475a,
-  'mauve': #cba6f7,
+  /* Catppuccin 全色相:多色强调由这些令牌驱动,区块/导航/卡片各取一色 */
+  'rosewater': #f5e0dc,
+  'flamingo': #f2cdcd,
   'pink': #f5c2e7,
-  'green': #a6e3a1,
+  'mauve': #cba6f7,
+  'red': #f38ba8,
+  'maroon': #eba0ac,
   'peach': #fab387,
+  'yellow': #f9e2af,
+  'green': #a6e3a1,
   'teal': #94e2d5,
-  'mauve-dim': rgba(203, 166, 247, 0.15),
+  'sky': #89dceb,
+  'sapphire': #74c7ec,
+  'lavender': #b4befe,
+  'rosewater-dim': rgba(245, 224, 220, 0.15),
+  'flamingo-dim': rgba(242, 205, 205, 0.15),
   'pink-dim': rgba(245, 194, 231, 0.15),
-  'green-dim': rgba(166, 227, 161, 0.15),
+  'mauve-dim': rgba(203, 166, 247, 0.15),
+  'red-dim': rgba(243, 139, 168, 0.15),
+  'maroon-dim': rgba(235, 160, 172, 0.15),
   'peach-dim': rgba(250, 179, 135, 0.15),
+  'yellow-dim': rgba(249, 226, 175, 0.15),
+  'green-dim': rgba(166, 227, 161, 0.15),
   'teal-dim': rgba(148, 226, 213, 0.15),
+  'sky-dim': rgba(137, 220, 235, 0.15),
+  'sapphire-dim': rgba(116, 199, 236, 0.15),
+  'lavender-dim': rgba(180, 190, 254, 0.15),
 );
 
 $glass-tokens: (
@@ -53,16 +70,32 @@ $latte-tokens: (
   'glass': rgba(255, 255, 255, 0.58),
   'glass-item': rgba(255, 255, 255, 0.72),
   'glass-border': rgba(76, 79, 105, 0.16),
-  'mauve': #8839ef,
+  'rosewater': #dc8a78,
+  'flamingo': #dd7878,
   'pink': #ea76cb,
-  'green': #40a02b,
+  'mauve': #8839ef,
+  'red': #d20f39,
+  'maroon': #e64553,
   'peach': #fe640b,
+  'yellow': #df8e1d,
+  'green': #40a02b,
   'teal': #179299,
-  'mauve-dim': rgba(136, 57, 239, 0.12),
+  'sky': #04a5e5,
+  'sapphire': #209fb5,
+  'lavender': #7287fd,
+  'rosewater-dim': rgba(220, 138, 120, 0.14),
+  'flamingo-dim': rgba(221, 120, 120, 0.14),
   'pink-dim': rgba(234, 118, 203, 0.14),
-  'green-dim': rgba(64, 160, 43, 0.14),
+  'mauve-dim': rgba(136, 57, 239, 0.12),
+  'red-dim': rgba(210, 15, 57, 0.12),
+  'maroon-dim': rgba(230, 69, 83, 0.13),
   'peach-dim': rgba(254, 100, 11, 0.14),
+  'yellow-dim': rgba(223, 142, 29, 0.14),
+  'green-dim': rgba(64, 160, 43, 0.14),
   'teal-dim': rgba(23, 146, 153, 0.14),
+  'sky-dim': rgba(4, 165, 229, 0.13),
+  'sapphire-dim': rgba(32, 159, 181, 0.14),
+  'lavender-dim': rgba(114, 135, 253, 0.13),
 );
 
 /* ---------- 字体 ---------- */
@@ -88,7 +121,7 @@ $latte-tokens: (
   }
 }
 
-/* ---------- 主题切换 transition 列表(24 项,含未注册的 glass 三项) ---------- */
+/* ---------- 主题切换 transition 列表(全部颜色令牌 + 未注册的 glass 三项) ---------- */
 $transition-keys: map.keys($anim-tokens) + map.keys($glass-tokens);
 $transitions: ();
 @each $k in $transition-keys {
@@ -105,6 +138,12 @@ $transitions: ();
     --#{$name}: #{$val};
   }
   --radius: 14px;
+  /* 渐变令牌(渐变无法用 @property 插值,不入 transition 列表;由色相令牌组成,双主题自动跟随) */
+  --grad-brand: linear-gradient(100deg, var(--primary), var(--lavender) 28%, var(--mauve) 55%, var(--pink) 78%, var(--peach));
+  --grad-spectrum: linear-gradient(90deg, var(--primary), var(--mauve), var(--pink), var(--peach));
+  /* 色相文字的掺色比例:深色主题纯色相(浅色字在深底上对比足够),
+     浅色主题掺入 --text 压深(latte 覆盖为 55%),否则黄/桃/粉在浅底上对比度不达标 */
+  --hue-fg-mix: 0%;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.18);
   --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.22);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -117,6 +156,8 @@ $transitions: ();
 /* ---------- 浅色主题 latte ---------- */
 :root[data-theme="latte"] {
   color-scheme: light;
+  /* 浅底上色相文字必须压深:掺 55% --text,黄/桃/粉也能过 4.5:1 */
+  --hue-fg-mix: 72%;
   @each $name, $val in $latte-tokens {
     --#{$name}: #{$val};
   }

@@ -68,11 +68,18 @@ python3 subset-font.py   # 字体子集化(独立步骤,见 3.2)
 - `nav.ts` 的 `bringIntoView()`:当前页落在视口外时(如手机上 Search 在最右)把它滚到中间,避免用户进页面看不到自己在哪。
 
 ### 3.5 数据驱动
-- `src/data/site.ts`:导航五条与页面元信息;`projects.ts`:项目卡数据(projects 页 3 卡 + following 页 4 卡共用);`palette.ts`:色板数据(4 风味 × 26 色)。
+- `src/data/site.ts`:导航五条与页面元信息;`projects.ts`:项目卡数据(projects 页 4 卡 + following 页 4 卡共用,`hue` 字段决定卡片色相);`palette.ts`:色板数据(4 风味 × 26 色)。
 - 项目卡组件 `ProjectCard.astro` 只消费数据;加项目 = 改 `projects.ts`,不动模板。
 - 色板页 `PaletteGrid.vue` SSR 直出全部色块 + 水合后绑定点击复制 Hex;数据在 `palette.ts` 维护。
 
-### 3.6 无障碍
+### 3.6 多色强调(色相系统)
+- 站点刻意用满 Catppuccin 的色相环,不是一个蓝色打天下;所有色相都来自 `_tokens.scss` 的令牌(双主题各一套值),不写死色值。
+- 三层落色:**区块**(`.b-*` 上的 `--acc` / `--acc-dim`,表在 `_layout.scss` 的 `$block-hues`)、**导航**(`_nav.scss` 的 `$nav-hues` 按索引给 `--nc`,指示条由 `nav.ts` 写 `--ni`)、**卡片/筹码/数字**(数据或索引驱动的 `.h-<hue>` / `--hc` / `--sc`)。页面背景的多色氛围层与两枚 `.glow` 光斑同样由色相令牌合成(`_reset.scss` / `_layout.scss`)。
+- 角色分工:色相负责区块身份与装饰;**动作与可达性**永远用 `--primary`(按钮、输入框聚焦、`:focus-visible` 焦点环)。
+- 色相文字统一走 `color-mix(in srgb, var(--hue), var(--text) var(--hue-fg-mix))`:Mocha 下 `--hue-fg-mix: 0%`(纯色相,深底上 4.5:1 起步),Latte 下 `72%`(色相作为文字色的着色调)。浅色主题的纯 pastel 文字对比度只有 2-3:1,所以浅色主题的彩色靠淡色底 + 彩边 + 彩色图标承担,文字只带色调。
+- 渐变令牌 `--grad-brand`(rail 标题 / search 时钟 / 404 标题的裁字渐变)与 `--grad-spectrum`(阅读进度线、指示条回退)定义在 `_tokens.scss`,由色相令牌拼成,双主题自动跟随。
+
+### 3.7 无障碍
 - 语义化 landmark、`aria-current`、可见焦点环、按钮可键盘操作。
 - 字体选择界面:role=dialog / aria-modal / aria-labelledby。
 

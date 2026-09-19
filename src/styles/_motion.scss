@@ -127,7 +127,7 @@ html.motion-js .project-card:active {
   height: 2px;
   z-index: 60;
   pointer-events: none;
-  background: var(--primary);
+  background: var(--grad-spectrum);
   transform: scaleX(var(--p, 0));
   transform-origin: left center;
   opacity: 0.85;

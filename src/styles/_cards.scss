@@ -44,19 +44,35 @@
   gap: 8px;
 }
 .interest {
+  --hc: var(--primary);
   display: inline-flex;
   align-items: center;
   padding: 7px 13px;
   border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
+  background: color-mix(in srgb, var(--hc) 7%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--hc) 30%, var(--border));
+  color: color-mix(in srgb, var(--hc), var(--text) var(--hue-fg-mix));
   font-size: 0.82rem;
-  transition: border-color 0.15s, color 0.15s, transform 0.15s var(--ease-out);
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
+}
+/* 兴趣筹码依次轮转色相,五个一组 */
+$interest-hues: (
+  1: 'primary',
+  2: 'mauve',
+  3: 'pink',
+  4: 'peach',
+  5: 'teal',
+);
+@each $i, $tok in $interest-hues {
+  .interest:nth-child(#{$i}) {
+    --hc: var(--#{$tok});
+  }
 }
 .interest:hover {
-  border-color: var(--primary);
-  color: var(--text);
+  border-color: var(--hc);
+  background: color-mix(in srgb, var(--hc) 12%, var(--surface));
+  /* 与 --text 混合:深色主题提亮、浅色主题压深,保证双主题对比度 */
+  color: color-mix(in srgb, var(--hc), var(--text) var(--hue-fg-mix));
   transform: translateY(-2px);
 }
 
@@ -102,17 +118,19 @@
 :root[data-theme="latte"] .tech-ico .tech-ico-mocha { display: none; }
 :root[data-theme="latte"] .tech-ico .tech-ico-latte { display: block; }
 $tech-colors: (
-  'blue': primary,
-  'green': green,
-  'teal': teal,
-  'pink': pink,
-  'peach': peach,
-  'mauve': mauve,
+  'blue': 'primary',
+  'green': 'green',
+  'teal': 'teal',
+  'pink': 'pink',
+  'peach': 'peach',
+  'mauve': 'mauve',
+  'lavender': 'lavender',
+  'sky': 'sky',
 );
 @each $cls, $tok in $tech-colors {
   .tech-tag.t-#{$cls} {
-    background: var(--#{$tok}-dim);
-    color: var(--#{$tok});
+    background: color-mix(in srgb, var(--#{$tok}) 8%, var(--surface));
+    color: color-mix(in srgb, var(--#{$tok}), var(--text) var(--hue-fg-mix));
     border-color: transparent;
   }
 }
@@ -161,7 +179,7 @@ $tech-colors: (
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: var(--primary);
+  background: var(--grad-brand);
   flex-shrink: 0;
 }
 .preview-name {
@@ -412,8 +430,19 @@ $tech-colors: (
   transition: transform 0.7s var(--ease-out);
   pointer-events: none;
 }
-/* catppuccin 卡:单一紫强调(主题令牌驱动,双主题自动),区别于其他卡的统一蓝 */
+/* 卡片色相:由数据(hue 字段)给出的类名驱动,同页卡片各占一色;
+   .f-catppuccin 是高优先级的特殊卡,色相固定为 mauve,不出现在 hue 数据里 */
+$card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauve', 'sapphire', 'maroon', 'flamingo', 'red';
+@each $tok in $card-hues {
+  .project-card.h-#{$tok} {
+    --acc: var(--#{$tok});
+    --acc-dim: var(--#{$tok}-dim);
+  }
+}
+/* catppuccin 卡:单一紫强调(主题令牌驱动,双主题自动),区别于其他卡 */
 .project-card.f-catppuccin {
+  --acc: var(--mauve);
+  --acc-dim: var(--mauve-dim);
   border-color: color-mix(in srgb, var(--mauve) 38%, transparent);
 }
 .project-card.f-catppuccin:hover {
@@ -431,14 +460,10 @@ $tech-colors: (
   color: var(--mauve);
   border-color: transparent;
 }
-html.motion-js .project-card.f-catppuccin {
-  --acc: var(--mauve);
-  --acc-dim: var(--mauve-dim);
-}
 .project-card:hover {
-  border-color: var(--primary);
+  border-color: var(--acc);
   transform: translateY(-3px);
-  box-shadow: var(--shadow-lift);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 14px 34px color-mix(in srgb, var(--acc) 26%, transparent);
 }
 .project-card:hover::after { transform: translateX(110%); }
 .project-card:active { transform: translateY(0) scale(0.985); }
@@ -504,9 +529,13 @@ html.motion-js .project-card.f-catppuccin {
   border-radius: 999px;
   font-size: 0.7rem;
   font-family: var(--mono);
-  background: var(--surface-strong);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
+  background: color-mix(in srgb, var(--acc) 8%, var(--surface-strong));
+  border: 1px solid transparent;
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+  transition: border-color 0.15s;
+}
+.project-card:hover .project-meta span {
+  border-color: color-mix(in srgb, var(--acc) 45%, transparent);
 }
 .project-go {
   position: absolute;
@@ -525,8 +554,8 @@ html.motion-js .project-card.f-catppuccin {
 
 /* ---------- Download section (projects 页) ---------- */
 .download-card {
-  --acc: var(--primary);
-  --acc-dim: var(--primary-dim);
+  --acc: var(--sky);
+  --acc-dim: var(--sky-dim);
   display: flex;
   align-items: center;
   gap: 14px;
@@ -638,29 +667,43 @@ html.motion-js .project-card.f-catppuccin {
   gap: 12px;
 }
 .stat-card {
+  --sc: var(--primary);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   padding: 18px 10px;
   border-radius: 14px;
-  background: var(--glass-item);
-  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--sc) 8%, var(--glass-item));
+  border: 1px solid color-mix(in srgb, var(--sc) 22%, var(--glass-border));
   -webkit-backdrop-filter: blur(10px) saturate(1.25);
   backdrop-filter: blur(10px) saturate(1.25);
   text-align: center;
-  transition: border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
+  transition: border-color 0.15s, background-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
+}
+/* 四个数字各占一色 */
+$stat-hues: (
+  1: 'primary',
+  2: 'mauve',
+  3: 'pink',
+  4: 'teal',
+);
+@each $i, $tok in $stat-hues {
+  .stat-card:nth-child(#{$i}) {
+    --sc: var(--#{$tok});
+  }
 }
 .stat-card:hover {
-  border-color: var(--primary);
+  border-color: var(--sc);
+  background: color-mix(in srgb, var(--sc) 14%, var(--glass-item));
   transform: translateY(-3px);
-  box-shadow: var(--shadow-lift);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--sc) 26%, transparent);
 }
 .stat-value {
   font-family: var(--mono);
   font-size: 1.7rem;
   font-weight: 700;
-  color: var(--primary);
+  color: color-mix(in srgb, var(--sc), var(--text) var(--hue-fg-mix));
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
@@ -742,11 +785,24 @@ html.motion-js .project-card.f-catppuccin {
   background: var(--glass-item);
   border: 1px solid var(--glass-border);
   min-height: 52px;
-  transition: border-color 0.15s, transform 0.15s var(--ease-out);
+  transition: border-color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
 }
 .leaderboard-row:hover {
-  border-color: var(--primary);
+  border-color: var(--acc);
   transform: translateX(2px);
+}
+/* 前三名整行上色:金 / 银 / 铜,颜色之外还有奖牌图标与名次数字,不靠颜色单独表意 */
+.leaderboard-row--1 {
+  background: color-mix(in srgb, var(--yellow) 13%, var(--glass-item));
+  border-color: color-mix(in srgb, var(--yellow) 36%, var(--glass-border));
+}
+.leaderboard-row--2 {
+  background: color-mix(in srgb, var(--text) 10%, var(--glass-item));
+  border-color: color-mix(in srgb, var(--text) 24%, var(--glass-border));
+}
+.leaderboard-row--3 {
+  background: color-mix(in srgb, var(--peach) 12%, var(--glass-item));
+  border-color: color-mix(in srgb, var(--peach) 34%, var(--glass-border));
 }
 .leaderboard-rank {
   flex: none;
@@ -822,18 +878,18 @@ html.motion-js .project-card.f-catppuccin {
   right: 0;
   height: 100%;
   border-radius: 6px;
-  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  background: color-mix(in srgb, var(--acc) 12%, transparent);
   transition: background-color 0.15s;
 }
 .leaderboard-row:hover .leaderboard-score-bar {
-  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  background: color-mix(in srgb, var(--acc) 18%, transparent);
 }
 .leaderboard-score-num {
   position: relative;
   font-family: var(--mono);
   font-size: 0.92rem;
   font-weight: 700;
-  color: var(--primary);
+  color: color-mix(in srgb, var(--acc) 78%, var(--text));
   font-variant-numeric: tabular-nums;
   flex: none;
 }

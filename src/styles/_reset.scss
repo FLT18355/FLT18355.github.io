@@ -14,6 +14,21 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* 全页多色氛围层:固定的 Catppuccin 光谱网格,给整站提供彩色底色。
+   固定定位 + z-index:0,内容(.shell z-index:1)与导航(z-index:40)始终在其上。 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(58vw 42vw at 10% -6%, color-mix(in srgb, var(--primary) 20%, transparent), transparent 64%),
+    radial-gradient(52vw 40vw at 97% 4%, color-mix(in srgb, var(--mauve) 19%, transparent), transparent 66%),
+    radial-gradient(56vw 44vw at 84% 98%, color-mix(in srgb, var(--pink) 15%, transparent), transparent 68%),
+    radial-gradient(50vw 40vw at 12% 94%, color-mix(in srgb, var(--teal) 15%, transparent), transparent 68%);
+}
+
 /* 启用 Maple Mono 后才引用 woff2;默认不触发字体下载,页面秒开 */
 html[data-font="maple"] body {
   font-family: "Maple Mono NF CN", -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
@@ -22,5 +37,5 @@ html[data-font="maple"] {
   --mono: "Maple Mono NF CN", ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
 }
 
-::selection { background: color-mix(in srgb, var(--primary) 28%, transparent); }
-html { scrollbar-color: var(--bg-input) var(--bg); }
+::selection { background: color-mix(in srgb, var(--mauve) 34%, transparent); }
+html { scrollbar-color: color-mix(in srgb, var(--mauve) 55%, var(--bg-input)) var(--bg); }

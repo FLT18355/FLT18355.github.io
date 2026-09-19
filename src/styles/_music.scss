@@ -20,8 +20,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-strong);
-  color: var(--text-muted);
+  background: linear-gradient(135deg, var(--pink-dim), var(--mauve-dim));
+  color: var(--pink);
 }
 .music-cover--placeholder svg {
   width: 40px;
@@ -101,9 +101,9 @@
   width: 44px;
   height: 44px;
   border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--surface-strong);
-  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--acc) 35%, transparent);
+  background: var(--acc-dim);
+  color: color-mix(in srgb, var(--acc) 80%, var(--text));
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -112,6 +112,8 @@
 }
 .music-toggle:hover {
   border-color: var(--acc);
+  background: color-mix(in srgb, var(--acc) 26%, transparent);
+  color: var(--acc);
   transform: translateY(-2px);
 }
 .music-toggle:focus-visible {

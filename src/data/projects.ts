@@ -1,5 +1,21 @@
 // projects.ts - 重点项目(projects 页)与关注项目(following 页)卡片数据
 
+/** 卡片强调色:对应 _cards.scss 的 .h-<hue> 类(Catppuccin 色相名) */
+export type Hue =
+  | 'rosewater'
+  | 'flamingo'
+  | 'pink'
+  | 'mauve'
+  | 'red'
+  | 'maroon'
+  | 'peach'
+  | 'yellow'
+  | 'green'
+  | 'teal'
+  | 'sky'
+  | 'sapphire'
+  | 'lavender';
+
 export interface Project {
   href: string;
   /** 图标:文本字母(如 "M")或行内 SVG HTML(f-catppuccin 的猫脸) */
@@ -10,6 +26,8 @@ export interface Project {
   sub: string;
   desc: string;
   tags: string[];
+  /** 卡片强调色;省略时用默认蓝(或 cls 指定的特殊卡色相) */
+  hue?: Hue;
   /** 附加卡片类:f-catppuccin 触发紫色强调 */
   cls?: string;
 }
@@ -22,6 +40,7 @@ export const featuredProjects: Project[] = [
     sub: 'FLT18355/terminal',
     desc: 'Terminal & desktop configs, v2.0: alacritty, fish, fastfetch and more, all themed Catppuccin.',
     tags: ['alacritty', 'fish', 'catppuccin'],
+    hue: 'teal',
   },
   {
     href: 'https://github.com/FLT18355/lxm',
@@ -30,6 +49,7 @@ export const featuredProjects: Project[] = [
     sub: 'FLT18355/lxm',
     desc: 'Local terminal music player driven by mpv, with a Bilibili video/audio downloader. Built on OpenTUI.',
     tags: ['mpv', 'bilibili', 'openTUI'],
+    hue: 'peach',
   },
   {
     href: 'https://github.com/FLT18355/dotfiles',
@@ -38,6 +58,7 @@ export const featuredProjects: Project[] = [
     sub: 'FLT18355/dotfiles',
     desc: 'Configured dev environment with Catppuccin theming, deployed with GNU Stow.',
     tags: ['shell', 'stow', 'catppuccin'],
+    hue: 'lavender',
   },
   {
     href: 'https://github.com/FLT18355/dsh-pet-inAndroid',
@@ -46,6 +67,7 @@ export const featuredProjects: Project[] = [
     sub: 'FLT18355/dsh-pet-inAndroid',
     desc: 'dsh-pet desktop pet, native Android port. Kotlin + Compose MD3 with Catppuccin Mocha theming.',
     tags: ['android', 'kotlin', 'catppuccin'],
+    hue: 'sky',
   },
 ];
 
@@ -57,6 +79,7 @@ export const followingProjects: Project[] = [
     sub: 'herdrdev/herdr',
     desc: 'The runtime your coding agents live on. A Rust terminal multiplexer and workspace manager for AI coding agents.',
     tags: ['rust', 'tui', 'agents'],
+    hue: 'green',
   },
   {
     href: 'https://github.com/can1357/oh-my-pi',
@@ -65,6 +88,7 @@ export const followingProjects: Project[] = [
     sub: 'can1357/oh-my-pi',
     desc: 'A coding agent with the IDE wired in. Multi-provider terminal assistant built on Bun and TypeScript.',
     tags: ['typescript', 'tui', 'coding-agent'],
+    hue: 'pink',
   },
   {
     href: 'https://github.com/catppuccin/catppuccin',
@@ -83,5 +107,6 @@ export const followingProjects: Project[] = [
     sub: 'neovim/neovim',
     desc: 'Vim-fork focused on extensibility and usability.',
     tags: ['editor', 'vim', 'lua'],
+    hue: 'yellow',
   },
 ];

@@ -13,7 +13,9 @@
   left: -15%;
   width: 70vw;
   height: 70vw;
-  background: radial-gradient(circle, var(--primary-glow) 0%, transparent 68%);
+  background:
+    radial-gradient(circle at 36% 38%, color-mix(in srgb, var(--primary) 22%, transparent) 0%, transparent 60%),
+    radial-gradient(circle at 66% 62%, color-mix(in srgb, var(--lavender) 18%, transparent) 0%, transparent 58%);
   transform: translate3d(calc(var(--mx, 0) * -22px), calc(var(--my, 0) * -16px), 0);
   transition: transform 1.2s var(--ease-out);
 }
@@ -22,8 +24,10 @@
   right: -15%;
   width: 65vw;
   height: 65vw;
-  background: radial-gradient(circle, var(--primary-dim) 0%, transparent 70%);
-  opacity: 0.5;
+  background:
+    radial-gradient(circle at 44% 46%, color-mix(in srgb, var(--mauve) 20%, transparent) 0%, transparent 60%),
+    radial-gradient(circle at 72% 66%, color-mix(in srgb, var(--teal) 16%, transparent) 0%, transparent 56%);
+  opacity: 0.65;
   transform: translate3d(calc(var(--mx, 0) * 18px), calc(var(--my, 0) * 14px), 0);
   transition: transform 1.4s var(--ease-out);
 }
@@ -76,39 +80,73 @@
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 64px;
-  background: linear-gradient(180deg, var(--primary-glow), transparent);
+  height: 72px;
+  background: linear-gradient(
+    115deg,
+    color-mix(in srgb, var(--primary) 26%, transparent),
+    color-mix(in srgb, var(--mauve) 22%, transparent) 42%,
+    color-mix(in srgb, var(--pink) 20%, transparent) 68%,
+    transparent
+  );
   pointer-events: none;
 }
 
-.avatar-logo {
-  width: 88px;
-  height: 88px;
-  object-fit: contain;
+/* 头像外的环形色轮:让身份卡顶部的焦点自带整套 Catppuccin 色相 */
+.avatar-ring {
   display: block;
+  width: 98px;
+  height: 98px;
+  padding: 4px;
   margin: 8px auto 14px;
   border-radius: 50%;
+  /* 裁成圆形:色环只绕圆一周,不会从 logo 方形画布的透明角里透出方块色块 */
+  overflow: hidden;
+  background: conic-gradient(
+    from 210deg,
+    var(--primary),
+    var(--mauve),
+    var(--pink),
+    var(--peach),
+    var(--yellow),
+    var(--green),
+    var(--teal),
+    var(--sky),
+    var(--lavender),
+    var(--primary)
+  );
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
   position: relative;
   animation: logoIn 0.6s cubic-bezier(0.34, 1.3, 0.64, 1) both;
   transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
 }
-.profile:hover .avatar-logo {
+.avatar-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 50%;
+}
+.profile:hover .avatar-ring {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 8px 24px var(--primary-dim);
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--mauve) 45%, transparent);
 }
 
 .rail h1 {
   font-size: 1.7rem;
   font-weight: 800;
-  color: var(--text);
   letter-spacing: -0.02em;
   margin-bottom: 2px;
+  /* 彩色渐变标题:背景裁进文字,双主题各自取本主题的色相值 */
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 .rail .handle {
   font-family: var(--mono);
   font-size: 0.78rem;
-  color: var(--primary);
+  color: color-mix(in srgb, var(--lavender), var(--text) var(--hue-fg-mix));
   letter-spacing: 0.02em;
 }
 
@@ -125,7 +163,7 @@
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--teal), var(--text) var(--hue-fg-mix));
   margin-bottom: 8px;
   display: flex;
   align-items: center;
@@ -135,7 +173,7 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: var(--border);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--teal) 55%, transparent), transparent);
 }
 
 /* ---------- 联系方式 ---------- */
@@ -151,18 +189,20 @@
   gap: 12px;
   padding: 10px 12px;
   border-radius: var(--radius);
-  background: var(--glass);
+  /* 每条联系入口带自己的品牌色:淡色底 + 同色描边,一眼可辨 */
+  background: color-mix(in srgb, var(--ci) 8%, var(--glass));
   -webkit-backdrop-filter: blur(12px) saturate(1.3);
   backdrop-filter: blur(12px) saturate(1.3);
-  border: 1px solid var(--glass-border);
+  border: 1px solid color-mix(in srgb, var(--ci) 22%, var(--glass-border));
   text-decoration: none;
   color: var(--text-secondary);
   transition: border-color 0.15s, background-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
 }
 .contact-item:hover {
   border-color: var(--ci);
+  background: color-mix(in srgb, var(--ci) 15%, var(--glass));
   transform: translateX(3px);
-  box-shadow: var(--shadow);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--ci) 22%, transparent);
 }
 .contact-item:active {
   transform: translateX(0) scale(0.98);
@@ -200,7 +240,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--ci), var(--text) var(--hue-fg-mix));
   line-height: 1.3;
 }
 .contact-link {
@@ -262,9 +302,30 @@ html.motion-js .block.in {
     --d: #{0.06s + ($i - 1) * 0.08s};
   }
 }
+/* 区块色相:每个区块一种 Catppuccin 色,区块描边、标题方块、指针光斑、
+   入场强调线统一取 --acc;动作控件(按钮/焦点环)仍固定用 --primary。 */
+$block-hues: (
+  'b-about': 'primary',
+  'b-interests': 'mauve',
+  'b-tech': 'teal',
+  'b-stats': 'peach',
+  'b-music': 'pink',
+  'b-projects': 'green',
+  'b-download': 'sky',
+  'b-following': 'lavender',
+  'b-leaderboard': 'sapphire',
+  'b-palette': 'mauve',
+  'b-search': 'sky',
+);
+@each $cls, $tok in $block-hues {
+  .#{$cls} {
+    --acc: var(--#{$tok});
+    --acc-dim: var(--#{$tok}-dim);
+  }
+}
 .block:hover {
-  border-color: var(--primary);
-  box-shadow: var(--shadow-lift);
+  border-color: var(--acc);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18), 0 14px 36px color-mix(in srgb, var(--acc) 20%, transparent);
 }
 
 .block-header {
@@ -273,13 +334,27 @@ html.motion-js .block.in {
   gap: 12px;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid color-mix(in srgb, var(--acc) 32%, var(--border));
 }
 .block-header h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-size: 1.15rem;
   color: var(--text);
   font-weight: 700;
   letter-spacing: -0.02em;
+}
+/* 标题前的菱形色块:标识区块色相(无 JS 时同样可见) */
+.block-header h2::before {
+  content: "";
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  background: var(--acc);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--acc) 65%, transparent);
+  transform: rotate(45deg);
 }
 
 p {
@@ -295,7 +370,7 @@ p {
   color: var(--text);
 }
 .about-lead strong {
-  color: var(--acc);
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
   font-weight: 700;
 }
 
@@ -305,7 +380,7 @@ p {
   padding: 28px 0 8px;
   color: var(--text-muted);
   font-size: 0.78rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid color-mix(in srgb, var(--mauve) 34%, var(--border));
   margin-top: 16px;
   display: flex;
   align-items: center;
@@ -320,8 +395,8 @@ p {
   transition: color 0.15s, border-color 0.15s;
 }
 .footline a:hover {
-  color: var(--primary);
-  border-color: var(--primary);
+  color: var(--lavender);
+  border-color: var(--lavender);
 }
 
 /* ---------- 关键帧 ---------- */

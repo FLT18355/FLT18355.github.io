@@ -8,6 +8,13 @@
   const current = list.querySelector<HTMLElement>('.nav-item[aria-current="page"]');
   if (!bar || !current) return;
 
+  /* 指示条取当前页色相(_nav.scss 按导航索引给每条 --nc):
+     写入 --ni 后由 CSS 在背景里解析,未写入时回退到光谱渐变 */
+  function tint(el: HTMLElement) {
+    const nc = getComputedStyle(el).getPropertyValue('--nc').trim();
+    if (nc) bar.style.setProperty('--ni', `linear-gradient(90deg, color-mix(in srgb, ${nc} 55%, transparent), ${nc})`);
+  }
+
   function place(animate: boolean) {
     if (!animate) bar.style.transition = 'none';
     /* 横向滚动容器里 rect 差值不含 scrollLeft,会随滑动错位;
@@ -15,6 +22,7 @@
        宽度用 offsetWidth:nav-item 有 flex-shrink:0,布局宽即视觉宽 */
     bar.style.setProperty('--x', current.offsetLeft.toFixed(1) + 'px');
     bar.style.setProperty('--w', current.offsetWidth.toFixed(1) + 'px');
+    tint(current);
     bar.classList.add('ready');
     if (!animate) {
       void bar.offsetWidth; // flush
@@ -45,6 +53,7 @@
     a.addEventListener('click', () => {
       bar.style.setProperty('--x', a.offsetLeft.toFixed(1) + 'px');
       bar.style.setProperty('--w', a.offsetWidth.toFixed(1) + 'px');
+      tint(a);
     });
   });
 })();

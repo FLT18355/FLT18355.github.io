@@ -6,7 +6,7 @@
   }
   .block,
   .rail,
-  .avatar-logo {
+  .avatar-ring {
     animation: none !important;
     opacity: 1;
     transform: none;
@@ -38,10 +38,10 @@
     text-align: left;
     padding: 20px;
   }
-  .avatar-logo {
+  .avatar-ring {
     margin: 0;
-    width: 66px;
-    height: 66px;
+    width: 72px;
+    height: 72px;
     grid-row: 1 / 4;
     align-self: start;
   }
@@ -61,10 +61,10 @@
     text-align: center;
     padding: 24px 16px 20px;
   }
-  .avatar-logo {
+  .avatar-ring {
     margin: 0 auto 12px;
-    width: 76px;
-    height: 76px;
+    width: 84px;
+    height: 84px;
   }
   .profile .tagline {
     justify-content: center;
