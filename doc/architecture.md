@@ -79,7 +79,13 @@ python3 subset-font.py   # 字体子集化(独立步骤,见 3.2)
 - 色相文字统一走 `color-mix(in srgb, var(--hue), var(--text) var(--hue-fg-mix))`:Mocha 下 `--hue-fg-mix: 0%`(纯色相,深底上 4.5:1 起步),Latte 下 `72%`(色相作为文字色的着色调)。浅色主题的纯 pastel 文字对比度只有 2-3:1,所以浅色主题的彩色靠淡色底 + 彩边 + 彩色图标承担,文字只带色调。
 - 渐变令牌 `--grad-brand`(rail 标题 / search 时钟 / 404 标题的裁字渐变)与 `--grad-spectrum`(阅读进度线、指示条回退)定义在 `_tokens.scss`,由色相令牌拼成,双主题自动跟随。
 
-### 3.7 无障碍
+### 3.7 低配设备与老浏览器适配
+- **判定在 head 内联脚本里同步执行**(`Base.astro` / `404.astro`,加 `html.lite`):省流量模式、`deviceMemory ≤ 4GB`、触屏且 `hardwareConcurrency ≤ 4` 之一成立即精简(必须早于首帧,否则玻璃模糊会先渲染一帧再关掉)。`?lite=1` / `?lite=0` 手动覆盖并写入 `localStorage('site-lite')`,同一台手机上可直接对比。
+- **精简内容**(`_lite.scss`):`backdrop-filter` 全部去掉并把 `--glass` 换成不透明玻璃(玻璃层逐帧重采样是弱 GPU 上最贵的一笔);主题切换 transition 关掉(几十个颜色令牌插值会让整页重绘);`body::before` 多色网格与两枚 `.glow` 视差层换成 body 上一张静态渐变;拨钮云朵、太阳脉冲、搜索页光斑停住(静态画面不变);跳过指针光斑与卡片 3D 倾斜(`motion.ts` 侧也跳过)。区块色相与滚动入场保留。
+- **老浏览器兜底**(`_compat.scss`):本站颜色大量依赖 `color-mix()`,不支持的浏览器(旧版 WebView / 老 Chrome)会把整条声明丢掉,底纹变透明。该文件整块包在 `@supports not (color: … color-mix …)` 内给出等价纯色。**兜底不能就地写两行声明**:CSS 压缩器会把「同属性、后一条不含渐变」的重复声明当必被覆盖而删掉(实测 `color` 会被删,`background` 渐变对会保留),所以统一写在 `_compat.scss`。
+- 头像用 `public/images/avatar.webp`(256×256 无损,32KB),源图 `public/logo.webp` 只作为资产保留,页面不引用(2757×2757 / 320KB 不该进首屏)。
+
+### 3.8 无障碍
 - 语义化 landmark、`aria-current`、可见焦点环、按钮可键盘操作。
 - 字体选择界面:role=dialog / aria-modal / aria-labelledby。
 

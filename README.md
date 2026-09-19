@@ -32,12 +32,15 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 ├── subset-font.py        字体子集化脚本
 ├── public/               静态资源(原样拷入 dist 根)
 │   ├── font.woff2        Maple Mono NF CN 子集(按源码文本裁剪,按需加载)
+│   ├── logo.webp        logo 原图(头像源文件,页面不直接引用)
 │   ├── font-full.woff2   Maple Mono 全量字体(7.1MB,子集化输入源)
-│   ├── logo.svg / images/ / bug/
+│   ├── logo.svg / images/ / bug/   (images/avatar.webp 为左栏头像)
 │   └── .nojekyll
 └── src/
     ├── styles/           SCSS 模块(global.scss 为汇总入口)
     │   ├── _tokens.scss  双主题令牌(map 驱动,含 @property 注册)
+    │   ├── _compat.scss  无 color-mix 浏览器的等价纯色兜底
+    │   ├── _lite.scss    低配精简层(html.lite 门控)
     │   ├── _layout.scss  两栏壳 / 左栏身份卡 / 联系方式 / 页脚
     │   ├── _cards.scss   标签筹码 / 色板 / 项目卡
     │   ├── _toggle.scss  主题拨钮(拖拽 / 键盘 / 圆形揭示)
@@ -65,7 +68,9 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 ## 设计机制
 
 - **主题**：Mocha(深)/ Latte(浅)双 Catppuccin 风味,`@property` 注册实现颜色平滑过渡;系统偏好自动适配,`localStorage` 持久化;切换用 View Transition 圆形揭示(ThemeToggle.vue)
-- **多色强调**：Catppuccin 全色相令牌(`_tokens.scss`),每个区块、每条导航、每张项目卡各占一色(区块 `--acc` / 导航 `--nc` / 卡片数据 `hue` → `.h-<hue>`);页面底色是四色氛围网格 + 双光斑,标题/时钟用品牌渐变裁字;动作控件与焦点环仍固定 `--primary`,保证注意力落点唯一
+- **多色强调**：Catppuccin 全色相令牌(`_tokens.scss`),每个区块、每条导航、每张项目卡各占一色(区块 `--acc` / 导航 `--nc` / 卡片数据 `hue` → `.h-<hue>`);页面底色是四色氛围网格 + 双光斑,身份卡顶边一条彩虹细线 + 顶部多色光晕,标题/时钟用品牌渐变裁字;动作控件与焦点环仍固定 `--primary`,保证注意力落点唯一
+- **低配适配**：head 内联脚本按省流量 / 内存 / 核心数判定 `html.lite`,精简层去掉玻璃模糊、固定渐变层与常驻动画(滚动与首屏优先);`?lite=1` / `?lite=0` 可手动对比
+- **老浏览器兜底**：颜色依赖的 `color-mix()` 缺失时由 `_compat.scss`(整块 `@supports not (...)`)给出等价纯色,颜色身份不丢、只是层次降一档
 - **Vue 岛**(client:load)：主题拨钮、首启字体选择、色板复制、搜索页(时钟/历史)、首页 Test 音乐播放器——SSR 直出全部静态内容,JS 不运行页面仍完整可用
 - **音乐播放器**：首页 Test 区,3 首曲目(GitHub Release 直链,经 gh-proxy 加速),`preload="auto"` 打开页面即自动下载;播放/暂停/进度跳转,左右键切歌,`localStorage` 保存上次播放的曲目与进度;音频文件不落地仓库
 - **字体选择**：首启弹出(默认字体免下载秒开),选 Maple Mono 才触发 `font.woff2` 下载;`localStorage`(`site-font`)持久化,页脚「字体」按钮重开

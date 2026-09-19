@@ -144,8 +144,14 @@ $nav-hues: (
   width: var(--w, 0);
   transform: translateX(var(--x, 0));
   border-radius: 2px;
-  /* --ni 由 nav.ts 按当前页色相写入;未写入时回退到渐变 */
+  /* --ni 由 nav.ts 按当前页色相令牌写入;未写入时回退到光谱渐变。
+     第一条不依赖 color-mix(老浏览器也能显示),第二条是渐入增强。 */
   background: var(--ni, var(--grad-spectrum));
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ni, var(--primary)) 55%, transparent),
+    var(--ni, var(--primary))
+  );
   opacity: 0;
   pointer-events: none;
 }

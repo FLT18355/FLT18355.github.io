@@ -35,6 +35,37 @@ import { SITE } from '../data/site';
         } catch (e) {}
       })();
     </script>
+    <!-- 低配适配:与 Base.astro 同一套判定(见 doc/architecture.md 3.7) -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        var nav = navigator;
+        var mode = null;
+        try {
+          var q = new URLSearchParams(location.search).get('lite');
+          if (q === '1' || q === '0') {
+            mode = q === '1' ? 'on' : 'off';
+            localStorage.setItem('site-lite', mode);
+          } else {
+            mode = localStorage.getItem('site-lite');
+          }
+        } catch (e) {}
+        var conn = nav.connection || nav.mozConnection || nav.webkitConnection;
+        var mem = nav.deviceMemory;
+        var cores = nav.hardwareConcurrency || 0;
+        var coarse = false;
+        try {
+          coarse = window.matchMedia('(pointer: coarse)').matches;
+        } catch (e) {}
+        var lite =
+          mode === 'on' ||
+          (mode !== 'off' &&
+            (!!(conn && conn.saveData) ||
+              (typeof mem === 'number' && mem <= 4) ||
+              (coarse && cores > 0 && cores <= 4)));
+        if (lite) root.className += ' lite';
+      })();
+    </script>
 
     <style>
       .err404 {

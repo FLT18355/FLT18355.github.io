@@ -76,27 +76,39 @@
   position: relative;
   overflow: hidden;
 }
+/* 卡片顶部的多色光晕:椭圆以卡片上方为中心,最后一档是 transparent,
+   在卡片上边缘处已经完全透明,不会像斜向 linear-gradient 那样在半途被硬切一刀。 */
 .profile::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 72px;
-  background: linear-gradient(
-    115deg,
-    color-mix(in srgb, var(--primary) 26%, transparent),
-    color-mix(in srgb, var(--mauve) 22%, transparent) 42%,
-    color-mix(in srgb, var(--pink) 20%, transparent) 68%,
-    transparent
+  height: 84px;
+  background: radial-gradient(
+    140% 120% at 50% -10%,
+    color-mix(in srgb, var(--primary) 30%, transparent),
+    color-mix(in srgb, var(--mauve) 24%, transparent) 34%,
+    color-mix(in srgb, var(--pink) 18%, transparent) 60%,
+    transparent 90%
   );
+  pointer-events: none;
+}
+/* 卡片顶边的彩虹细线:一条就够,浏览器再老也画得出完整一条 */
+.profile::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--grad-spectrum);
+  opacity: 0.9;
   pointer-events: none;
 }
 
 /* 头像外的环形色轮:让身份卡顶部的焦点自带整套 Catppuccin 色相 */
 .avatar-ring {
   display: block;
-  width: 98px;
-  height: 98px;
-  padding: 4px;
+  width: 100px;
+  height: 100px;
+  padding: 5px;
   margin: 8px auto 14px;
   border-radius: 50%;
   /* 裁成圆形:色环只绕圆一周,不会从 logo 方形画布的透明角里透出方块色块 */
@@ -184,6 +196,8 @@
 }
 .contact-item {
   --ci: var(--primary);
+  /* 同色相的淡底(兜底用,见 _compat.scss) */
+  --ci-dim: var(--primary-dim);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -266,10 +280,10 @@
   transform: translateX(0);
   color: var(--ci);
 }
-.contact-item.t-teal { --ci: var(--teal); }
-.contact-item.t-green { --ci: var(--green); }
-.contact-item.t-pink { --ci: var(--pink); }
-.contact-item.t-mauve { --ci: var(--mauve); }
+.contact-item.t-teal { --ci: var(--teal); --ci-dim: var(--teal-dim); }
+.contact-item.t-green { --ci: var(--green); --ci-dim: var(--green-dim); }
+.contact-item.t-pink { --ci: var(--pink); --ci-dim: var(--pink-dim); }
+.contact-item.t-mauve { --ci: var(--mauve); --ci-dim: var(--mauve-dim); }
 
 /* ============ Right column: content flow ============ */
 .content {

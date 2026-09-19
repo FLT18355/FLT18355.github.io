@@ -23,9 +23,13 @@
 |---|---|
 | `font.woff2` | Maple Mono 子集(约 56KB,按源码文本裁剪,按需下载;subset-font.py 覆盖) |
 | `font-full.woff2` | Maple Mono 全量字体(7.1MB,子集化输入源,勿删) |
-| `logo.svg` | 站点 logo / 头像 |
+| `logo.svg` | 站点图标(favicon / og:image,矢量,不占额外体积) |
+| `logo.webp` | logo 原图(2757×2757,头像的源文件;改头像从这里重新生成) |
+| `images/avatar.webp` | 左栏头像(256×256 无损,由 `logo.webp` 缩放而来,约 32KB) |
 | `.nojekyll` | GitHub Pages 免 Jekyll 处理标记 |
 | `images/QQ-cm.svg` | QQ 品牌图标(contact 区使用,fill 固定色) |
+| `images/avatar.webp` | 左栏头像(见上;`Rail.astro` 引用 `/images/avatar.webp`) |
+| `images/*_circle.png` / `images/svg/*` | 导航品牌 logo(深浅双版)与技术栈双色图标 |
 | `bug/` | 截图存档,不入站 |
 
 ## `src/`(唯一编辑入口)
@@ -45,7 +49,7 @@
 
 | 路径 | 职责 |
 |---|---|
-| `layouts/Base.astro` | 骨架:head 元信息(OG / twitter / JSON-LD)+ 主题/字体恢复内联脚本 + 导航 + 两栏壳 + `body-end` 插槽;打包 `scripts/motion.ts` 与 `scripts/nav.ts` |
+| `layouts/Base.astro` | 骨架:head 元信息(OG / twitter / JSON-LD)+ 主题/字体/低配判定三个 head 内联脚本 + 导航 + 两栏壳 + `body-end` 插槽;打包 `scripts/motion.ts` 与 `scripts/nav.ts` |
 | `components/Nav.astro` | 顶部导航(五条链接 + 滑动指示条 + 主题拨钮岛) |
 | `components/ThemeToggle.vue` | 主题拨钮:拖拽/点击/键盘切换 + View Transition 圆形揭示 + theme-color 同步 |
 | `components/Rail.astro` | 左栏:身份卡 + 联系方式 |
@@ -70,7 +74,7 @@
 
 | 文件 | 说明 |
 |---|---|
-| `motion.ts` | 动效编排:滚动入场、指针光斑、3D 微倾斜、进度线;挂 `html.motion-js` 门控 |
+| `motion.ts` | 动效编排:滚动入场、指针光斑、3D 微倾斜、进度线;挂 `html.motion-js` 门控;`html.lite` 下跳过指针光斑与倾斜 |
 | `nav.ts` | 导航指示条定位(offsetLeft 系,滚动安全)+ 窄屏当前页滚入视野 |
 
 ### 样式 `src/styles/`
@@ -89,6 +93,8 @@
 | `_nav.scss` | 顶部导航 + 滑动指示条 + 窄屏横向滚动 |
 | `_font-picker.scss` | 首启字体选择界面 + 页脚按钮 |
 | `_responsive.scss` | 减弱动效块 + 920px / 560px 断点 |
+| `_compat.scss` | 老浏览器兜底:整块包在 `@supports not (color: … color-mix …)` 下,给所有 color-mix 颜色等价的纯色/纯渐变 |
+| `_lite.scss` | 低配精简层(`html.lite`):去玻璃模糊、去固定渐变层、停常驻动画、去指针光斑 |
 
 ## 页面差异速查
 

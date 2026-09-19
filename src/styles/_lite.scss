@@ -1,0 +1,71 @@
+/* _lite.scss - 低配设备精简层
+   html.lite 由 Base.astro / 404.astro 的 head 内联脚本按硬件能力判定(见 doc/architecture.md 3.7)。
+   原则:先保证滚动与首屏不卡,再谈玻璃与光效;区块色相(--acc / --nc)、双主题、内容语义完全不变。
+   判定与开关:自动(省流量 / 内存 ≤4GB / 触屏且核心数 ≤4),也可用 ?lite=1 / ?lite=0 手动覆盖。 */
+
+/* ---------- 1. 玻璃模糊:整站最贵的一笔(每个玻璃层每帧都要重采样背后的像素),
+   低配下换成不透明度更高的纯色玻璃,观感几乎一致,逐帧开销归零 ---------- */
+html.lite {
+  --glass: rgba(48, 49, 66, 0.95);
+  --glass-item: rgba(60, 62, 82, 0.95);
+}
+html.lite[data-theme="latte"] {
+  --glass: rgba(255, 255, 255, 0.96);
+  --glass-item: rgba(255, 255, 255, 0.98);
+}
+html.lite .site-nav,
+html.lite .profile,
+html.lite .contact-item,
+html.lite .block,
+html.lite .project-card,
+html.lite .download-card,
+html.lite .stat-card,
+html.lite .leaderboard-row,
+html.lite .preview-card,
+html.lite .search-form,
+html.lite .font-picker {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* ---------- 2. 主题切换:几十个颜色令牌的过渡会让整页重绘,低配下直接跳变 ---------- */
+html.lite {
+  transition: none;
+}
+
+/* ---------- 3. 固定层的大半径多色渐变 + 两枚视差光斑:
+   低配下换成 body 上一张静态渐变(只画一次),滚动不再合成额外层 ---------- */
+html.lite body::before,
+html.lite .glow {
+  display: none;
+}
+html.lite body {
+  background:
+    linear-gradient(180deg, var(--primary-glow) 0%, transparent 26%),
+    linear-gradient(205deg, var(--mauve-dim) 0%, transparent 34%),
+    linear-gradient(0deg, var(--teal-dim) 0%, transparent 24%),
+    var(--bg);
+}
+
+/* ---------- 4. 常驻动画(拨钮云朵 / 太阳脉冲 / 搜索页漂浮光斑):低配下停在静态那一帧。
+   拨钮场景本身保留(太阳、月亮、云的静态位置不变),只是不再逐帧动 ---------- */
+html.lite .theme-toggle .cloud,
+html.lite .theme-toggle .sun,
+html.lite .search-bg::before,
+html.lite .search-bg::after {
+  animation: none;
+}
+
+/* ---------- 5. 指针光斑与卡片 will-change(JS 侧 motion.ts 也会跳过光斑与倾斜) ---------- */
+html.lite .block::after,
+html.lite .project-card::before {
+  display: none;
+}
+html.lite .project-card {
+  will-change: auto;
+}
+
+/* ---------- 6. 大范围 drop-shadow 也要逐帧栅格化 ---------- */
+html.lite .search-time {
+  filter: none;
+}

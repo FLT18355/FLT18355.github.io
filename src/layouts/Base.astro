@@ -69,6 +69,39 @@ const ldJson = JSON.stringify(
         } catch (e) {}
       })();
     </script>
+    <!-- 低配适配:必须在 head 内同步执行,否则玻璃模糊/光斑会先渲染一帧再关掉。
+         判定:省流量模式、内存 ≤4GB、触屏且核心数 ≤4 之一成立即精简;
+         ?lite=1 / ?lite=0 手动覆盖并记住(localStorage),方便在同一台手机上对比。 -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        var nav = navigator;
+        var mode = null;
+        try {
+          var q = new URLSearchParams(location.search).get('lite');
+          if (q === '1' || q === '0') {
+            mode = q === '1' ? 'on' : 'off';
+            localStorage.setItem('site-lite', mode);
+          } else {
+            mode = localStorage.getItem('site-lite');
+          }
+        } catch (e) {}
+        var conn = nav.connection || nav.mozConnection || nav.webkitConnection;
+        var mem = nav.deviceMemory;
+        var cores = nav.hardwareConcurrency || 0;
+        var coarse = false;
+        try {
+          coarse = window.matchMedia('(pointer: coarse)').matches;
+        } catch (e) {}
+        var lite =
+          mode === 'on' ||
+          (mode !== 'off' &&
+            (!!(conn && conn.saveData) ||
+              (typeof mem === 'number' && mem <= 4) ||
+              (coarse && cores > 0 && cores <= 4)));
+        if (lite) root.className += ' lite';
+      })();
+    </script>
   </head>
   <body>
     <div class="glow glow-a" aria-hidden="true"></div>

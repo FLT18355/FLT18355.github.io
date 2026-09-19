@@ -9,10 +9,10 @@
   if (!bar || !current) return;
 
   /* 指示条取当前页色相(_nav.scss 按导航索引给每条 --nc):
-     写入 --ni 后由 CSS 在背景里解析,未写入时回退到光谱渐变 */
+     只写纯色相令牌,渐变增强交给 CSS;老浏览器不支持 color-mix 也能显示 */
   function tint(el: HTMLElement) {
     const nc = getComputedStyle(el).getPropertyValue('--nc').trim();
-    if (nc) bar.style.setProperty('--ni', `linear-gradient(90deg, color-mix(in srgb, ${nc} 55%, transparent), ${nc})`);
+    if (nc) bar.style.setProperty('--ni', nc);
   }
 
   function place(animate: boolean) {

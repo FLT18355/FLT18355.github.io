@@ -58,7 +58,13 @@ npm run build          # 产出 dist/
 - `@keyframes drift`(`_toggle.scss`):`translateX(270px)` → `-90px`,右侧外飘入、穿出左外循环;静态回退 `translateX(270px)`(右外,不遮挡太阳);云朵 `z-index:4` 高于太阳(云遮日)。
 - 四朵云用负 `animation-delay` 错峰(-2/-7/-12/-17s),相位分布保证任意时刻有一朵从右进入。**不要**把 delay 改成正值或 0(会同步成「几朵云挤一起」)。
 
-### 3.5 无障碍 / reduced-motion
+### 3.5 低配设备与老浏览器(html.lite / _compat.scss)
+- **低配判定**(`Base.astro` 与 `404.astro` 的 head 内联脚本,两处必须同步改):省流量 / `deviceMemory ≤ 4` / 触屏且核心数 ≤ 4 → 给 `<html>` 加 `lite`。**必须在 head 内同步跑**,模块脚本晚一帧,玻璃模糊会先渲染再关掉、肉眼可见闪烁。`?lite=1` / `?lite=0` 手动覆盖(存 `localStorage('site-lite')`)。
+- `_lite.scss` 里关掉的都是刻意的,别再打开:玻璃模糊、主题切换 transition、`body::before` 氛围层与 `.glow` 视差、拨钮云朵/太阳脉冲、搜索页光斑、指针光斑、卡片 `will-change`。**新增重效果(模糊 / 固定层大渐变 / 常驻动画)时,同步在 `_lite.scss` 补一条关闭,`motion.ts` 侧也要用已有的 `lite` 判断跳过**。
+- **颜色兜底统一写在 `_compat.scss`**(整块 `@supports not (color: … color-mix …)`),不要就地写两行同属性声明:构建的 CSS 压缩器会把「后一条不含渐变」的重复声明当成必然被覆盖而删掉(`color` 会被删,`background` 渐变对能保留),就地兜底会静默失效。新增 color-mix 用法时,若丢掉这条声明会让页面变透明或失去色相,就去补一条等价纯色。
+- 头像:`public/images/avatar.webp` 由 `public/logo.webp` 缩放而来(256×256 无损,约 32KB)。换 logo 时重新生成,别把 2757px 原图挂到页面上。
+
+### 3.6 无障碍 / reduced-motion
 - 除拨钮场景动画外,所有动效都尊重 `prefers-reduced-motion`(`_responsive.scss` 与 `_motion.scss` 各有 reduce 块)。新增动效必须补 reduce 分支。
 - 动效只用 transform / opacity;不用 `window.addEventListener('scroll')`(用 IntersectionObserver / rAF,见 `src/scripts/motion.ts`)。
 
@@ -91,3 +97,5 @@ npm run build          # 产出 dist/
 - [ ] 字体选择流程未破坏(首启弹窗 / 选后刷新 / 页脚重开)
 - [ ] 双主题未破坏
 - [ ] 没往 dist 里手写内容
+- [ ] 新增 color-mix 用法:丢掉那条声明会透明/失色相时,已在 `_compat.scss` 补等价纯色
+- [ ] 新增重效果(模糊 / 固定层大渐变 / 常驻动画):已在 `_lite.scss` 补关闭,并在 `?lite=1` 下自查

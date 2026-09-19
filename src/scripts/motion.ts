@@ -11,6 +11,9 @@
 
   root.classList.add('motion-js');
 
+  /* 低配精简模式(Base.astro 的 head 脚本已判定):滚动入场这类一次性动效保留,
+     但跳过指针光斑与 3D 倾斜,省掉每帧的样式写入与重绘 */
+  const lite = root.classList.contains('lite');
   const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
@@ -50,8 +53,8 @@
     ioFoot.observe(footline);
   }
 
-  /* ---------- 2. 指针光斑 + 卡片 3D 微倾斜(仅精确指针) ---------- */
-  if (fine) {
+  /* ---------- 2. 指针光斑 + 卡片 3D 微倾斜(仅精确指针,低配精简模式跳过) ---------- */
+  if (fine && !lite) {
     const TILT = 5.5;
     const cards = Array.prototype.slice.call(document.querySelectorAll('.project-card'));
     const spots = blocks.concat(cards);

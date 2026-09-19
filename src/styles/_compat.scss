@@ -1,0 +1,166 @@
+/* _compat.scss - 没有 color-mix() 的浏览器兜底(老手机上的旧版 WebView / 老 Chrome)
+   本站颜色大量来自 color-mix(连 --surface / --surface-strong 两个令牌本身都是),
+   不支持的浏览器会把整条声明丢掉:底纹变透明、彩色文字回到继承色。
+   这里在 @supports not (...) 下给出等价的纯色/纯渐变,颜色身份保留、层次略降一档。
+
+   为什么不就地写两行声明:CSS 压缩器会把「同一属性、后一条不含渐变」的重复声明
+   当成必然被覆盖而删掉(实测 color / background 纯色那一条会被删),就地兜底会静默失效;
+   @supports 块里的声明它动不了。
+   维护规则:新增 color-mix 用法时,若这条声明丢失会让页面变透明或失去色相,就在这里补一条等价兜底。 */
+
+@supports not (color: color-mix(in srgb, red, blue)) {
+  /* ---------- 1. 令牌:两个中性面直接用等价值的十六进制 ---------- */
+  :root {
+    --surface: #393a4d;
+    --surface-strong: #3f4154;
+  }
+  :root[data-theme="latte"] {
+    --surface: #c6cad4;
+    --surface-strong: #c0c4d0;
+  }
+
+  /* ---------- 2. 氛围层:回到只用 rgba 令牌的渐变 ---------- */
+  body::before {
+    background:
+      radial-gradient(58vw 42vw at 10% -6%, var(--primary-dim) 0%, transparent 64%),
+      radial-gradient(52vw 40vw at 97% 4%, var(--mauve-dim) 0%, transparent 66%);
+  }
+  .glow-a { background: radial-gradient(circle, var(--primary-glow) 0%, transparent 68%); }
+  .glow-b { background: radial-gradient(circle, var(--mauve-dim) 0%, transparent 70%); }
+  ::selection { background: var(--mauve-dim); }
+  html { scrollbar-color: var(--bg-input) var(--bg); }
+
+  /* ---------- 3. 身份卡 ---------- */
+  .profile::before { background: linear-gradient(180deg, var(--primary-dim), transparent); }
+  .profile:hover .avatar-ring { box-shadow: 0 8px 24px var(--mauve-dim); }
+  .rail .handle { color: var(--lavender); }
+  .rail-label { color: var(--teal); }
+  .rail-label::after { background: var(--border); }
+  .contact-item {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+  }
+  .contact-item:hover {
+    background: var(--ci-dim);
+    box-shadow: var(--shadow);
+  }
+  .contact-ico { background: var(--ci-dim); }
+  .contact-label { color: var(--text-muted); }
+
+  /* ---------- 4. 区块 ---------- */
+  .block:hover { box-shadow: var(--shadow-lift); }
+  .block-header { border-bottom: 1px solid var(--border); }
+  .about-lead strong { color: var(--acc); }
+  .footline { border-top: 1px solid var(--border); }
+  html.motion-js .block::after {
+    background: radial-gradient(320px circle at var(--sx, 50%) var(--sy, 50%), var(--acc-dim), transparent 65%);
+  }
+
+  /* ---------- 5. 筹码 / 标签 ---------- */
+  .flavor i { border: 1px solid var(--glass-border); }
+  .interest {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .interest:hover {
+    background: var(--hc-dim);
+    color: var(--hc);
+  }
+  @each $cls, $tok in (
+    'blue': 'primary',
+    'green': 'green',
+    'teal': 'teal',
+    'pink': 'pink',
+    'peach': 'peach',
+    'mauve': 'mauve',
+    'lavender': 'lavender',
+    'sky': 'sky'
+  ) {
+    .tech-tag.t-#{$cls} {
+      background: var(--#{$tok}-dim);
+      color: var(--#{$tok});
+    }
+  }
+  .preview-tag--mauve,
+  .preview-tag--teal { border-color: var(--border); }
+  .compare-bar { border: 1px solid var(--glass-border); }
+  .swatch-chip { border: 1px solid var(--glass-border); }
+
+  /* ---------- 6. 项目卡 / 统计 / 排行榜 ---------- */
+  .project-card::after {
+    background: linear-gradient(115deg, transparent 30%, var(--acc-dim) 50%, transparent 70%);
+  }
+  .project-card.f-catppuccin { border-color: var(--mauve-dim); }
+  .project-card.f-catppuccin:hover { border-color: var(--mauve); }
+  .project-card:hover { box-shadow: var(--shadow-lift); }
+  html.motion-js .project-card::before {
+    background: radial-gradient(260px circle at var(--sx, 50%) var(--sy, 50%), var(--acc-dim), transparent 60%);
+  }
+  .project-meta span {
+    background: var(--surface-strong);
+    color: var(--text-muted);
+  }
+  .project-card:hover .project-meta span { border-color: transparent; }
+  .stat-card {
+    background: var(--glass-item);
+    border: 1px solid var(--glass-border);
+  }
+  .stat-card:hover {
+    background: var(--glass-item);
+    box-shadow: var(--shadow-lift);
+  }
+  .stat-value { color: var(--sc); }
+  .leaderboard-row--1,
+  .leaderboard-row--2,
+  .leaderboard-row--3 {
+    background: var(--glass-item);
+    border-color: var(--glass-border);
+  }
+  .leaderboard-score-bar,
+  .leaderboard-row:hover .leaderboard-score-bar { background: var(--acc-dim); }
+  .leaderboard-score-num { color: var(--acc); }
+
+  /* ---------- 7. 导航 / 音乐 / 字体弹窗 ---------- */
+  .site-nav { background: var(--bg); }
+  .nav-item:hover {
+    color: var(--text);
+    background: var(--surface-strong);
+  }
+  .nav-item[aria-current="page"] { color: var(--nc); }
+  .music-toggle {
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .music-toggle:hover { background: var(--acc-dim); }
+  .font-picker { background: var(--bg); }
+
+  /* ---------- 8. search 页 ---------- */
+  .search-bg {
+    background:
+      radial-gradient(46vw 46vw at 18% 22%, var(--primary-glow) 0%, transparent 70%),
+      radial-gradient(40vw 40vw at 84% 28%, var(--mauve-dim) 0%, transparent 72%),
+      radial-gradient(52vw 52vw at 66% 88%, var(--teal-dim) 0%, transparent 70%);
+  }
+  .search-time { filter: none; }
+  .search-time-sec {
+    color: var(--pink);
+    -webkit-text-fill-color: var(--pink);
+  }
+  .search-form {
+    border: 1px solid var(--primary-dim);
+    background: var(--bg);
+  }
+  .quicklink:hover { background: var(--glass-item); }
+  .search-chip {
+    border: 1px solid var(--glass-border);
+    background: var(--mauve-dim);
+    color: var(--mauve);
+  }
+  .search-greeting-line { background: linear-gradient(90deg, transparent, var(--border), transparent); }
+  .search-greeting-text { color: var(--text-muted); }
+
+  /* ---------- 9. 404 页(样式在 404.astro 内联,这里只补 color-mix 那两条描边) ---------- */
+  .err404-back,
+  .err404-search { border-color: var(--primary-dim); }
+}
