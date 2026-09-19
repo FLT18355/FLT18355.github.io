@@ -1,8 +1,12 @@
 ---
-// projects.astro - 重点项目
+// projects.astro - 重点项目 + GitHub 资料卡(构建时从 api.github.com 拉取)
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import GithubCard from '../components/GithubCard.astro';
 import { featuredProjects } from '../data/projects';
+import { getGithubUser } from '../data/github';
+
+const githubUser = await getGithubUser();
 ---
 
 <Base
@@ -18,6 +22,17 @@ import { featuredProjects } from '../data/projects';
       {featuredProjects.map((p) => <ProjectCard project={p} />)}
     </div>
   </section>
+
+  {
+    githubUser && (
+      <section class="block b-github">
+        <div class="block-header">
+          <h2>GitHub Profile</h2>
+        </div>
+        <GithubCard user={githubUser} />
+      </section>
+    )
+  }
 
   <section class="block b-download">
     <div class="block-header">

@@ -39,3 +39,14 @@ html[data-font="maple"] {
 
 ::selection { background: color-mix(in srgb, var(--mauve) 34%, transparent); }
 html { scrollbar-color: color-mix(in srgb, var(--mauve) 55%, var(--bg-input)) var(--bg); }
+
+/* 标题换行平衡:多行标题的两行字数更接近,不会出现「孤零零一个字」的尾行 */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+
+/* 键盘焦点环的全局兜底:组件里给了更具体规则的地方以组件为准(如 .nav-item:focus-visible) */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

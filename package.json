@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "snapshot:github": "node scripts/snapshot-github.mjs"
   },
   "dependencies": {
     "@astrojs/vue": "^7.0.2",

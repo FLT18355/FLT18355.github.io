@@ -170,7 +170,7 @@ $tech-colors: (
   border: 1px solid var(--glass-border);
   -webkit-backdrop-filter: blur(10px) saturate(1.25);
   backdrop-filter: blur(10px) saturate(1.25);
-  box-shadow: var(--shadow);
+  box-shadow: var(--edge), var(--shadow);
 }
 .preview-top {
   display: flex;
@@ -420,6 +420,7 @@ $tech-colors: (
   border: 1px solid var(--glass-border);
   -webkit-backdrop-filter: blur(10px) saturate(1.25);
   backdrop-filter: blur(10px) saturate(1.25);
+  box-shadow: var(--edge), var(--shadow);
   transition: background-color 0.15s, border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
   /* 裁剪斜向扫光带:静止时 translateX(-110%) 在卡片左外,必须裁掉,否则会画到左边邻居卡片上 */
   overflow: hidden;
@@ -466,7 +467,7 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
 .project-card:hover {
   border-color: var(--acc);
   transform: translateY(-3px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 14px 34px color-mix(in srgb, var(--acc) 26%, transparent);
+  box-shadow: var(--edge), 0 2px 4px rgba(0, 0, 0, 0.2), 0 14px 34px color-mix(in srgb, var(--acc) 26%, transparent);
 }
 .project-card:hover::after { transform: translateX(110%); }
 .project-card:active { transform: translateY(0) scale(0.985); }
@@ -570,12 +571,13 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   border: 1px solid var(--glass-border);
   -webkit-backdrop-filter: blur(10px) saturate(1.25);
   backdrop-filter: blur(10px) saturate(1.25);
+  box-shadow: var(--edge), var(--shadow);
   transition: background-color 0.15s, border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
 }
 .download-card:hover {
   border-color: var(--acc);
   transform: translateY(-3px);
-  box-shadow: var(--shadow-lift);
+  box-shadow: var(--edge), var(--shadow-lift);
 }
 .download-card:active { transform: translateY(0) scale(0.985); }
 .download-card:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
@@ -663,6 +665,315 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   }
 }
 
+/* ---------- GitHub profile card (projects 页) ----------
+   数据来自 src/data/github.ts(构建时拉取),字段能上的全上:统计块 + 明细表 + 折叠的 API 端点。 */
+.gh-card {
+  --acc: var(--lavender);
+  --acc-dim: var(--lavender-dim);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 14px;
+  background: var(--glass-item);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(10px) saturate(1.25);
+  backdrop-filter: blur(10px) saturate(1.25);
+  box-shadow: var(--edge), var(--shadow);
+  transition: border-color 0.15s, box-shadow 0.2s var(--ease-out);
+}
+.gh-card:hover {
+  border-color: color-mix(in srgb, var(--acc) 55%, var(--glass-border));
+  box-shadow: var(--edge), 0 2px 4px rgba(0, 0, 0, 0.2), 0 14px 34px color-mix(in srgb, var(--acc) 20%, transparent);
+}
+
+/* ---------- 头部:头像 + 名号 + 徽章 + 简介 ---------- */
+.gh-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.gh-avatar {
+  flex: none;
+  display: block;
+  width: 88px;
+  height: 88px;
+  padding: 3px;
+  border-radius: 50%;
+  /* 骨架:淡色底 + 同色描边,加载 GitHub 头像前也有轮廓 */
+  background: var(--acc-dim);
+  border: 1px solid color-mix(in srgb, var(--acc) 34%, var(--glass-border));
+  transition: border-color 0.15s, transform 0.2s var(--ease-out);
+}
+.gh-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.gh-avatar:hover {
+  border-color: var(--acc);
+  transform: scale(1.03);
+}
+.gh-avatar:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.gh-id {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.gh-name {
+  font-size: 1.22rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.25;
+}
+.gh-login {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+.gh-login a {
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.gh-login a:hover { border-color: currentColor; }
+.gh-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+}
+.gh-bio {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+/* ---------- 数字:四个统计块各占一色(与首页数字卡同一套语言) ---------- */
+.gh-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.gh-stat {
+  --sh: var(--primary);
+  --sh-dim: var(--primary-dim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px 8px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sh) 8%, var(--surface-strong));
+  border: 1px solid color-mix(in srgb, var(--sh) 20%, var(--border));
+  text-align: center;
+  transition: border-color 0.15s, background-color 0.15s, transform 0.18s var(--ease-out);
+}
+$gh-stat-hues: (
+  1: 'green',
+  2: 'pink',
+  3: 'teal',
+  4: 'peach',
+);
+@each $i, $tok in $gh-stat-hues {
+  .gh-stat:nth-child(#{$i}) {
+    --sh: var(--#{$tok});
+    --sh-dim: var(--#{$tok}-dim);
+  }
+}
+.gh-stat:hover {
+  border-color: var(--sh);
+  background: color-mix(in srgb, var(--sh) 14%, var(--surface-strong));
+  transform: translateY(-2px);
+}
+.gh-stat-value {
+  font-family: var(--mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--sh), var(--text) var(--hue-fg-mix));
+}
+.gh-stat-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+/* ---------- 明细表:标签左、值右,窄屏单列 ---------- */
+.gh-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0 20px;
+}
+.gh-detail {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 7px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+}
+.gh-detail dt {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.gh-detail dd {
+  font-size: 0.84rem;
+  color: var(--text);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.gh-detail dd.is-mono {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+.gh-detail dd.is-empty {
+  color: var(--text-muted);
+  font-style: italic;
+}
+.gh-detail dd a {
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--acc) 40%, transparent);
+}
+.gh-detail dd a:hover { border-bottom-color: var(--acc); }
+
+/* ---------- API 端点:默认折叠,需要时再展开 ---------- */
+.gh-api {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+}
+.gh-api summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  padding: 4px 0;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  transition: color 0.15s;
+  /* 自绘折角:默认三角在各浏览器大小不一,这里用 currentColor 画一个跟着文字走的 */
+  list-style: none;
+}
+.gh-api summary::-webkit-details-marker {
+  display: none;
+}
+.gh-api summary::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-left: 2px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.2s var(--ease-out);
+}
+.gh-api[open] summary::before {
+  transform: rotate(45deg);
+}
+.gh-api summary:hover { color: var(--text); }
+.gh-api summary:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.gh-api ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+}
+.gh-api li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.gh-api li span {
+  flex: none;
+  width: 112px;
+  color: var(--text-muted);
+}
+.gh-api li a {
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.gh-api li a:hover { border-bottom: 1px solid var(--acc); }
+
+/* ---------- 动作:卡片自己的入口,沿用 --acc 淡底 + 悬停实底 ---------- */
+.gh-cta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--acc-dim);
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+  border: 1px solid transparent;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s, transform 0.15s var(--ease-out);
+}
+.gh-cta:hover {
+  background: var(--acc);
+  color: var(--bg);
+  transform: translateY(-1px);
+}
+.gh-cta:active { transform: translateY(0) scale(0.98); }
+.gh-cta:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.gh-cta svg { display: block; }
+
+@media (max-width: 560px) {
+  .gh-card {
+    gap: 16px;
+    padding: 16px;
+  }
+  .gh-head { gap: 12px; }
+  .gh-avatar {
+    width: 64px;
+    height: 64px;
+    padding: 2px;
+  }
+  .gh-name { font-size: 1.05rem; }
+  .gh-stats { grid-template-columns: repeat(2, 1fr); }
+  .gh-details { grid-template-columns: 1fr; }
+  .gh-api li {
+    flex-direction: column;
+    gap: 0;
+  }
+  .gh-api li span { width: auto; }
+  .gh-cta {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
 /* ---------- By the Numbers 统计 ---------- */
 .stats-grid {
   display: grid;
@@ -681,6 +992,7 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   border: 1px solid color-mix(in srgb, var(--sc) 22%, var(--glass-border));
   -webkit-backdrop-filter: blur(10px) saturate(1.25);
   backdrop-filter: blur(10px) saturate(1.25);
+  box-shadow: var(--edge), var(--shadow);
   text-align: center;
   transition: border-color 0.15s, background-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
 }
@@ -700,7 +1012,7 @@ $stat-hues: (
   border-color: var(--sc);
   background: color-mix(in srgb, var(--sc) 14%, var(--glass-item));
   transform: translateY(-3px);
-  box-shadow: 0 10px 28px color-mix(in srgb, var(--sc) 26%, transparent);
+  box-shadow: var(--edge), 0 2px 4px rgba(0, 0, 0, 0.16), 0 10px 28px color-mix(in srgb, var(--sc) 26%, transparent);
 }
 .stat-value {
   font-family: var(--mono);

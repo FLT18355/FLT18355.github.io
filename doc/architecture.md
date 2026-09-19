@@ -68,8 +68,8 @@ python3 subset-font.py   # 字体子集化(独立步骤,见 3.2)
 - `nav.ts` 的 `bringIntoView()`:当前页落在视口外时(如手机上 Search 在最右)把它滚到中间,避免用户进页面看不到自己在哪。
 
 ### 3.5 数据驱动
-- `src/data/site.ts`:导航五条与页面元信息;`projects.ts`:项目卡数据(projects 页 4 卡 + following 页 4 卡共用,`hue` 字段决定卡片色相);`palette.ts`:色板数据(4 风味 × 26 色)。
-- 项目卡组件 `ProjectCard.astro` 只消费数据;加项目 = 改 `projects.ts`,不动模板。
+- `src/data/site.ts`:导航五条与页面元信息;`projects.ts`:项目卡数据(projects 页 4 卡 + following 页 4 卡共用,`hue` 字段决定卡片色相);`palette.ts`:色板数据(4 风味 × 26 色);`github.ts`:GitHub 资料卡数据源(见 3.9)。
+- 项目卡组件 `ProjectCard.astro` 只消费数据;加项目 = 改 `projects.ts`,不动模板。GitHub 资料卡同理,组件 `GithubCard.astro` 只消费 `github.ts` 归一化后的对象。
 - 色板页 `PaletteGrid.vue` SSR 直出全部色块 + 水合后绑定点击复制 Hex;数据在 `palette.ts` 维护。
 
 ### 3.6 多色强调(色相系统)
@@ -88,13 +88,22 @@ python3 subset-font.py   # 字体子集化(独立步骤,见 3.2)
 ### 3.8 无障碍
 - 语义化 landmark、`aria-current`、可见焦点环、按钮可键盘操作。
 - 字体选择界面:role=dialog / aria-modal / aria-labelledby。
+- `_reset.scss` 里有一条全局 `:focus-visible` 兜底(2px `--primary` 焦点环):组件里更具体的 `:focus-visible` 规则依旧覆盖它,新增交互元素即使忘了写焦点样式也不会裸奔。
+- 标题统一 `text-wrap: balance`,正文 `text-wrap: pretty`,多行标题不会甩出孤字尾行。
+
+### 3.9 GitHub 资料卡(projects 页,构建时拉取)
+- 数据源 `src/data/github.ts`:`projects.astro` 的 frontmatter `await getGithubUser()`,构建时请求 `https://api.github.com/users/FLT18355` 一次,归一化成驼峰结构交给 `GithubCard.astro`。**访客侧零请求、无 JS 也完整可见**,数据随每次部署刷新,和「全部 SSR 直出」的取向一致。
+- **失败不空窗**:拉取失败(限流 / 断网)时打一条构建警告,退回 `src/data/github-user.snapshot.json`(committed 的 API 响应快照);两条路都不通才不渲染这一块。快照用 `npm run snapshot:github`(=`scripts/snapshot-github.mjs`)刷新。
+- **token**:实名请求 5000 次/小时,匿名只有 60 次/小时且 Actions 出口 IP 共享,因此 `deploy.yml` 的 build 步骤透传 `GITHUB_TOKEN`(非 `PUBLIC_` 变量不会进客户端产物,`github.ts` 只在服务端侧被引用)。
+- 字段覆盖:除 `*_url`(10 个 API 端点,折叠在 `<details>` 里)之外的字段全部上卡片,空值显示 `not set`;端点 href 去掉 RFC 6570 模板段(`{/other_user}` 之类)再输出。
+- 新字段(例如 GitHub 以后再加一个 `pronouns`):在 `normalize()` 里补一行,再在 `GithubCard.astro` 的 `details` 数组里补一行,不用动样式。
 
 ## 4. 当前页面与数据
 
 | 页 | `src/pages/` | 内容 |
 |---|---|---|
 | index | `index.astro` | About Me / Interests / Tech Stack |
-| projects | `projects.astro` | terminal / lxm / dotfiles 三卡(`data/projects.ts`) |
+| projects | `projects.astro` | terminal / lxm / dotfiles 三卡(`data/projects.ts`)+ GitHub 资料卡(`data/github.ts`,构建时拉 api.github.com) |
 | catppuccin | `catppuccin.astro` | 色板页:4 风味 × 26 色(`PaletteGrid.vue` + `data/palette.ts`,含中文文案需进字体字符集) |
 | following | `following.astro` | herdr / oh-my-pi / catppuccin(`f-catppuccin` 单色紫强调卡,线性猫 SVG 图标)/ neovim |
 | search | `search.astro` | bare 模式(无左栏):实时时钟 + Bing 搜索表单(新标签打开结果) + 快捷站点链接(GitHub/Bilibili/YouTube/MDN) + 最近搜索历史(localStorage 5 条);交互逻辑在 `SearchPanel.vue`(`/` 或 Ctrl+K 聚焦,Esc 清空);背景光斑 `.search-bg` 经 `body-end` 插槽渲染(静态层在 `_search.scss`,动画在 `_motion.scss` 第 8 节) |

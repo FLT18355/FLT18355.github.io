@@ -147,6 +147,9 @@ $transitions: ();
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.18);
   --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.22);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  /* 玻璃卡片的顶部内高光:材质感的来源。必须与投影同写一条 box-shadow,
+     写成独立属性会在不支持 color-mix 的浏览器里把整条阴影带下去(见 _compat.scss)。 */
+  --edge: inset 0 1px 0 color-mix(in srgb, var(--text) 8%, transparent);
   --surface: color-mix(in srgb, var(--text) 5%, var(--bg-card));
   --surface-strong: color-mix(in srgb, var(--text) 9%, var(--bg-card));
   --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
@@ -163,4 +166,7 @@ $transitions: ();
   }
   --shadow: 0 1px 2px rgba(76, 79, 105, 0.06), 0 4px 16px rgba(76, 79, 105, 0.08);
   --shadow-lift: 0 2px 4px rgba(76, 79, 105, 0.08), 0 12px 32px rgba(76, 79, 105, 0.14);
+  /* 浅色主题:白玻璃上的白色内高光几乎不可见,改用一条极淡的内收边,
+     让卡片上沿仍有「切出来的」轮廓,而不是和背景糊成一片 */
+  --edge: inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 rgba(76, 79, 105, 0.05);
 }

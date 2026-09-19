@@ -61,12 +61,25 @@ npm run build          # 产出 dist/
 ### 3.5 低配设备与老浏览器(html.lite / _compat.scss)
 - **低配判定**(`Base.astro` 与 `404.astro` 的 head 内联脚本,两处必须同步改):省流量 / `deviceMemory ≤ 4` / 触屏且核心数 ≤ 4 → 给 `<html>` 加 `lite`。**必须在 head 内同步跑**,模块脚本晚一帧,玻璃模糊会先渲染再关掉、肉眼可见闪烁。`?lite=1` / `?lite=0` 手动覆盖(存 `localStorage('site-lite')`)。
 - `_lite.scss` 里关掉的都是刻意的,别再打开:玻璃模糊、主题切换 transition、`body::before` 氛围层与 `.glow` 视差、拨钮云朵/太阳脉冲、搜索页光斑、指针光斑、卡片 `will-change`。**新增重效果(模糊 / 固定层大渐变 / 常驻动画)时,同步在 `_lite.scss` 补一条关闭,`motion.ts` 侧也要用已有的 `lite` 判断跳过**。
+- `_lite.scss` 末尾还有一块 `@media (prefers-reduced-transparency: reduce)`(系统辅助功能里的「减弱透明度」):同样去模糊 + 换不透明玻璃。**新增玻璃层时两处清单都要补**(`html.lite` 与 `prefers-reduced-transparency`)。
 - **颜色兜底统一写在 `_compat.scss`**(整块 `@supports not (color: … color-mix …)`),不要就地写两行同属性声明:构建的 CSS 压缩器会把「后一条不含渐变」的重复声明当成必然被覆盖而删掉(`color` 会被删,`background` 渐变对能保留),就地兜底会静默失效。新增 color-mix 用法时,若丢掉这条声明会让页面变透明或失去色相,就去补一条等价纯色。
 - 头像:`public/images/avatar.webp` 由 `public/logo.webp` 缩放而来(256×256 无损,约 32KB)。换 logo 时重新生成,别把 2757px 原图挂到页面上。
 
 ### 3.6 无障碍 / reduced-motion
 - 除拨钮场景动画外,所有动效都尊重 `prefers-reduced-motion`(`_responsive.scss` 与 `_motion.scss` 各有 reduce 块)。新增动效必须补 reduce 分支。
 - 动效只用 transform / opacity;不用 `window.addEventListener('scroll')`(用 IntersectionObserver / rAF,见 `src/scripts/motion.ts`)。
+
+### 3.7 玻璃材质(--edge)
+- 玻璃卡片的「厚度」= `--edge`(顶部 1px 内高光)+ 投影,两者**必须写在同一条 `box-shadow`**里:`box-shadow: var(--edge), var(--shadow)`。写成独立属性会在不支持 `color-mix` 的浏览器里整条失效(自定义属性为无效值时整条声明作废),卡片会连投影一起丢。
+- `--edge` 定义在 `_tokens.scss`(`:root` 与 `:root[data-theme="latte"]` 各一份),`_compat.scss` 里补了纯色等价版本。**新增玻璃面时**:先在 `--acc` 语言下加 `box-shadow: var(--edge), var(--shadow)`,再确认 hover 态也是「`var(--edge)` + 同数量投影」,否则过渡会在两套投影列表之间跳变。
+- hover 态的投影列表条数要与静止态一致(mocha 是 1 + 2),不一致时浏览器按「不可插值」处理,过渡变成硬切。
+
+### 3.8 GitHub 资料卡(projects 页)
+- 数据是**构建时**拉的(`src/data/github.ts` 的 `getGithubUser()`,`projects.astro` frontmatter await),不是客户端请求:访客零请求、无 JS 可见,数据随每次部署刷新。**不要改成 `client:load` 的浏览器侧 fetch**(会闪空窗、且访客侧要吃限流)。
+- 拉取失败会退回 `src/data/github-user.snapshot.json` 并打 `[github] ...` 警告;两条路都不通才不渲染这一块。快照用 `npm run snapshot:github` 刷新,改完记得一起提交。
+- `GITHUB_TOKEN` 由 `deploy.yml` 的 build 步骤透传(实名 5000 次/小时,匿名只有 60 次/小时且 Actions 出口 IP 共享)。`github.ts` 只在服务端被引用,`GITHUB_TOKEN` 是普通变量(非 `PUBLIC_`),不进客户端产物:别把它改成从页面脚本里读。
+- 端点字段(`*_url`)会带上 RFC 6570 模板段(`{/other_user}`),渲染时 href 去掉模板段、文本保留原值。
+- 新增字段的落点:`normalize()` 补一行 → `GithubCard.astro` 的 `details` 数组补一行 → 空值用 `or()`,保证显示 `not set` 而不是空白。
 
 ## 4. 页面内容约定
 
@@ -99,3 +112,5 @@ npm run build          # 产出 dist/
 - [ ] 没往 dist 里手写内容
 - [ ] 新增 color-mix 用法:丢掉那条声明会透明/失色相时,已在 `_compat.scss` 补等价纯色
 - [ ] 新增重效果(模糊 / 固定层大渐变 / 常驻动画):已在 `_lite.scss` 补关闭,并在 `?lite=1` 下自查
+- [ ] 新增玻璃面:`box-shadow` 是 `var(--edge)` + 同数量投影,且 `_lite.scss` 的模糊关闭清单里有它
+- [ ] 动了 GitHub 卡片:构建日志无 `[github] ... 失败`(有的话说明走了快照,确认是否符合预期)

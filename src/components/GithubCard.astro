@@ -1,0 +1,107 @@
+---
+// GithubCard.astro - projects 页 GitHub 资料卡(数据由 src/data/github.ts 在构建时拉取)
+// 字段里能上卡片的全上:其余 *_url 端点折叠进 <details>,空字段显示 not set 而不是省略;
+// 端点 href 去掉 RFC 6570 模板段({/other_user} 这类),点开的是能访问的地址。
+import type { GithubUser } from '../data/github';
+
+interface Props {
+  user: GithubUser;
+}
+const { user } = Astro.props;
+
+const stats = [
+  { label: 'Public repos', value: user.publicRepos },
+  { label: 'Followers', value: user.followers },
+  { label: 'Following', value: user.following },
+  { label: 'Public gists', value: user.publicGists },
+];
+
+interface Detail {
+  label: string;
+  value: string;
+  /** 有值且是地址时渲染成链接 */
+  href?: string | null;
+  /** 等宽字体:数字 / 标识符 / 地址 */
+  mono?: boolean;
+}
+
+/** 空字段的统一口径:卡片上显示 not set,不做省略(样式靠 .is-empty) */
+const EMPTY = 'not set';
+
+const blogHref = user.blog ? (/^https?:\/\//.test(user.blog) ? user.blog : `https://${user.blog}`) : null;
+
+const details: Detail[] = [
+  { label: 'Name', value: user.name ?? EMPTY },
+  { label: 'Login', value: `@${user.login}` },
+  { label: 'Account type', value: user.type },
+  { label: 'Visibility', value: user.userViewType },
+  { label: 'Site admin', value: user.siteAdmin ? 'yes' : 'no' },
+  { label: 'GitHub ID', value: String(user.id), mono: true },
+  { label: 'Node ID', value: user.nodeId, mono: true },
+  { label: 'Gravatar ID', value: user.gravatarId ?? EMPTY, mono: true },
+  { label: 'Company', value: user.company ?? EMPTY },
+  { label: 'Website', value: user.blog ?? EMPTY, href: blogHref },
+  { label: 'Location', value: user.location ?? EMPTY },
+  { label: 'Email', value: user.email ?? EMPTY },
+  { label: 'Twitter', value: user.twitterUsername ? `@${user.twitterUsername}` : EMPTY },
+  { label: 'Hireable', value: user.hireable === null ? EMPTY : user.hireable ? 'yes' : 'no' },
+  { label: 'Member since', value: user.createdAt.slice(0, 10), mono: true },
+  { label: 'Last updated', value: user.updatedAt.slice(0, 10), mono: true },
+  { label: 'Avatar URL', value: user.avatarUrl, href: user.avatarUrl, mono: true },
+  { label: 'API URL', value: user.apiUrl, href: user.apiUrl, mono: true },
+];
+---
+
+<article class="gh-card">
+  <header class="gh-head">
+    <a class="gh-avatar" href={user.htmlUrl} target="_blank" rel="noopener" aria-label={`${user.login} on GitHub`}>
+      <img src={user.avatarUrl} alt="" width="96" height="96" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+    </a>
+    <div class="gh-id">
+      <h3 class="gh-name">{user.name ?? user.login}</h3>
+      <p class="gh-login">
+        <a href={user.htmlUrl} target="_blank" rel="noopener">@{user.login}</a>
+        <span class="gh-badge">{user.type}</span>
+        <span class="gh-badge">{user.userViewType}</span>
+      </p>
+      <p class="gh-bio">{user.bio ?? 'No bio on GitHub yet.'}</p>
+    </div>
+  </header>
+
+  <div class="gh-stats">
+    {stats.map((s) => (
+      <div class="gh-stat">
+        <span class="gh-stat-value">{s.value}</span>
+        <span class="gh-stat-label">{s.label}</span>
+      </div>
+    ))}
+  </div>
+
+  <dl class="gh-details">
+    {details.map((d) => (
+      <div class="gh-detail">
+        <dt>{d.label}</dt>
+        <dd class:list={[{ 'is-mono': d.mono, 'is-empty': d.value === EMPTY }]}>
+          {d.href ? <a href={d.href} target="_blank" rel="noopener">{d.value}</a> : d.value}
+        </dd>
+      </div>
+    ))}
+  </dl>
+
+  <details class="gh-api">
+    <summary>API endpoints</summary>
+    <ul>
+      {user.endpoints.map((e) => (
+        <li>
+          <span>{e.key.replace(/_url$/, '')}</span>
+          <a href={e.href.replace(/\{.*$/, '')} target="_blank" rel="noopener">{e.href.replace('https://api.github.com', '')}</a>
+        </li>
+      ))}
+    </ul>
+  </details>
+
+  <a class="gh-cta" href={user.htmlUrl} target="_blank" rel="noopener">
+    View on GitHub
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" /></svg>
+  </a>
+</article>

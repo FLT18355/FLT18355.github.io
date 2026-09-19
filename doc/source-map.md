@@ -13,6 +13,7 @@
 | `.gitignore` | 忽略清单 | dist / node_modules / .astro / .cache / bug / .omp |
 | `.github/workflows/deploy.yml` | 部署工作流 | push 到 main 后自动构建并上传 dist/ 到 GitHub Pages(需在 Pages 设置选 GitHub Actions 源) |
 | `scripts/deploy.sh` | 部署脚本 | 不用 Actions 时:构建 + 同步产物到仓库根,推根目录即可部署 |
+| `scripts/snapshot-github.mjs` | 数据脚本 | `npm run snapshot:github`:刷新 `src/data/github-user.snapshot.json`(GitHub 资料卡的兜底快照) |
 | `README.md` | 站点说明 | 页面表 + 构建用法 + 设计机制 |
 | `doc/` | 文档 | architecture(机制)/ build(构建验证)/ ai-maintainer-guide(硬约束)/ source-map(本清单) |
 | `legacy/` | 旧版归档 | 迁移前的模板渲染 + 手写 JS/CSS 全量快照,仅供对照,不参与构建 |
@@ -39,7 +40,7 @@
 | 文件 | 内容 |
 |---|---|
 | `index.astro` | 主页:About / Interests / Tech Stack 三 block + Test 音乐播放器 |
-| `projects.astro` | 重点项目:terminal / lxm / dotfiles 三卡(`data/projects.ts`) |
+| `projects.astro` | 重点项目:terminal / lxm / dotfiles 三卡(`data/projects.ts`)+ GitHub 资料卡(构建时拉 api.github.com,见 `data/github.ts`) |
 | `catppuccin.astro` | 色板页:渲染容器 + `PaletteGrid.vue` |
 | `following.astro` | 关注项目:herdr / oh-my-pi / catppuccin / neovim 四卡 |
 | `search.astro` | 搜索页(bare 模式,无左栏):`SearchPanel.vue` + `body-end` 插槽里的 `.search-bg` |
@@ -56,6 +57,7 @@
 | `components/Contacts.astro` | 联系方式列表(GitHub / QQ / 微信 / B 站大号 / B 站小号,长 SVG path 原样保留) |
 | `components/Footline.astro` | 页脚:版权 / Source on GitHub / 字体重开按钮 |
 | `components/ProjectCard.astro` | 项目卡(projects / following 共用,消费 `data/projects.ts`) |
+| `components/GithubCard.astro` | GitHub 资料卡(projects 页,消费 `data/github.ts`;统计块 + 明细表 + 折叠的 API 端点) |
 | `components/FontPicker.vue` | 首启字体选择:显隐判断、选项绑定、页脚重开 |
 | `components/PaletteGrid.vue` | 色板:SSR 直出 104 色块 + 水合后点击复制 Hex |
 | `components/SearchPanel.vue` | 搜索页:实时时钟 / Bing 表单 / 快捷链接 / 最近搜索历史 |
@@ -69,6 +71,8 @@
 | `projects.ts` | 项目卡数据(改项目在这里) |
 | `palette.ts` | Catppuccin 色板数据(4 风味 × 26 色,含中文说明文案) |
 | `music.ts` | 音乐播放器曲目列表(3 首,gh-proxy 直链 + 标题/作者;仅首曲含封面) |
+| `github.ts` | GitHub 资料卡数据源:构建时拉 `api.github.com/users/FLT18355` 并归一化;失败退回快照 |
+| `github-user.snapshot.json` | API 响应快照(兜底数据源,`npm run snapshot:github` 刷新;结构 = GitHub 原样返回) |
 
 ### 脚本 `src/scripts/`
 
@@ -82,10 +86,10 @@
 | 文件 | 说明 |
 |---|---|
 | `global.scss` | 汇总入口(`@use` 顺序即级联顺序) |
-| `_tokens.scss` | 双主题令牌(SCSS map 驱动)+ `@property` 注册 + `@font-face` |
-| `_reset.scss` | 重置 / body / `data-font` 字体门控规则 |
-| `_layout.scss` | 两栏壳、左栏身份卡、联系方式、区块、页脚 + 入场关键帧 |
-| `_cards.scss` | flavor 筹码 / 兴趣 / 技术标签 / 色板 / 项目卡 |
+| `_tokens.scss` | 双主题令牌(SCSS map 驱动)+ `@property` 注册 + `@font-face`;`--edge`(玻璃卡顶部内高光)/ `--grad-brand` / `--grad-spectrum` 也在这里 |
+| `_reset.scss` | 重置 / body / `data-font` 字体门控 + 全局 `:focus-visible` 兜底 + 标题 `text-wrap: balance` |
+| `_layout.scss` | 两栏壳、左栏身份卡(含头像色环)、联系方式、区块、页脚 + 入场关键帧 + `$block-hues` 区块色相表 |
+| `_cards.scss` | flavor 筹码 / 兴趣 / 技术标签 / 色板 / 项目卡 / 下载卡 / 数字卡 / 排行榜 / GitHub 资料卡 |
 | `_toggle.scss` | 主题拨钮(太阳/云/月亮/星星/滑钮 + 拖动态) |
 | `_search.scss` | search 页:背景光斑 / 时钟 / 表单 / 快捷链接 / 历史 chips |
 | `_music.scss` | 首页音乐播放器:按钮 / 均衡条 / 进度条 |
@@ -94,7 +98,7 @@
 | `_font-picker.scss` | 首启字体选择界面 + 页脚按钮 |
 | `_responsive.scss` | 减弱动效块 + 920px / 560px 断点 |
 | `_compat.scss` | 老浏览器兜底:整块包在 `@supports not (color: … color-mix …)` 下,给所有 color-mix 颜色等价的纯色/纯渐变 |
-| `_lite.scss` | 低配精简层(`html.lite`):去玻璃模糊、去固定渐变层、停常驻动画、去指针光斑 |
+| `_lite.scss` | 低配精简层(`html.lite`):去玻璃模糊、去固定渐变层、停常驻动画、去指针光斑;末尾另有 `prefers-reduced-transparency: reduce` 偏好层(去模糊 + 换不透明玻璃) |
 
 ## 页面差异速查
 

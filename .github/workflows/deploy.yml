@@ -29,6 +29,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          # projects 页的 GitHub 卡片在构建时调 api.github.com:匿名只有 60 次/小时
+          # (Actions 出口 IP 共享,容易被限流),透传 token 提到 5000 次/小时。
+          # 拿不到实时数据时构建会退回 src/data/github-user.snapshot.json,不会失败。
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

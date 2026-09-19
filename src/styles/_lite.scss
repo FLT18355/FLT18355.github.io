@@ -23,6 +23,7 @@ html.lite .stat-card,
 html.lite .leaderboard-row,
 html.lite .preview-card,
 html.lite .search-form,
+html.lite .gh-card,
 html.lite .font-picker {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
@@ -68,4 +69,32 @@ html.lite .project-card {
 /* ---------- 6. 大范围 drop-shadow 也要逐帧栅格化 ---------- */
 html.lite .search-time {
   filter: none;
+}
+
+/* ---------- 7. 系统「减弱透明度」偏好(Safari / macOS 辅助功能开关):
+   玻璃层换成不透明底并去掉模糊,和低配层同一套处理,只是触发条件是用户偏好而非硬件 */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass: rgba(48, 49, 66, 0.97);
+    --glass-item: rgba(60, 62, 82, 0.97);
+  }
+  :root[data-theme="latte"] {
+    --glass: rgba(255, 255, 255, 0.98);
+    --glass-item: rgba(255, 255, 255, 0.99);
+  }
+  .site-nav,
+  .profile,
+  .contact-item,
+  .block,
+  .project-card,
+  .download-card,
+  .stat-card,
+  .gh-card,
+  .leaderboard-row,
+  .preview-card,
+  .search-form,
+  .font-picker {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }

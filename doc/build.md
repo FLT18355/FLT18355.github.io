@@ -10,6 +10,7 @@
 - 改了 `src/data/*.ts`(标题/描述/项目/色板数据)→ 必须 build
 - 改了 `src/styles/*.scss` / `src/scripts/*.ts` → 必须 build(CSS/JS 打包进 `dist/_astro/`,改完刷新源码部署的 dist 即可看到)
 - 改了页面/组件**文案**(新增字符)→ 重新 `python3 subset-font.py`,否则新字符缺字
+- **构建需要网络**:`projects.astro` 构建时会调一次 `https://api.github.com/users/FLT18355`(15s 超时)。拉不到不报错,会打一条 `[github] ...` 警告并退回 `src/data/github-user.snapshot.json`;想更新兜底数据跑 `npm run snapshot:github`。
 
 `public/`(logo.svg / font.woff2 / images/ / .nojekyll)原样拷入 dist,改它们只需重新 build(会重新拷贝),不需要子集化(除非改的是 font.woff2 本身)。
 
@@ -56,7 +57,7 @@ x ls dist/font.woff2 dist/logo.svg dist/.nojekyll dist/images/QQ-cm.svg
 手动抽查(用 `npm run dev` 或 `npm run preview`):
 
 - index.html:导航高亮在 Home,右侧为 About/Interests/Tech
-- projects.html:高亮在 Projects,三张项目卡
+- projects.html:高亮在 Projects,三张项目卡 + GitHub 资料卡(头像 / 名号 / 4 个数字 / 18 行明细 / 折叠的 API endpoints / View on GitHub);断网构建时卡片来自快照,内容不空
 - following.html:高亮在 Following,四张卡(其中 Catppuccin 是紫色强调 + 猫图标)
 - catppuccin.html:**无 JS 也可见** 104 个色块(SSR 直出);点击复制 Hex,有 "Copied!" 反馈
 - search.html:无左栏(无 300px 列),上方实时时钟、下方 Bing 搜索表单;提交后新标签打开 Bing 结果
@@ -83,6 +84,8 @@ x ls dist/font.woff2 dist/logo.svg dist/.nojekyll dist/images/QQ-cm.svg
 | 改主题色/间距 | `src/styles/_tokens.scss`(颜色)/ 对应模块 | 是 |
 | 换站点图标 | `public/logo.svg` | 是(重新拷贝) |
 | 换字体文件 | 替换 `public/font-full.woff2` 后重跑 `subset-font.py` | 字体 |
+| 改 GitHub 卡片字段 | `src/data/github.ts`(normalize)+ `src/components/GithubCard.astro`(details 数组);样式是 `_cards.scss` 的 `.gh-*` | 是 |
+| 刷新 GitHub 兜底快照 | `npm run snapshot:github` | 否(提交 JSON 即可;建议再 build 一次确认卡片正常) |
 
 ## 5. 产物覆盖安全
 

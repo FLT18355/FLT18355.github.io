@@ -13,6 +13,8 @@
   :root {
     --surface: #393a4d;
     --surface-strong: #3f4154;
+    /* --edge 默认值含 color-mix,丢掉会让所有玻璃卡的 box-shadow 整条失效,这里给等价纯色 */
+    --edge: inset 0 1px 0 rgba(205, 214, 244, 0.08);
   }
   :root[data-theme="latte"] {
     --surface: #c6cad4;
@@ -32,7 +34,12 @@
 
   /* ---------- 3. 身份卡 ---------- */
   .profile::before { background: linear-gradient(180deg, var(--primary-dim), transparent); }
-  .profile:hover .avatar-ring { box-shadow: 0 8px 24px var(--mauve-dim); }
+  .avatar-ring {
+    box-shadow: inset 0 0 0 1px var(--glass-border), 0 6px 18px rgba(0, 0, 0, 0.28);
+  }
+  .profile:hover .avatar-ring {
+    box-shadow: inset 0 0 0 1px var(--glass-border), 0 8px 24px var(--mauve-dim);
+  }
   .rail .handle { color: var(--lavender); }
   .rail-label { color: var(--teal); }
   .rail-label::after { background: var(--border); }
@@ -121,7 +128,27 @@
   .leaderboard-row:hover .leaderboard-score-bar { background: var(--acc-dim); }
   .leaderboard-score-num { color: var(--acc); }
 
-  /* ---------- 7. 导航 / 音乐 / 字体弹窗 ---------- */
+  /* ---------- 7. GitHub 资料卡(projects 页) ---------- */
+  .gh-card:hover { border-color: var(--acc-dim); }
+  .gh-avatar { border: 1px solid var(--glass-border); }
+  .gh-avatar:hover { border-color: var(--acc); }
+  .gh-login a,
+  .gh-detail dd a,
+  .gh-api li a,
+  .gh-cta { color: var(--acc); }
+  .gh-detail { border-bottom: 1px solid var(--border); }
+  .gh-detail dd a { border-bottom: 1px solid var(--border); }
+  .gh-stat {
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
+  }
+  .gh-stat:hover {
+    background: var(--sh-dim);
+    border-color: var(--sh);
+  }
+  .gh-stat-value { color: var(--sh); }
+
+  /* ---------- 8. 导航 / 音乐 / 字体弹窗 ---------- */
   .site-nav { background: var(--bg); }
   .nav-item:hover {
     color: var(--text);
@@ -135,7 +162,7 @@
   .music-toggle:hover { background: var(--acc-dim); }
   .font-picker { background: var(--bg); }
 
-  /* ---------- 8. search 页 ---------- */
+  /* ---------- 9. search 页 ---------- */
   .search-bg {
     background:
       radial-gradient(46vw 46vw at 18% 22%, var(--primary-glow) 0%, transparent 70%),
@@ -160,7 +187,7 @@
   .search-greeting-line { background: linear-gradient(90deg, transparent, var(--border), transparent); }
   .search-greeting-text { color: var(--text-muted); }
 
-  /* ---------- 9. 404 页(样式在 404.astro 内联,这里只补 color-mix 那两条描边) ---------- */
+  /* ---------- 10. 404 页(样式在 404.astro 内联,这里只补 color-mix 那两条描边) ---------- */
   .err404-back,
   .err404-search { border-color: var(--primary-dim); }
 }

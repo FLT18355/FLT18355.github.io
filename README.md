@@ -7,7 +7,7 @@
 | 页面 | 内容 |
 |------|------|
 | [`index.html`](index.html) | 主页:关于我、兴趣、技术栈 + Test 音乐播放器 |
-| [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles |
+| [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles + GitHub 资料卡(构建时从 api.github.com 拉取) |
 | [`catppuccin.html`](catppuccin.html) | Catppuccin 色板:4 风味 × 26 色,点击复制 Hex(SSR 直出,无 JS 也可见) |
 | [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin(紫色重点卡 + 猫图标)/ neovim |
 | [`search.html`](search.html) | Bing 搜索页:实时时钟 / 快捷链接 / 最近搜索(无左栏单列布局) |
@@ -20,6 +20,7 @@ npm install        # 首次:安装 astro / vue / sass
 npm run dev        # 开发预览 http://localhost:4321
 npm run build      # 产出 dist/ 六个 HTML + 资源
 npm run preview    # 预览构建产物
+npm run snapshot:github  # 刷新 GitHub 资料卡的兜底快照(构建时优先用实时 API)
 python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,约 3.5 分钟)
 ```
 
@@ -30,6 +31,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 ```
 ├── package.json / astro.config.mjs / tsconfig.json
 ├── subset-font.py        字体子集化脚本
+├── scripts/snapshot-github.mjs  刷新 GitHub 资料卡的兜底快照
 ├── public/               静态资源(原样拷入 dist 根)
 │   ├── font.woff2        Maple Mono NF CN 子集(按源码文本裁剪,按需加载)
 │   ├── logo.webp        logo 原图(头像源文件,页面不直接引用)
@@ -51,12 +53,15 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     ├── layouts/Base.astro   页面骨架(head 元信息 + 主题/字体恢复内联脚本)
     ├── components/
     │   ├── Nav.astro / Rail.astro / Contacts.astro / Footline.astro / ProjectCard.astro
+    │   ├── GithubCard.astro  GitHub 资料卡(消费 data/github.ts)
     │   └── ThemeToggle.vue / FontPicker.vue / PaletteGrid.vue / SearchPanel.vue / MusicPlayer.vue
     ├── data/
     │   ├── site.ts       站点元信息 + 导航配置
     │   ├── projects.ts   项目卡数据(projects / following 共用)
     │   ├── palette.ts    Catppuccin 色板数据(4 风味 × 26 色)
-    │   └── music.ts      音乐播放器曲目(gh-proxy 直链 + 标题)
+    │   ├── music.ts      音乐播放器曲目(gh-proxy 直链 + 标题)
+    │   ├── github.ts     GitHub 资料卡数据源(构建时拉 api.github.com,失败退回快照)
+    │   └── github-user.snapshot.json  api.github.com 响应快照(兜底,`npm run snapshot:github` 刷新)
     ├── scripts/
     │   ├── motion.ts     动效编排(滚动入场、光斑、倾斜、进度线)
     │   └── nav.ts        导航指示条定位
@@ -68,7 +73,9 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 ## 设计机制
 
 - **主题**：Mocha(深)/ Latte(浅)双 Catppuccin 风味,`@property` 注册实现颜色平滑过渡;系统偏好自动适配,`localStorage` 持久化;切换用 View Transition 圆形揭示(ThemeToggle.vue)
-- **多色强调**：Catppuccin 全色相令牌(`_tokens.scss`),每个区块、每条导航、每张项目卡各占一色(区块 `--acc` / 导航 `--nc` / 卡片数据 `hue` → `.h-<hue>`);页面底色是四色氛围网格 + 双光斑,身份卡顶边一条彩虹细线 + 顶部多色光晕,标题/时钟用品牌渐变裁字;动作控件与焦点环仍固定 `--primary`,保证注意力落点唯一
+- **多色强调**：Catppuccin 全色相令牌(`_tokens.scss`),每个区块、每条导航、每张项目卡各占一色(区块 `--acc` / 导航 `--nc` / 卡片数据 `hue` → `.h-<hue>`);页面底色是四色氛围网格 + 双光斑,身份卡顶部多色光晕 + 头像外一圈全色相色环,标题/时钟用品牌渐变裁字;动作控件与焦点环仍固定 `--primary`,保证注意力落点唯一
+- **材质**：玻璃卡片统一 `--edge`(顶部 1px 内高光,浅色主题换成白色内描边) + 双层投影,静止时也有「浮起来」的厚度;系统开「减弱透明度」时与低配层同样去模糊、换不透明底
+- **GitHub 资料卡**(projects 页)：构建时调 `https://api.github.com/users/FLT18355`,把返回的字段尽量铺满卡片(统计块 + 明细表 + 折叠的 API 端点);拉不到(限流 / 断网)自动退回 `src/data/github-user.snapshot.json`,访客侧零请求、无 JS 也完整可见
 - **低配适配**：head 内联脚本按省流量 / 内存 / 核心数判定 `html.lite`,精简层去掉玻璃模糊、固定渐变层与常驻动画(滚动与首屏优先);`?lite=1` / `?lite=0` 可手动对比
 - **老浏览器兜底**：颜色依赖的 `color-mix()` 缺失时由 `_compat.scss`(整块 `@supports not (...)`)给出等价纯色,颜色身份不丢、只是层次降一档
 - **Vue 岛**(client:load)：主题拨钮、首启字体选择、色板复制、搜索页(时钟/历史)、首页 Test 音乐播放器——SSR 直出全部静态内容,JS 不运行页面仍完整可用

@@ -18,6 +18,11 @@
   .project-card::after {
     display: none;
   }
+  /* GitHub 卡的展开折角:静态直接跳变 */
+  .gh-api summary::before,
+  .gh-cta {
+    transition: none;
+  }
 }
 
 /* ============ Responsive collapse ============ */
