@@ -39,7 +39,7 @@
 
 | 文件 | 内容 |
 |---|---|
-| `index.astro` | 主页:About / Interests / Tech Stack 三 block + Test 音乐播放器 |
+| `index.astro` | 主页:About / Interests / Tech Stack / By the Numbers 四 block + Test 音乐播放器 + Local Weather 天气卡(客户端定位与 Open-Meteo,见 `components/WeatherWidget.vue`) |
 | `projects.astro` | 重点项目:terminal / lxm / dotfiles 三卡(`data/projects.ts`)+ GitHub 资料卡(构建时拉 api.github.com,见 `data/github.ts`) |
 | `catppuccin.astro` | 色板页:渲染容器 + `PaletteGrid.vue` |
 | `following.astro` | 关注项目:herdr / oh-my-pi / catppuccin / neovim 四卡 |
@@ -62,6 +62,7 @@
 | `components/PaletteGrid.vue` | 色板:SSR 直出 104 色块 + 水合后点击复制 Hex |
 | `components/SearchPanel.vue` | 搜索页:实时时钟 / Bing 表单 / 快捷链接 / 最近搜索历史 |
 | `components/MusicPlayer.vue` | 首页 Test 播放器:3 曲目(gh-proxy 直链)/ 播放暂停 / 左右键切歌 / 进度跳转 / localStorage 保存上次播放 |
+| `components/WeatherWidget.vue` | 首页 Local Weather 卡(`client:load`,仅首页):geolocation → IP 定位 → 默认坐标的降级链路 + Open-Meteo `current_weather`;30 分钟结果缓存;探测与请求超时用 `AbortController` 收口 |
 
 ### 数据 `src/data/`
 
@@ -71,6 +72,7 @@
 | `projects.ts` | 项目卡数据(改项目在这里) |
 | `palette.ts` | Catppuccin 色板数据(4 风味 × 26 色,含中文说明文案) |
 | `music.ts` | 音乐播放器曲目列表(3 首,gh-proxy 直链 + 标题/作者;仅首曲含封面) |
+| `weather.ts` | 天气卡数据源:默认坐标(北京)、IP 定位端点表、Open-Meteo 地址、WMO 天气码 → 文案/图标表、坐标与方位等纯函数(无浏览器 API 依赖,可在 node 里直接跑) |
 | `github.ts` | GitHub 资料卡数据源:构建时拉 `api.github.com/users/FLT18355` 并归一化;失败退回快照 |
 | `github-user.snapshot.json` | API 响应快照(兜底数据源,`npm run snapshot:github` 刷新;结构 = GitHub 原样返回) |
 
@@ -93,6 +95,7 @@
 | `_toggle.scss` | 主题拨钮(太阳/云/月亮/星星/滑钮 + 拖动态) |
 | `_search.scss` | search 页:背景光斑 / 时钟 / 表单 / 快捷链接 / 历史 chips |
 | `_music.scss` | 首页音乐播放器:按钮 / 均衡条 / 进度条 |
+| `_weather.scss` | 首页天气卡:主行(图标 + 温度 + 状态 + 刷新)/ 四块观测信息(`.weather-tile`)/ 兜底提示与说明文案 / 窄屏回落 |
 | `_motion.scss` | 增量动效层(`html.motion-js` 门控) |
 | `_nav.scss` | 顶部导航 + 滑动指示条 + 窄屏横向滚动 |
 | `_font-picker.scss` | 首启字体选择界面 + 页脚按钮 |

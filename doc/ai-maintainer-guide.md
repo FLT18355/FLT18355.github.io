@@ -81,6 +81,15 @@ npm run build          # 产出 dist/
 - 端点字段(`*_url`)会带上 RFC 6570 模板段(`{/other_user}`),渲染时 href 去掉模板段、文本保留原值。
 - 新增字段的落点:`normalize()` 补一行 → `GithubCard.astro` 的 `details` 数组补一行 → 空值用 `or()`,保证显示 `not set` 而不是空白。
 
+### 3.9 天气卡(首页,客户端定位)
+- **这里是刻意的浏览器侧请求,别「修」成构建时拉取**:天气取决于访客所在位置,构建时拿不到。与 3.8 的 GitHub 卡片方向相反,不要互相「统一」。
+- 定位链路三级,顺序不要动:`navigator.geolocation` → IP 定位端点(`ipwho.is` → `get.geojs.io`,只取经纬度字段,加端点就往 `src/data/weather.ts` 的 `IP_ENDPOINTS` 里加)→ 默认坐标(北京 39.9, 116.4)。**卡片必须在三级都失败时仍有内容**,不允许出现空卡片或错误占位当正文。
+- 天气请求必须带 `timezone=auto`(否则 `current_weather.time` 是 UTC,「观测时间」会显示成别处的时间,且前端不做时区换算,只切字符串)。
+- 单位写死在文案里(请求不传 `temperature_unit` / `windspeed_unit`,默认就是 °C / km/h):改单位要同时改请求参数与 `_weather.scss` 里的 `°C` / `km/h`。
+- 缓存键 `localStorage['weather-cache']`,TTL 30 分钟(`CACHE_TTL`);改缓存结构不用管老数据,`restoreCache()` 会逐字段校验并丢弃不合法的旧值。
+- 新增可见文案后照样要重跑 `python3 subset-font.py`(这次就为 `°` 跑过一次)。
+- 新增常驻动画 / 模糊层要同步 `_lite.scss`(当前天气卡没有,所以没登记);新增 color-mix 的等价兜底在 `_compat.scss` 第 11 节。
+
 ## 4. 页面内容约定
 
 - 文案语言:页面 UI 以英文为主(About Me / Interests / Tech Stack / Featured Projects …),中文仅用于面向用户的提示(字体选择界面、联系方式里纯中文标签等)。新增文案按此惯例。
@@ -96,7 +105,7 @@ npm run build          # 产出 dist/
 
 ## 5. 技术栈约束
 
-- 框架:Astro 7 + Vue 3(仅五个交互岛,`client:load`)+ SCSS。交互逻辑优先放 Vue 岛;纯 DOM 增强(指示条/动效编排)用 `src/scripts/*.ts` 由 Base.astro 打包。
+- 框架:Astro 7 + Vue 3(仅六个交互岛,`client:load`)+ SCSS。交互逻辑优先放 Vue 岛;纯 DOM 增强(指示条/动效编排)用 `src/scripts/*.ts` 由 Base.astro 打包。
 - 不要引入外部 CDN / 运行时框架依赖;动效零第三方库。
 - 修改公共结构后用 `doc/build.md` 的验证清单(self-check)。
 
@@ -114,3 +123,4 @@ npm run build          # 产出 dist/
 - [ ] 新增重效果(模糊 / 固定层大渐变 / 常驻动画):已在 `_lite.scss` 补关闭,并在 `?lite=1` 下自查
 - [ ] 新增玻璃面:`box-shadow` 是 `var(--edge)` + 同数量投影,且 `_lite.scss` 的模糊关闭清单里有它
 - [ ] 动了 GitHub 卡片:构建日志无 `[github] ... 失败`(有的话说明走了快照,确认是否符合预期)
+- [ ] 动了天气卡:首页底部卡片在「允许定位 / 拒绝定位 / 断网」三种情况下都有内容(拒绝与断网时坐标必须回落到 IP 或默认北京),定位方式与坐标如实显示,Refresh 能重新取数

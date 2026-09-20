@@ -1,8 +1,9 @@
 ---
-// index.astro - 首页:关于 / 兴趣 / 技术栈
+// index.astro - 首页:关于 / 兴趣 / 技术栈 / 音乐 / 天气
 import Base from '../layouts/Base.astro';
 import MusicPlayer from '../components/MusicPlayer.vue';
 import StatsCounter from '../components/StatsCounter.vue';
+import WeatherWidget from '../components/WeatherWidget.vue';
 ---
 
 <Base
@@ -73,4 +74,6 @@ import StatsCounter from '../components/StatsCounter.vue';
   </section>
 
   <MusicPlayer client:load />
+
+  <WeatherWidget client:load />
 </Base>

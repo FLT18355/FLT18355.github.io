@@ -190,4 +190,17 @@
   /* ---------- 10. 404 页(样式在 404.astro 内联,这里只补 color-mix 那两条描边) ---------- */
   .err404-back,
   .err404-search { border-color: var(--primary-dim); }
+
+  /* ---------- 11. 首页天气卡 ---------- */
+  .weather-now {
+    background: var(--glass-item);
+    border: 1px solid var(--glass-border);
+  }
+  .weather-icon {
+    background: var(--acc-dim);
+    color: var(--acc);
+  }
+  .weather-tile:hover { border-color: var(--acc); }
+  .weather-refresh:hover:not(:disabled) { background: var(--primary-dim); }
+  .weather-hint { color: var(--peach); }
 }

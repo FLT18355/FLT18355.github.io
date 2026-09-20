@@ -1,0 +1,176 @@
+/* _weather.scss - 首页 Local Weather 卡(定位 / 当前天气 / 观测信息)
+   色相来自区块表($block-hues 的 b-weather = sky);动作控件(刷新按钮)固定用 --primary。 */
+
+.weather-now {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--acc) 8%, var(--glass-item));
+  border: 1px solid color-mix(in srgb, var(--acc) 22%, var(--glass-border));
+  box-shadow: var(--edge), var(--shadow);
+}
+
+.weather-icon {
+  flex: none;
+  width: 66px;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--acc) 14%, transparent);
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+}
+.weather-icon svg {
+  width: 38px;
+  height: 38px;
+}
+
+.weather-main {
+  min-width: 0;
+}
+/* 温度是这张卡的「主数字」:与 rail 标题 / search 时钟同一套品牌渐变裁字 */
+.weather-temp {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.weather-unit {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.weather-cond {
+  margin-top: 2px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.weather-refresh {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
+}
+.weather-refresh svg {
+  width: 14px;
+  height: 14px;
+}
+.weather-refresh:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-dim);
+}
+.weather-refresh:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.weather-refresh:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* ---------- 观测信息:风 / 观测时间 / 时区 / 位置 ---------- */
+.weather-facts {
+  display: grid;
+  /* 140px 起自动换列:窄屏自然回落成 2 列 / 1 列,不用写断点 */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.weather-tile {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--glass-item);
+  border: 1px solid var(--glass-border);
+  transition: border-color 0.15s;
+}
+.weather-tile:hover {
+  border-color: color-mix(in srgb, var(--acc) 45%, var(--glass-border));
+}
+.weather-tile dt {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.weather-tile dd {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.weather-value {
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.weather-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.weather-hint {
+  margin-top: 12px;
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--peach), var(--text) var(--hue-fg-mix));
+}
+.weather-note {
+  margin-top: 12px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ---------- 小屏适配 ---------- */
+@media (max-width: 560px) {
+  .weather-now {
+    grid-template-columns: auto 1fr;
+    row-gap: 14px;
+    padding: 14px;
+    gap: 14px;
+  }
+  .weather-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+  }
+  .weather-icon svg {
+    width: 31px;
+    height: 31px;
+  }
+  .weather-temp {
+    font-size: 2rem;
+  }
+  /* 刷新按钮独占一行,不再和温度挤在一起 */
+  .weather-refresh {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+}

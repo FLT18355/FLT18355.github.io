@@ -9,7 +9,7 @@
 ```
 src/pages/*.astro         页面(每页一个组件树)
 src/layouts/Base.astro    骨架(head 元信息 + 主题/字体恢复内联脚本)
-src/components/           .astro 组件 + 五个 .vue 交互岛
+src/components/           .astro 组件 + 六个 .vue 交互岛
 src/data/                 站点/项目/色板数据(TS 模块)
 src/scripts/              motion.ts / nav.ts(打包进页面)
 src/styles/               SCSS 模块(global.scss 汇总)
@@ -25,7 +25,7 @@ dist/                    产物:经 GitHub Actions 自动部署,或用 scripts/d
 - 五页(index/projects/catppuccin/following)共享 `Base.astro`:顶部导航(含主题拨钮)、左侧身份栏(头像/名号/标语/联系方式)、右侧内容区、页脚。
 - search 页是无左栏页面(bare 模式):页面传 `rail={false}`,`Base.astro` 不渲染 `<Rail />` 并给 `.shell` 加 `shell--bare` 类(单列网格 + 内容限宽居中,见 `src/styles/_layout.scss`)。
 - 页级差异只有 4 个点:`title`、`description`、导航 `aria-current`、`<main>` 内容,由各页面文件与 `src/data/site.ts` 定义。
-- 交互逻辑收敛为五个 Vue 岛(`client:load`):主题拨钮、首启字体选择、色板复制、搜索页、首页 Test 音乐播放器。**全部 SSR 直出静态内容,JS 不加载页面仍完整可用**(旧版色板页是 JS 渲染,无 JS 空白)。
+- 交互逻辑收敛为六个 Vue 岛(`client:load`):主题拨钮、首启字体选择、色板复制、搜索页、首页 Test 音乐播放器、首页天气卡。**除天气卡外全部 SSR 直出静态内容,JS 不加载页面仍完整可用**(旧版色板页是 JS 渲染,无 JS 空白);天气卡的内容取决于访客位置,只能在浏览器侧请求(见 3.10),无 JS 时显示一行提示。
 
 ## 2. 构建管线
 
@@ -98,11 +98,21 @@ python3 subset-font.py   # 字体子集化(独立步骤,见 3.2)
 - 字段覆盖:除 `*_url`(10 个 API 端点,折叠在 `<details>` 里)之外的字段全部上卡片,空值显示 `not set`;端点 href 去掉 RFC 6570 模板段(`{/other_user}` 之类)再输出。
 - 新字段(例如 GitHub 以后再加一个 `pronouns`):在 `normalize()` 里补一行,再在 `GithubCard.astro` 的 `details` 数组里补一行,不用动样式。
 
+### 3.10 首页天气卡(客户端定位 + Open-Meteo)
+- **与 3.9 相反,这里是刻意的浏览器侧请求**:天气取决于访客所在位置,构建时拿不到,所以 `WeatherWidget.vue`(`client:load`,只挂首页)在挂载后才定位并请求。JS 不跑时卡片显示占位(`--`)与一行提示,不做假数据。
+- **定位链路**(降级逐级兜底,`src/data/weather.ts`):`navigator.geolocation`(8s 超时、`enableHighAccuracy: false`、`maximumAge` 10 分钟)→ 无 Key 的 IP 定位端点顺序尝试(`ipwho.is` → `get.geojs.io`,6s 超时,只取经纬度两个字段,其余响应字段一律不用)→ 默认坐标(北京 39.9, 116.4)。三级都记在卡片上(`GPS` / `IP location` / `Default (Beijing)`),坐标同时展示,不靠猜。已经明确拒绝授权时(`navigator.permissions` 为 `denied`)直接跳过定位调用,省掉一次无谓报错。
+- **天气请求**:`https://api.open-meteo.com/v1/forecast?latitude=..&longitude=..&current_weather=true&timezone=auto`,免费且无需 API Key。**`timezone=auto` 是必需的**:否则返回的 `time` 是 UTC,「观测时间」会显示成别的地方的时间;带上它以后 API 返回的就是该地当地时间,前端只切字符串,不做时区换算。
+- **单位**:请求不传 `temperature_unit` / `windspeed_unit`,即用默认 °C 与 km/h,所以卡片文案里的 `°C` / `km/h` 是写死的;要换单位得同时改请求参数与 `_weather.scss` 里的文案。
+- **缓存**:结果(坐标 + 定位方式 + 天气 + 时区)写 `localStorage('weather-cache')`,30 分钟内直接复用,避免每次进首页都弹定位授权;手动点 Refresh 会重新走一遍完整链路。
+- **超时与失败**:所有请求都用 `AbortController` 收口(不用 `AbortSignal.timeout`,照顾老浏览器),任一环节失败都不阻塞渲染;Open-Meteo 失败时卡片进入错误态并给 Refresh 按钮,不清空已有坐标。
+- **天气码**:WMO code → 文案 + 图标的表在 `src/data/weather.ts` 的 `WMO_WEATHER`(`iconNight` 用于夜间换成月亮);图标是 24x24 描边 path,存在同一文件的 `WEATHER_ICONS`(云 / 月亮拆成常量复用),`stroke` 由 CSS 给,不引第三方图标库。
+- **色相与动效**:区块色相 `b-weather` = sky(`_layout.scss` 的 `$block-hues`);观测信息四块 `.weather-tile` 走 `_motion.scss` 的筹码二级错峰;刷新按钮是动作控件,固定用 `--primary`;没有新增常驻动画与模糊层,所以 `_lite.scss` 无需新增条目(新增 color-mix 的等价兜底在 `_compat.scss` 第 11 节)。
+
 ## 4. 当前页面与数据
 
 | 页 | `src/pages/` | 内容 |
 |---|---|---|
-| index | `index.astro` | About Me / Interests / Tech Stack |
+| index | `index.astro` | About Me / Interests / Tech Stack + By the Numbers + Test 音乐播放器 + Local Weather 天气卡(`WeatherWidget.vue` + `data/weather.ts`,客户端定位与请求,见 3.10) |
 | projects | `projects.astro` | terminal / lxm / dotfiles 三卡(`data/projects.ts`)+ GitHub 资料卡(`data/github.ts`,构建时拉 api.github.com) |
 | catppuccin | `catppuccin.astro` | 色板页:4 风味 × 26 色(`PaletteGrid.vue` + `data/palette.ts`,含中文文案需进字体字符集) |
 | following | `following.astro` | herdr / oh-my-pi / catppuccin(`f-catppuccin` 单色紫强调卡,线性猫 SVG 图标)/ neovim |

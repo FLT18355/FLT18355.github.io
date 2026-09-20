@@ -10,7 +10,7 @@
 - 改了 `src/data/*.ts`(标题/描述/项目/色板数据)→ 必须 build
 - 改了 `src/styles/*.scss` / `src/scripts/*.ts` → 必须 build(CSS/JS 打包进 `dist/_astro/`,改完刷新源码部署的 dist 即可看到)
 - 改了页面/组件**文案**(新增字符)→ 重新 `python3 subset-font.py`,否则新字符缺字
-- **构建需要网络**:`projects.astro` 构建时会调一次 `https://api.github.com/users/FLT18355`(15s 超时)。拉不到不报错,会打一条 `[github] ...` 警告并退回 `src/data/github-user.snapshot.json`;想更新兜底数据跑 `npm run snapshot:github`。
+- **构建需要网络**:`projects.astro` 构建时会调一次 `https://api.github.com/users/FLT18355`(15s 超时)。拉不到不报错,会打一条 `[github] ...` 警告并退回 `src/data/github-user.snapshot.json`;想更新兜底数据跑 `npm run snapshot:github`。(首页天气卡是访客侧请求,构建期不联网,见 architecture 3.10。)
 
 `public/`(logo.svg / font.woff2 / images/ / .nojekyll)原样拷入 dist,改它们只需重新 build(会重新拷贝),不需要子集化(除非改的是 font.woff2 本身)。
 
@@ -57,6 +57,7 @@ x ls dist/font.woff2 dist/logo.svg dist/.nojekyll dist/images/QQ-cm.svg
 手动抽查(用 `npm run dev` 或 `npm run preview`):
 
 - index.html:导航高亮在 Home,右侧为 About/Interests/Tech
+- index.html 天气卡(页面最底部):首次访问会请求定位授权;允许后显示当地温度/天气/风/观测时间/时区/坐标,定位方式显示 `GPS`;拒绝授权后回落到 IP 定位(`IP location`),IP 也不通则用默认北京(`Default (Beijing)` 且带一行说明),**三种情况下卡片都必须有内容**;Refresh 按钮能重新定位取数;30 分钟内再次进入直接读缓存(`localStorage['weather-cache']`),不再弹授权
 - projects.html:高亮在 Projects,三张项目卡 + GitHub 资料卡(头像 / 名号 / 4 个数字 / 18 行明细 / 折叠的 API endpoints / View on GitHub);断网构建时卡片来自快照,内容不空
 - following.html:高亮在 Following,四张卡(其中 Catppuccin 是紫色强调 + 猫图标)
 - catppuccin.html:**无 JS 也可见** 104 个色块(SSR 直出);点击复制 Hex,有 "Copied!" 反馈
@@ -65,7 +66,7 @@ x ls dist/font.woff2 dist/logo.svg dist/.nojekyll dist/images/QQ-cm.svg
 - search.html 最近搜索:提交过非空搜索后出现 Recent 区(chips 最多 5 条,点击新标签重搜,Clear 清空);localStorage 键 `search-history`
 - search.html 快捷链接:GitHub/Bilibili/YouTube/MDN 四卡,悬停微浮起
 - search.html 背景光斑:内容下方有 `.search-bg`(其它页面 grep 应为 0 处);开启动效时两个光斑缓慢漂浮,系统开「减弱动效」后静止
-- 页面隔离:`grep -c 'quicklink\|search-bg' dist/*.html` 在非 search 页应全为 0
+- 页面隔离:`grep -c 'quicklink\|search-bg' dist/*.html` 在非 search 页应全为 0;`grep -c 'weather-now' dist/*.html` 只有 index 为 1
 - 首次访问(清 localStorage)出现字体选择界面;选完自动刷新不再弹出;页脚「字体」按钮可重开
 - 双主题切换:拨钮拖拽/点击/键盘,主题持久化;切换瞬间新主题从拨钮中心圆形扩散,扩散全程不遮挡文字/卡片(若切换时出现整屏色块盖住内容即为回归)
 - 手机窄屏(≤390px):导航链接区可左右滑动、无滚动条,主题拨钮固定右侧;当前页若在屏幕外加载时自动滚到中间,指示条跟随不错位
@@ -85,6 +86,7 @@ x ls dist/font.woff2 dist/logo.svg dist/.nojekyll dist/images/QQ-cm.svg
 | 换站点图标 | `public/logo.svg` | 是(重新拷贝) |
 | 换字体文件 | 替换 `public/font-full.woff2` 后重跑 `subset-font.py` | 字体 |
 | 改 GitHub 卡片字段 | `src/data/github.ts`(normalize)+ `src/components/GithubCard.astro`(details 数组);样式是 `_cards.scss` 的 `.gh-*` | 是 |
+| 改天气卡(定位链路 / IP 端点 / 天气码文案) | `src/data/weather.ts`(端点、WMO 表、纯函数)+ `src/components/WeatherWidget.vue`;样式 `_weather.scss`(区块色相在 `_layout.scss` 的 `$block-hues`) | 是(文案新增字符还要跑 `subset-font.py`) |
 | 刷新 GitHub 兜底快照 | `npm run snapshot:github` | 否(提交 JSON 即可;建议再 build 一次确认卡片正常) |
 
 ## 5. 产物覆盖安全

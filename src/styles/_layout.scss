@@ -301,7 +301,7 @@ html.motion-js .block.in {
   animation: blockIn 0.65s var(--ease-out) both;
   animation-delay: var(--d, 0s);
 }
-@for $i from 1 through 5 {
+@for $i from 1 through 6 {
   html.motion-js .content .block:nth-child(#{$i}) {
     --d: #{0.06s + ($i - 1) * 0.08s};
   }
@@ -314,6 +314,7 @@ $block-hues: (
   'b-tech': 'teal',
   'b-stats': 'peach',
   'b-music': 'pink',
+  'b-weather': 'sky',
   'b-projects': 'green',
   'b-github': 'lavender',
   'b-download': 'sky',

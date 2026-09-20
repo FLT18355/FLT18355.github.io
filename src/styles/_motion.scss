@@ -30,6 +30,7 @@ html.motion-js .block.in .block-header::after {
 html.motion-js .block.in .interest,
 html.motion-js .block.in .tech-tag,
 html.motion-js .block.in .flavor,
+html.motion-js .block.in .weather-tile,
 html.motion-js .block.in .stat-card {
   animation: chipIn 0.5s var(--ease-out) backwards;
 }
@@ -37,6 +38,7 @@ html.motion-js .block.in .stat-card {
   html.motion-js .block.in .interest:nth-child(#{$i}),
   html.motion-js .block.in .tech-tag:nth-child(#{$i}),
   html.motion-js .block.in .flavor:nth-child(#{$i}),
+  html.motion-js .block.in .weather-tile:nth-child(#{$i}),
   html.motion-js .block.in .stat-card:nth-child(#{$i}) {
     animation-delay: calc(var(--d, 0s) + #{0.18s + ($i - 1) * 0.06s});
   }
@@ -44,6 +46,7 @@ html.motion-js .block.in .stat-card {
 html.motion-js .block.in .interest:nth-child(n+5),
 html.motion-js .block.in .tech-tag:nth-child(n+5),
 html.motion-js .block.in .flavor:nth-child(n+5),
+html.motion-js .block.in .weather-tile:nth-child(n+5),
 html.motion-js .block.in .stat-card:nth-child(n+5) {
   animation-delay: calc(var(--d, 0s) + 0.42s);
 }
