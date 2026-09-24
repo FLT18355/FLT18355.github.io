@@ -24,6 +24,9 @@ html.lite .leaderboard-row,
 html.lite .preview-card,
 html.lite .search-form,
 html.lite .gh-card,
+html.lite .reader-bar,
+html.lite .reader-font-panel,
+html.lite .reader-drawer-panel,
 html.lite .font-picker {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
@@ -100,6 +103,9 @@ html.lite .search-time {
   .leaderboard-row,
   .preview-card,
   .search-form,
+  .reader-bar,
+  .reader-font-panel,
+  .reader-drawer-panel,
   .font-picker {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

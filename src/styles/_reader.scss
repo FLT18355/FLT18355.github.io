@@ -1,28 +1,35 @@
 /* _reader.scss - Markdown 阅读器页(reader.html,无左栏、占满 shell 宽度)
    结构与职责:
-   .reader            玻璃工作区:工具条 + 目录树 + 文档区(不设 backdrop-filter,
-                      因为窄屏抽屉/遮罩要用 position:fixed,而 filter/backdrop-filter
-                      会变成 fixed 子元素的包含块;面板用不透明白玻 --bg-card,
-                      长文阅读反而更稳,也少一条 _lite.scss 清单)
+   .reader            阅读工作区:工具条 + 目录树 + 文档区(本体不设 backdrop-filter,
+                      因为窄屏抽屉与字体面板要用 position:fixed,而 filter/backdrop-filter
+                      会变成 fixed 子元素的包含块,把浮层关进卡里)
    .reader-bar        粘性工具条:压缩包标识 + Open ZIP / Font / 目录(窄屏)
    .reader-tree       目录树(桌面 sticky 自滚动;窄屏整页抽屉,见 .reader-drawer)
-   .reader-doc        渲染后的 Markdown(正文限宽 72ch)
+   .reader-doc        渲染后的 Markdown(正文限宽 76ch)
    .reader-drawer     窄屏抽屉层:遮罩 + 树面板(position:fixed,全高)
 
    色相:页面取 sky 作强调(导航第 6 条同色);动作控件仍固定 --primary;
         正文(Markdown)另有一套固定分工,见「渲染出的 Markdown 排版」一节。
    字体:页面强制以系统字体栈(--sys-font)打底,不跟随站点字体选择;
         上传的自定义字体只覆盖这一层(--reader-font),见 .has-reading-font。
+   材质:卡本体保持不透明 --bg-card——字体面板与窄屏抽屉是 position:fixed 子元素,
+        祖先一旦挂 filter / backdrop-filter 就会成为它们的包含块,浮层会被关进卡里;
+        玻璃(--glass + blur)只给「浮在页面背景之上」的工具条与两个浮层,与 .block 同一套。
+   圆角:14 卡 / 14 浮层 / 12 正文里的块 / 10 控件 / 8 输入框。
    动效:只有工具条下的读取进度线一条;都挂 prefers-reduced-motion 关闭。 */
 
 .reader {
   --acc: var(--sky);
   --acc-dim: var(--sky-dim);
   --reader-font: var(--sys-font);
+  /* 代码字体栈单独一条:--mono 里没有任何 CJK 字形,代码块的中文会直接掉到
+     浏览器最后兜底字体。所以自定义字体要顶到这一栈的最前面,
+     而不是只挂在 --reader-font 上(那一层管不到 code)。 */
+  --reader-code-font: var(--mono), var(--sys-font);
   font-family: var(--reader-font);
   position: relative;
-  border-radius: 16px;
-  border: 1px solid var(--border);
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
   background: var(--bg-card);
   box-shadow: var(--edge), var(--shadow);
   /* 不用 overflow:hidden(会吞掉 sticky 定位),圆角交给内部各面自己收 */
@@ -31,6 +38,9 @@
    @font-face 由 lib/reader/custom-font.ts 注入(.has-reading-font 由组件按已存/已上传状态挂上) */
 .reader.has-reading-font {
   --reader-font: "ReadingFont", var(--sys-font);
+  /* 代码块同样顶到最前面:要的是「中文完全用上传的字体」,
+     等宽栈排在后面只作为 ReadingFont 缺字时的回落 */
+  --reader-code-font: "ReadingFont", var(--mono), var(--sys-font);
 }
 
 /* ============ 工具条(粘在站点导航之下) ============ */
@@ -44,9 +54,13 @@
   gap: 12px;
   padding: 10px 16px;
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: 16px 16px 0 0;
-  /* 工具条下沿:站点谱系线,和文档标题下沿同一笔——阅读器的分隔语言 */
+  /* 与 .block 同一套玻璃:桌面不粘,背景就是卡底,视觉上等于「透明 + 一条分隔线」;
+     窄屏粘住时它才真正糊住下面滚过去的正文 */
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+  border-radius: 14px 14px 0 0;
+  /* 工具条下沿:站点谱系线,和文档标题下沿同一笔(阅读器的分隔语言) */
   background-image: var(--grad-spectrum);
   background-repeat: no-repeat;
   background-position: bottom left;
@@ -165,16 +179,16 @@
 .reader-alert {
   margin: 14px 16px;
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid var(--red-dim);
-  background: color-mix(in srgb, var(--red) 7%, var(--bg-card));
+  background: color-mix(in srgb, var(--red) 12%, var(--bg-card));
   color: color-mix(in srgb, var(--red), var(--text) var(--hue-fg-mix));
   font-size: 0.84rem;
   line-height: 1.6;
 }
 .reader-alert.is-info {
   border-color: var(--acc-dim);
-  background: color-mix(in srgb, var(--acc) 7%, var(--bg-card));
+  background: color-mix(in srgb, var(--acc) 10%, var(--bg-card));
   color: var(--text-secondary);
 }
 
@@ -299,7 +313,8 @@
   transition: color 0.12s, background-color 0.12s;
 }
 .reader-node:hover {
-  background: var(--surface-strong);
+  /* 和站内导航项同一手法:悬停铺一层本页色相,而不是中性灰 */
+  background: color-mix(in srgb, var(--acc) 9%, var(--surface-strong));
   color: var(--text);
 }
 .reader-node:focus-visible {
@@ -363,7 +378,7 @@
   font-size: 0.95rem;
   line-height: 1.8;
 }
-/* 空态图标:页面色相的圆角徽章,别处不放这种装饰 */
+/* 空态图标:页面色相的圆角徽章 + 与 .block-header 菱形同一手的柔光 */
 .reader-hint-ico {
   width: 46px;
   height: 46px;
@@ -372,6 +387,7 @@
   border-radius: 14px;
   background: var(--acc-dim);
   color: var(--acc);
+  box-shadow: inset 0 0 0 1px var(--acc-dim), 0 0 22px var(--acc-dim);
 }
 .reader-hint strong {
   color: var(--text);
@@ -404,8 +420,10 @@
   bottom: 0;
   left: 0;
   width: min(86vw, 320px);
-  background: var(--bg-card);
-  border-right: 1px solid var(--border);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  backdrop-filter: blur(16px) saturate(1.35);
+  border-right: 1px solid var(--glass-border);
   box-shadow: var(--shadow-lift);
   display: flex;
   flex-direction: column;
@@ -443,7 +461,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-secondary);
@@ -476,8 +494,10 @@
   width: min(340px, calc(100vw - 32px));
   padding: 16px;
   border-radius: 14px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  backdrop-filter: blur(16px) saturate(1.35);
   box-shadow: var(--edge), var(--shadow-lift);
   animation: readerFade 0.16s ease-out both;
 }
@@ -509,7 +529,8 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-secondary);
-  font-family: var(--mono);
+  /* 文件名也可能是中文,同样不能留在纯 --mono 栈里 */
+  font-family: var(--reader-code-font);
   font-size: 0.76rem;
 }
 .reader-font-name.is-default {
@@ -547,7 +568,7 @@
     left: 0;
     right: 0;
     width: 100%;
-    border-radius: 16px 16px 0 0;
+    border-radius: 14px 14px 0 0;
     border-right: 0;
     border-left: 0;
     border-bottom: 0;
@@ -642,6 +663,7 @@
   border-radius: 3px;
 }
 .reader-doc a:hover {
+  background: color-mix(in srgb, var(--acc) 15%, transparent);
   text-decoration-color: var(--acc);
   text-decoration-thickness: 2px;
 }
@@ -725,9 +747,10 @@
 .reader-doc blockquote > :last-child {
   margin-bottom: 0;
 }
-/* 行内代码:pink 是「逐字照抄」的专色,不与标题的谱系色相撞 */
+/* 行内代码:pink 是「逐字照抄」的专色,不与标题的谱系色相撞。
+   字体走 --reader-code-font:等宽栈里没有 CJK 字形,中文必须由它指定 */
 .reader-doc code {
-  font-family: var(--mono);
+  font-family: var(--reader-code-font);
   font-size: 0.86em;
   background: var(--surface-strong);
   border: 1px solid color-mix(in srgb, var(--pink) 28%, var(--border));
@@ -739,8 +762,8 @@
   margin: 0 0 18px;
   padding: 14px 16px;
   border-radius: 12px;
-  border: 1px solid var(--border);
-  /* 代码块用 --bg 作凹槽(深色主题更深、浅色主题更亮),与卡片面区分 */
+  /* 代码块与行内代码同属一支:描边吃 pink,底色用 --bg 作凹槽 */
+  border: 1px solid color-mix(in srgb, var(--pink) 24%, var(--border));
   background: var(--bg);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -848,12 +871,8 @@
   }
 }
 @media (max-width: 560px) {
-  .reader {
-    border-radius: 12px;
-  }
   .reader-bar {
     padding: 8px 10px;
-    border-radius: 12px 12px 0 0;
   }
   .reader-count {
     display: none;

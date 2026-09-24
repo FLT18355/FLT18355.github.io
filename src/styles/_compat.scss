@@ -237,6 +237,15 @@
   .reader-doc h2 {
     background: linear-gradient(90deg, var(--border), transparent) bottom left / 100% 1px no-repeat;
   }
+  .reader-node:hover {
+    background: var(--surface-strong);
+  }
+  .reader-doc pre {
+    border: 1px solid var(--border);
+  }
+  .reader-doc a:hover {
+    background: var(--acc-dim);
+  }
   .reader-doc tbody tr:nth-child(even) td {
     background: var(--surface);
   }
