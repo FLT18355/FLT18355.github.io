@@ -113,6 +113,7 @@ $nav-hues: (
   3: 'mauve',
   4: 'pink',
   5: 'teal',
+  6: 'sky',
 );
 @each $i, $tok in $nav-hues {
   .nav-list .nav-item:nth-child(#{$i}) {

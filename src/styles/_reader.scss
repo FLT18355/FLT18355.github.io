@@ -1,0 +1,736 @@
+/* _reader.scss - Markdown 阅读器页(reader.html,无左栏、占满 shell 宽度)
+   结构与职责:
+   .reader            玻璃工作区:工具条 + 目录树 + 文档区(不设 backdrop-filter,
+                      因为窄屏抽屉/遮罩要用 position:fixed,而 filter/backdrop-filter
+                      会变成 fixed 子元素的包含块;面板用不透明白玻 --bg-card,
+                      长文阅读反而更稳,也少一条 _lite.scss 清单)
+   .reader-bar        粘性工具条:压缩包标识 + Open ZIP / Font / 目录(窄屏)
+   .reader-tree       目录树(桌面 sticky 自滚动;窄屏整页抽屉,见 .reader-drawer)
+   .reader-doc        渲染后的 Markdown(正文限宽 72ch)
+   .reader-drawer     窄屏抽屉层:遮罩 + 树面板(position:fixed,全高)
+
+   色相:页面取 sky 作强调(导航第 6 条同色);动作控件仍固定 --primary。
+   动效:只有工具条下的读取进度线一条;都挂 prefers-reduced-motion 关闭。 */
+
+.reader {
+  --acc: var(--sky);
+  --acc-dim: var(--sky-dim);
+  position: relative;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: var(--edge), var(--shadow);
+  /* 不用 overflow:hidden(会吞掉 sticky 定位),圆角交给内部各面自己收 */
+}
+
+/* ============ 工具条(粘在站点导航之下) ============ */
+.reader-bar {
+  position: sticky;
+  top: 56px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 16px 16px 0 0;
+}
+/* 桌面:工具条不粘(有树 + 文档,滚动是页级);只有窄屏需要它跟手 */
+@media (min-width: 921px) {
+  .reader-bar {
+    position: static;
+    border-radius: 0;
+  }
+}
+
+.reader-bar-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.reader-bar-title .reader-ico {
+  color: var(--acc);
+}
+.reader-zip {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.reader-count {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.reader-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+.reader-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
+}
+.reader-btn:hover:not(:disabled) {
+  color: var(--primary);
+  border-color: var(--primary-dim);
+  background: var(--primary-glow);
+}
+.reader-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.reader-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.reader-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.reader-btn.is-active {
+  color: var(--primary);
+  border-color: var(--primary-dim);
+  background: var(--primary-glow);
+}
+/* 窄屏工具条按钮:大触控目标 */
+@media (max-width: 560px) {
+  .reader-btn {
+    height: 42px;
+    padding: 0 12px;
+    font-size: 0.82rem;
+  }
+}
+
+/* ============ 读取进度线(加载 ZIP 时) ============ */
+.reader-progress {
+  position: relative;
+  height: 3px;
+  margin: 0;
+  overflow: hidden;
+  background: var(--surface-strong);
+}
+.reader-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 34%;
+  background: linear-gradient(90deg, transparent, var(--acc), transparent);
+  animation: readerSweep 1.1s var(--ease-out) infinite;
+}
+@keyframes readerSweep {
+  from { transform: translateX(-110%); }
+  to   { transform: translateX(330%); }
+}
+
+/* ============ 提示条(错误 / 无 md 文件) ============ */
+.reader-alert {
+  margin: 14px 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--red-dim);
+  background: color-mix(in srgb, var(--red) 7%, var(--bg-card));
+  color: color-mix(in srgb, var(--red), var(--text) var(--hue-fg-mix));
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+.reader-alert.is-info {
+  border-color: var(--acc-dim);
+  background: color-mix(in srgb, var(--acc) 7%, var(--bg-card));
+  color: var(--text-secondary);
+}
+
+/* ============ 主体:树 + 文档 ============ */
+.reader-body {
+  display: grid;
+  grid-template-columns: 288px 1fr;
+  align-items: start;
+  min-width: 0;
+}
+.reader-main {
+  min-width: 0;
+  border-left: 1px solid var(--border);
+}
+
+/* ---------- 目录树 ---------- */
+.reader-tree {
+  position: sticky;
+  top: 72px;
+  /* 树超长时内部滚动:先 100vh 兜底再上 100dvh(移动端地址栏收起时) */
+  max-height: calc(100vh - 96px);
+  max-height: calc(100dvh - 96px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 12px 10px 18px;
+}
+.reader-tree-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 6px 8px;
+}
+.reader-filter {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-family: inherit;
+}
+.reader-filter::placeholder {
+  color: var(--text-muted);
+}
+.reader-filter:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+.reader-search {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.reader-tree-head--drawer {
+  margin: 0;
+  padding: 10px 12px;
+}
+.reader-tree-count {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  color: var(--text-muted);
+}
+.reader-tree-empty {
+  padding: 22px 14px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* 树本体:纯 <ul>/<li> + 按钮,原生键盘可达,不装 role=tree 的架子 */
+.reader-tree-list,
+.reader-tree-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.reader-tree-list ul {
+  margin-left: 15px;
+  border-left: 1px solid var(--border);
+  padding-left: 4px;
+}
+.reader-tree-item {
+  margin: 1px 0;
+}
+.reader-node {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-weight: 500;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.12s, background-color 0.12s;
+}
+.reader-node:hover {
+  background: var(--surface-strong);
+  color: var(--text);
+}
+.reader-node:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+.reader-node .reader-ico {
+  flex: none;
+  color: var(--text-muted);
+}
+.reader-node-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 目录节点:chevron + 文件夹图标;折叠时 chevron 收平 */
+.reader-node--dir .reader-ico--chev {
+  transition: transform 0.16s var(--ease-out);
+  color: var(--text-muted);
+}
+.reader-node--dir.is-collapsed .reader-ico--chev {
+  transform: rotate(-90deg);
+}
+.reader-node--dir .reader-ico--folder {
+  color: color-mix(in srgb, var(--peach) 80%, var(--text-muted));
+}
+/* 文件节点:当前文档用页面色相高亮 */
+.reader-node--file[aria-current="true"] {
+  background: var(--acc-dim);
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+}
+.reader-node--file[aria-current="true"] .reader-ico {
+  color: var(--acc);
+}
+
+/* ---------- 文档区 ---------- */
+.reader-doc {
+  padding: 30px clamp(20px, 4vw, 44px) 72px;
+  max-width: 76ch;
+  margin: 0 auto;
+  min-height: 52vh;
+  color: var(--text);
+}
+.reader-hint {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+/* ============ 窄屏抽屉(≤920px) ============ */
+.reader-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+.reader-scrim {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: readerFade 0.2s ease-out both;
+}
+.reader-drawer-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(86vw, 320px);
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  box-shadow: var(--shadow-lift);
+  display: flex;
+  flex-direction: column;
+  animation: readerSlide 0.24s var(--ease-out) both;
+}
+.reader-drawer-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 12px 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.reader-drawer-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+}
+/* 抽屉里的树直接挂在面板下(没有 .reader-tree 外壳),滚动与内边距给到列表本身 */
+.reader-drawer-panel .reader-tree-list {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 10px 10px calc(24px + env(safe-area-inset-bottom));
+}
+.reader-drawer-close {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.reader-drawer-close:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+.reader-drawer-close:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+@keyframes readerFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes readerSlide {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+/* ============ 字体面板(工具条下方弹出,窄屏贴底) ============ */
+.reader-font-panel {
+  position: fixed;
+  z-index: 50;
+  top: 106px;
+  right: 16px;
+  width: min(340px, calc(100vw - 32px));
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: var(--edge), var(--shadow-lift);
+  animation: readerFade 0.16s ease-out both;
+}
+.reader-font-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.reader-font-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+.reader-font-row:last-of-type {
+  border-bottom: 0;
+}
+.reader-font-label {
+  color: var(--text-muted);
+  flex: none;
+}
+.reader-font-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+}
+.reader-font-name.is-default {
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.84rem;
+}
+.reader-font-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.reader-font-actions .reader-btn {
+  flex: 1;
+  justify-content: center;
+}
+.reader-font-note {
+  margin-top: 12px;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.reader-font-note.is-error {
+  color: var(--red);
+}
+@media (max-width: 560px) {
+  .reader-font-panel {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 0;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ============ 渲染出的 Markdown 排版 ============ */
+.reader-doc {
+  font-size: 0.97rem;
+  line-height: 1.75;
+}
+/* 长标题换行平衡与正文对齐遵循全站令牌 */
+.reader-doc h1,
+.reader-doc h2,
+.reader-doc h3,
+.reader-doc h4,
+.reader-doc h5,
+.reader-doc h6 {
+  text-wrap: balance;
+}
+.reader-doc h1 {
+  font-size: 1.62rem;
+  line-height: 1.35;
+  margin: 0 0 22px;
+  letter-spacing: -0.02em;
+}
+.reader-doc h2 {
+  font-size: 1.28rem;
+  margin: 38px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--acc) 30%, var(--border));
+  letter-spacing: -0.015em;
+}
+.reader-doc h3 {
+  font-size: 1.1rem;
+  margin: 28px 0 10px;
+}
+.reader-doc h4,
+.reader-doc h5,
+.reader-doc h6 {
+  font-size: 0.98rem;
+  margin: 24px 0 8px;
+  color: var(--text-secondary);
+}
+.reader-doc p {
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+}
+.reader-doc a {
+  color: color-mix(in srgb, var(--primary), var(--text) var(--hue-fg-mix));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--primary-dim);
+  border-radius: 3px;
+}
+.reader-doc a:hover {
+  text-decoration-color: var(--primary);
+}
+.reader-doc a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.reader-doc a.is-missing {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--border);
+  cursor: not-allowed;
+}
+.reader-doc ul,
+.reader-doc ol {
+  margin: 0 0 16px;
+  padding-left: 1.5em;
+  color: var(--text-secondary);
+}
+.reader-doc li {
+  margin: 4px 0;
+}
+.reader-doc li > p {
+  margin: 0;
+}
+/* GFM 任务列表:单复选框的 li 打标后去掉项目符号,给原生 checkbox 上色 */
+.reader-doc li.md-task {
+  list-style: none;
+  margin-left: -1.5em;
+}
+.reader-doc input[type="checkbox"] {
+  accent-color: var(--acc);
+  width: 15px;
+  height: 15px;
+  margin-right: 8px;
+  vertical-align: -2px;
+}
+.reader-doc blockquote {
+  margin: 0 0 16px;
+  padding: 2px 0 2px 16px;
+  border-left: 3px solid var(--acc);
+  color: var(--text-muted);
+}
+.reader-doc blockquote p {
+  color: var(--text-muted);
+}
+.reader-doc code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+.reader-doc pre {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.reader-doc pre code {
+  display: block;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  tab-size: 4;
+  color: var(--text);
+}
+/* 表格:窄屏横向滚动(JS 给 table 包 .md-table 容器) */
+.reader-doc .md-table {
+  margin: 0 0 18px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.reader-doc table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.86rem;
+}
+.reader-doc th,
+.reader-doc td {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.reader-doc th {
+  background: var(--surface-strong);
+  color: var(--text);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.reader-doc tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--text) 2%, transparent);
+}
+.reader-doc hr {
+  border: 0;
+  height: 1px;
+  margin: 28px 0;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+.reader-doc img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 4px 0 16px;
+}
+/* 图片缺失:替换成说明条,而不是破图图标 */
+.reader-doc .md-img-missing {
+  display: inline-block;
+  margin: 4px 0 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+/* 内链(指向包内其他 md)的悬停提示 */
+.reader-doc a[data-doc] {
+  cursor: pointer;
+}
+
+/* ============ 无障碍:视觉隐藏(页面暂无现成工具类) ============ */
+.reader-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============ 响应式:两栏 → 单栏 + 抽屉 ============ */
+@media (max-width: 920px) {
+  .reader-body {
+    display: block;
+  }
+  .reader-main {
+    border-left: 0;
+  }
+  .reader-doc {
+    padding: 24px 18px 64px;
+  }
+  /* 桌面树隐藏,全部走抽屉 */
+  .reader-tree {
+    display: none;
+  }
+}
+@media (max-width: 560px) {
+  .reader {
+    border-radius: 12px;
+  }
+  .reader-bar {
+    padding: 8px 10px;
+    border-radius: 12px 12px 0 0;
+  }
+  .reader-count {
+    display: none;
+  }
+  .reader-doc {
+    font-size: 1rem;
+  }
+}
+
+/* ============ 减弱动效 ============ */
+@media (prefers-reduced-motion: reduce) {
+  .reader-btn,
+  .reader-node,
+  .reader-node--dir .reader-ico--chev,
+  .reader-drawer-close {
+    transition: none;
+  }
+  .reader-progress::after {
+    animation: none;
+    width: 100%;
+    opacity: 0.5;
+  }
+  .reader-drawer-panel {
+    animation: none;
+  }
+  .reader-scrim {
+    animation: none;
+  }
+  .reader-font-panel {
+    animation: none;
+  }
+}

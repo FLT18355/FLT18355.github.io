@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
-# deploy.sh - 构建并把产物同步到仓库根(GitHub Pages 默认从根目录服务)
-# 这是不用 GitHub Actions 的替代方案:沿用旧工作流,把产物放到根目录后推送。
-# 用法:
+# deploy.sh - 构建并把产物同步到仓库根目录(GitHub Pages 从根目录服务 HTML)
+#
+# 这是本仓库**唯一**的部署方式:不使用 GitHub Actions。
+# 每次改完 src/ 都要跑一遍,否则根目录还是旧产物:
 #   bash scripts/deploy.sh
-# 然后按脚本末尾的提示 git add / commit / push 即可。
+#
+# 脚本做三件事:
+#   1) npm run build            -> 产出 dist/(Astro 会清空重建)
+#   2) 清掉根目录同名旧产物     -> 避免已删除页面的残留文件继续被服务
+#   3) 把 dist/* 拷到仓库根     -> 跳过 6.7MB 的 font-full.woff2(只是子集化输入源)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+echo "[deploy] 构建 src/ -> dist/"
 npm run build
 
-# 同步 dist -> 根:先删根目录同名旧产物(避免已删除页面的残留),再拷贝。
-# font-full.woff2 是子集化输入源(6.7MB),部署不需要,跳过。
+echo "[deploy] 同步 dist/ -> 仓库根(跳过 font-full.woff2)"
 for item in dist/*; do
   name=$(basename "$item")
   [ "$name" = "font-full.woff2" ] && continue
@@ -19,8 +24,7 @@ for item in dist/*; do
 done
 
 echo
-echo "产物已同步到仓库根目录(index.html / projects.html / _astro/ 等)。"
-echo "提交并推送即可部署:"
-echo "  git add -A && git commit -m 'deploy' && git push"
+echo "[deploy] 完成。根目录下的产物(与 dist/ 一致):"
+ls -1 *.html
 echo
-echo "或改用自动部署:见 .github/workflows/deploy.yml(需在 Pages 设置选 GitHub Actions)。"
+echo "若仓库以后接回 git:提交并推送根目录产物即可上线。"

@@ -14,9 +14,11 @@ interface Props {
   current: PageKey;
   /** false 时去掉左栏并居中限宽(search 页) */
   rail?: boolean;
+  /** 仅在 rail=false 时有效:去掉限宽,让内容占满 shell 宽度(reader 页) */
+  wide?: boolean;
 }
 
-const { title, description, current, rail = true } = Astro.props;
+const { title, description, current, rail = true, wide = false } = Astro.props;
 
 const ldJson = JSON.stringify(
   {
@@ -111,7 +113,7 @@ const ldJson = JSON.stringify(
 
     <Nav current={current} />
 
-    <div class:list={['shell', !rail && 'shell--bare']}>
+    <div class:list={['shell', !rail && 'shell--bare', !rail && wide && 'shell--wide']}>
       {rail && <Rail />}
       <!-- ============ Right column: content ============ -->
       <main class="content">

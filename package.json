@@ -12,6 +12,9 @@
   "dependencies": {
     "@astrojs/vue": "^7.0.2",
     "astro": "^7.3.1",
+    "dompurify": "^3.4.16",
+    "jszip": "^3.10.2",
+    "marked": "^18.0.14",
     "sass": "^1.104.0",
     "vue": "^3.5.42"
   }

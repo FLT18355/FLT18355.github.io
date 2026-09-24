@@ -99,6 +99,12 @@ $latte-tokens: (
 );
 
 /* ---------- 字体 ---------- */
+/* 全站 UI 字体栈:body 与阅读器(自定义字体回落)都引用它。
+   注意:字体门控见 AGENTS.md「字体门控」,Maple Mono 的名字只允许出现在
+   html[data-font="maple"] 的覆盖里,默认用户的 computed font-family 永远不会引用它,
+   因此不触发下载。 */
+
+/* ---------- @font-face 区(声明不触发下载,引用才下载) ---------- */
 @font-face {
   font-family: "Maple Mono NF CN";
   src: url("/font.woff2") format("woff2");
@@ -153,6 +159,7 @@ $transitions: ();
   --surface: color-mix(in srgb, var(--text) 5%, var(--bg-card));
   --surface-strong: color-mix(in srgb, var(--text) 9%, var(--bg-card));
   --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+  --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
   transition: $transitions;
 }
 

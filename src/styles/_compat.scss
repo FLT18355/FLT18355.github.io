@@ -203,4 +203,40 @@
   .weather-tile:hover { border-color: var(--acc); }
   .weather-refresh:hover:not(:disabled) { background: var(--primary-dim); }
   .weather-hint { color: var(--peach); }
+
+  /* ---------- 12. Markdown 阅读器页(reader) ----------
+     面板底色是不透明 --bg-card,丢掉 color-mix 只会少一层色调,不透明、可读;
+     以下补的都是会「变透明 / 失色相」的声明。 */
+  .reader-alert {
+    background: var(--bg-card);
+    border-color: var(--red-dim);
+    color: var(--red);
+  }
+  .reader-alert.is-info {
+    border-color: var(--acc-dim);
+    color: var(--text-secondary);
+  }
+  .reader-btn:hover,
+  .reader-btn.is-active {
+    background: var(--primary-dim);
+    color: var(--primary);
+  }
+  .reader-scrim {
+    background: var(--bg);
+  }
+  .reader-node--dir .reader-ico--folder {
+    color: var(--peach);
+  }
+  .reader-doc h2 {
+    border-bottom-color: var(--border);
+  }
+  .reader-doc tbody tr:nth-child(even) td {
+    background: var(--surface);
+  }
+  .reader-doc a {
+    color: var(--primary);
+  }
+  .reader-doc hr {
+    background: var(--border);
+  }
 }

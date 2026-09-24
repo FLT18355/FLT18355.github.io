@@ -11,6 +11,7 @@
 @use 'motion';
 @use 'nav';
 @use 'font-picker';
+@use 'reader';
 @use 'responsive';
 /* 环境层放最后:老浏览器兜底(无 color-mix)与低配精简层 */
 @use 'compat';

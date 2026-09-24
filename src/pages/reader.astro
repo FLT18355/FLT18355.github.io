@@ -1,0 +1,15 @@
+---
+// reader.astro - Markdown 阅读器页(无左栏、占满 shell 宽度的 bare+wide 模式)
+import Base from '../layouts/Base.astro';
+import MarkdownReader from '../components/MarkdownReader.vue';
+---
+
+<Base
+  title="FLT18355 - Reader"
+  description="Markdown reader: open a ZIP, walk every folder for .md files, render GFM with in-archive images and links, plus a persistent custom reading font."
+  current="reader"
+  rail={false}
+  wide
+>
+  <MarkdownReader client:load />
+</Base>

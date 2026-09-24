@@ -2,7 +2,7 @@
 // WeatherWidget.vue - 首页最底部的 Local Weather 卡(仅首页挂载)
 // 定位:navigator.geolocation -> 无 Key 的 IP 定位端点 -> 默认坐标(北京);
 // 天气:Open-Meteo current_weather(免费、无需 Key)。
-// 数据依赖访客位置,只能在浏览器侧请求(与 GitHub 卡片的构建时拉取正好相反,见 doc/architecture.md)。
+// 数据依赖访客位置,只能在浏览器侧请求(与 GitHub 卡片的构建时拉取正好相反,见 AGENTS.md)。
 import { computed, onMounted, ref } from 'vue';
 import {
   CACHE_KEY,

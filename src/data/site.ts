@@ -1,6 +1,6 @@
 // site.ts - 站点元信息与导航配置
 
-export type PageKey = 'home' | 'projects' | 'palette' | 'following' | 'search';
+export type PageKey = 'home' | 'projects' | 'palette' | 'following' | 'search' | 'reader';
 
 export const SITE = {
   url: 'https://flt18355.github.io/',
@@ -29,7 +29,7 @@ export const STATS: Stat[] = [
   { value: 4, label: 'Featured Projects' },
   { value: 104, label: 'Palette Swatches' },
   { value: 3, label: 'Music Tracks' },
-  { value: 6, label: 'Pages' },
+  { value: 7, label: 'Pages' },
 ];
 
 export const NAV: { key: PageKey; href: string; label: string }[] = [
@@ -38,4 +38,5 @@ export const NAV: { key: PageKey; href: string; label: string }[] = [
   { key: 'palette', href: '/catppuccin.html', label: 'Palette' },
   { key: 'following', href: '/following.html', label: 'Following' },
   { key: 'search', href: '/search.html', label: 'Search' },
+  { key: 'reader', href: '/reader.html', label: 'Reader' },
 ];

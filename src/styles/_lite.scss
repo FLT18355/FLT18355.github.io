@@ -1,5 +1,5 @@
 /* _lite.scss - 低配设备精简层
-   html.lite 由 Base.astro / 404.astro 的 head 内联脚本按硬件能力判定(见 doc/architecture.md 3.7)。
+   html.lite 由 Base.astro / 404.astro 的 head 内联脚本按硬件能力判定(见 AGENTS.md「低配与老浏览器」)。
    原则:先保证滚动与首屏不卡,再谈玻璃与光效;区块色相(--acc / --nc)、双主题、内容语义完全不变。
    判定与开关:自动(省流量 / 内存 ≤4GB / 触屏且核心数 ≤4),也可用 ?lite=1 / ?lite=0 手动覆盖。 */
 
@@ -48,13 +48,20 @@ html.lite body {
     var(--bg);
 }
 
-/* ---------- 4. 常驻动画(拨钮云朵 / 太阳脉冲 / 搜索页漂浮光斑):低配下停在静态那一帧。
+/* ---------- 4. 常驻动画(拨钮云朵 / 太阳脉冲 / 搜索页漂浮光斑 / 阅读器进度线):
+   低配下停在静态那一帧。
    拨钮场景本身保留(太阳、月亮、云的静态位置不变),只是不再逐帧动 ---------- */
 html.lite .theme-toggle .cloud,
 html.lite .theme-toggle .sun,
 html.lite .search-bg::before,
-html.lite .search-bg::after {
+html.lite .search-bg::after,
+html.lite .reader-progress::after {
   animation: none;
+}
+/* 进度线停住后保持可辨识的静态条 */
+html.lite .reader-progress::after {
+  width: 100%;
+  opacity: 0.5;
 }
 
 /* ---------- 5. 指针光斑与卡片 will-change(JS 侧 motion.ts 也会跳过光斑与倾斜) ---------- */

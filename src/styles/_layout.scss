@@ -53,6 +53,10 @@
   margin: 0 auto;
   width: 100%;
 }
+/* reader 页无左栏且不限宽:阅读器占满 shell 宽度(1024px) */
+.shell--bare.shell--wide .content {
+  max-width: none;
+}
 
 /* ============ Left rail: identity (sticky) ============ */
 .rail {
