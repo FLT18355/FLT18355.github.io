@@ -227,8 +227,15 @@
   .reader-node--dir .reader-ico--folder {
     color: var(--peach);
   }
+  .reader-tree-list ul {
+    border-left: 1px solid var(--border);
+  }
+  .reader-count {
+    border: 1px solid var(--border);
+    color: var(--acc);
+  }
   .reader-doc h2 {
-    border-bottom-color: var(--border);
+    background: linear-gradient(90deg, var(--border), transparent) bottom left / 100% 1px no-repeat;
   }
   .reader-doc tbody tr:nth-child(even) td {
     background: var(--surface);
@@ -236,7 +243,46 @@
   .reader-doc a {
     color: var(--primary);
   }
-  .reader-doc hr {
-    background: var(--border);
+  /* 正文色相:丢掉 color-mix 会退回继承色,标题 / 强调 / 代码会整体失色相,
+     这里按角色补回原色(浅色主题对比度略降,但色相身份在;分级见 _reader.scss 的配色注释) */
+  .reader-doc h1,
+  .reader-doc h2,
+  .reader-doc h3,
+  .reader-doc h4,
+  .reader-doc h5,
+  .reader-doc h6 {
+    color: var(--md-h);
+  }
+  .reader-doc strong,
+  .reader-doc mark {
+    color: var(--yellow);
+  }
+  .reader-doc mark {
+    background: var(--yellow-dim);
+  }
+  .reader-doc del {
+    text-decoration-color: var(--red-dim);
+  }
+  .reader-doc ins {
+    color: var(--green);
+    text-decoration-color: var(--green-dim);
+  }
+  .reader-doc blockquote {
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+  }
+  .reader-doc code {
+    border: 1px solid var(--border);
+    color: var(--pink);
+  }
+  .reader-doc .md-table {
+    border: 1px solid var(--border);
+  }
+  .reader-doc th {
+    background: var(--surface-strong);
+  }
+  .reader-doc tbody tr:hover td {
+    background: var(--acc-dim);
   }
 }

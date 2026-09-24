@@ -45,7 +45,7 @@ const isNarrow = ref(false);
 const drawerOpen = ref(false);
 const fontOpen = ref(false);
 const font = ref<{ name: string; size: number } | null>(null);
-const fontNote = ref('Supports .woff2 / .ttf / .otf. Stored in this browser (IndexedDB), so it survives a reload.');
+const fontNote = ref('Supports .woff2 / .woff / .ttf / .otf. Stored in this browser (IndexedDB), so it survives a reload.');
 const fontNoteKind = ref<'error' | 'info'>('info');
 const announce = ref('');
 const docEl = ref<HTMLElement | null>(null);
@@ -78,7 +78,9 @@ const filteredCount = computed(() => {
   return archive.value ? count(archive.value.tree) : 0;
 });
 
-// 搜索框左侧图标内联样式(多处复用)
+// 搜索框左侧图标内联样式(多处复用)。
+// 位置改这里,记得同步 _reader.scss 里 .reader-filter 的 padding-left:
+// 图标占 x=9→24px,输入框左内边距必须让开这 24px 才不会压字。
 const searchIconStyle = {
   position: 'absolute',
   left: '9px',
@@ -334,7 +336,7 @@ async function resetFont() {
   await clearReadingFont();
   font.value = null;
   fontNoteKind.value = 'info';
-  fontNote.value = 'Site default restored. Pick a .woff2, .ttf or .otf to use your own font.';
+  fontNote.value = 'System default restored. Pick a .woff2, .woff, .ttf or .otf to use your own font.';
 }
 
 // ---------- 生命周期 ----------
@@ -473,7 +475,7 @@ watch(isNarrow, (v) => {
     />
 
     <!-- 主体 -->
-    <div class="reader-body">
+    <div class="reader-body" :class="{ 'reader-body--solo': !archive }">
       <aside v-if="!isNarrow && archive" class="reader-tree" id="reader-tree">
         <div class="reader-tree-head">
           <div class="reader-search">
@@ -506,11 +508,13 @@ watch(isNarrow, (v) => {
           class="reader-hint"
         >
           <template v-if="status === 'idle'">
-            Open a ZIP to start reading.<br />
+            <ReaderIcon name="upload" class="reader-hint-ico" />
+            <strong>Open a ZIP to start reading.</strong>
             <small>Markdown files are listed as a tree, images are read straight from the archive, everything else is ignored. You can also drop a file here.</small>
           </template>
           <template v-else>
-            Select a file from the contents.<br />
+            <ReaderIcon name="file" class="reader-hint-ico" />
+            <strong>Select a file from the contents.</strong>
             <small>Pick any .md in the contents tree to start reading.</small>
           </template>
         </p>

@@ -9,7 +9,7 @@
 // 私有模式 / IDB 不可用时:存库会抛,组件捕获后降级为「仅本次会话生效」,
 // 不静默吞掉错误。Promise 包装用 withResolvers,线性控制流。
 
-export type FontFormat = 'woff2' | 'truetype' | 'opentype';
+export type FontFormat = 'woff2' | 'woff' | 'truetype' | 'opentype';
 
 export interface ReadingFont {
   /** 显示用的文件名 */
@@ -28,13 +28,16 @@ const KEY = 'reading-font';
 
 const EXT_FORMAT: Record<string, FontFormat> = {
   woff2: 'woff2',
-  woff: 'woff2', // woff 也归 woff2 提示(极少见,浏览器会自行判断)
+  // woff 必须报自己的格式:写成 woff2 时浏览器按提示去解 WOFF1 数据会失败,
+  // 而且失败是静默的(字体照样「上传成功」,只是始终回落到下一个字体)
+  woff: 'woff',
   ttf: 'truetype',
   otf: 'opentype',
 };
 
 const FORMAT_MIME: Record<FontFormat, string> = {
   woff2: 'font/woff2',
+  woff: 'font/woff',
   truetype: 'font/ttf',
   opentype: 'font/otf',
 };
@@ -103,7 +106,7 @@ export async function loadReadingFont(): Promise<ReadingFont | null> {
 export async function readFontFile(file: File): Promise<ReadingFont> {
   const format = formatFromFileName(file.name);
   if (!format) {
-    throw new Error('Unsupported font format. Pick a .woff2, .ttf or .otf file.');
+    throw new Error('Unsupported font format. Pick a .woff2, .woff, .ttf or .otf file.');
   }
   const data = await file.arrayBuffer();
   return {

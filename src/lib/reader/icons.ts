@@ -9,7 +9,7 @@ export type IconName =
   | 'menu'
   | 'close'
   | 'search'
-  | 'undo'
+  | 'circle'
   | 'folder'
   | 'file'
   | 'chevron';
@@ -33,9 +33,10 @@ export const ICONS: Record<IconName, string> = {
   // 搜索
   search:
     '<circle cx="11" cy="11" r="6"/><path d="M15.5 15.5 20 20"/>',
-  // 恢复默认(逆时针圆箭头)
-  undo:
-    '<path d="M9 7H6.5a6.5 6.5 0 1 0 1.4 10"/><path d="M6 4v3.5h3.5"/>',
+  // 恢复默认:一个圆环(原「逆时针圆箭头」的弧线圆心落在 (3.15, 12.57),
+  // 左半截跑出 24×24 viewBox 被裁掉,画出来是缺口;直接用圆环)
+  circle:
+    '<circle cx="12" cy="12" r="8"/>',
   // 文件夹
   folder:
     '<path d="M3 8a1 1 0 0 1 1-1h4.6l2 2.2H20a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8Z"/>',

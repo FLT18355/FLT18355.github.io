@@ -30,9 +30,9 @@ body::before {
 }
 
 /* 启用 Maple Mono 后才引用 woff2;默认不触发字体下载,页面秒开。
-   覆盖令牌而不是 body:阅读器等全部引用 --ui-font 的面同步生效。 */
+   覆盖令牌而不是 body:除阅读器(强制系统字体,见 _reader.scss)外的面同步生效。 */
 html[data-font="maple"] {
-  --ui-font: "Maple Mono NF CN", -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --ui-font: "Maple Mono NF CN", var(--sys-font);
 }
 html[data-font="maple"] {
   --mono: "Maple Mono NF CN", ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;

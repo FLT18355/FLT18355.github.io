@@ -46,7 +46,7 @@ function fmtSize(bytes: number): string {
     <div class="reader-font-row">
       <span class="reader-font-label">Current</span>
       <span v-if="current" class="reader-font-name">{{ current.name }} · {{ fmtSize(current.size) }}</span>
-      <span v-else class="reader-font-name is-default">Default (site font)</span>
+      <span v-else class="reader-font-name is-default">Default (system font)</span>
     </div>
 
     <div class="reader-font-actions">
@@ -60,7 +60,7 @@ function fmtSize(bytes: number): string {
         :disabled="!current"
         @click="emit('reset')"
       >
-        <ReaderIcon name="undo" />
+        <ReaderIcon name="circle" />
         <span>Reset</span>
       </button>
     </div>

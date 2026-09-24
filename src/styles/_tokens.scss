@@ -99,7 +99,9 @@ $latte-tokens: (
 );
 
 /* ---------- 字体 ---------- */
-/* 全站 UI 字体栈:body 与阅读器(自定义字体回落)都引用它。
+/* 字体栈分两层:
+   --sys-font 系统字体栈,与站点字体选择无关;阅读器(reader)强制拿它当默认字体;
+   --ui-font  站点 UI 字体栈 = --sys-font,启用 Maple Mono 后由 _reset.scss 换成 Maple 打头。
    注意:字体门控见 AGENTS.md「字体门控」,Maple Mono 的名字只允许出现在
    html[data-font="maple"] 的覆盖里,默认用户的 computed font-family 永远不会引用它,
    因此不触发下载。 */
@@ -159,7 +161,8 @@ $transitions: ();
   --surface: color-mix(in srgb, var(--text) 5%, var(--bg-card));
   --surface-strong: color-mix(in srgb, var(--text) 9%, var(--bg-card));
   --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
-  --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --sys-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  --ui-font: var(--sys-font);
   transition: $transitions;
 }
 
