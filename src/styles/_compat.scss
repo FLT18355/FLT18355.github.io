@@ -294,4 +294,35 @@
   .reader-doc tbody tr:hover td {
     background: var(--acc-dim);
   }
+  /* ---------- 13. 阅读器美化新增面 ----------
+     工具条改成「柔光 + 谱系线」两层 background-image,旧浏览器会把整条 image 丢掉,
+     连下沿那条谱系线一起消失;这里退回单层谱系线。 */
+  .reader-bar {
+    background-image: var(--grad-spectrum);
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    background-size: 100% 2px;
+  }
+  /* 当前文档项:color-mix 那层文字色丢掉会退回继承色,补回页面色相 */
+  .reader-node--file[aria-current="true"] {
+    color: var(--acc);
+  }
+  /* 代码块外壳:描边含 color-mix,丢掉会整条没有边框 */
+  .reader-doc .md-code {
+    border: 1px solid var(--border);
+  }
+  .reader-doc .md-code > pre {
+    border: 0;
+  }
+  .reader-doc .md-code-lang {
+    color: var(--pink);
+  }
+  .reader-doc .md-code-copy:hover {
+    color: var(--pink);
+    border-color: var(--pink);
+    background: var(--surface-strong);
+  }
+  .reader-doc .md-code-copy.is-done {
+    border-color: var(--green);
+  }
 }

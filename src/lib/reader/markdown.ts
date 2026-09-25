@@ -1,10 +1,14 @@
 // markdown.ts - 把压缩包内的 .md 渲染成可插入的 DocumentFragment。
 // marked 负责 GFM 语法,DOMPurify 消毒(随机压缩包可能带脚本/事件处理器/javascript: 链接),
-// 之后在 detach 的 <template> 里做四趟 DOM 后处理:
+// 之后在 detach 的 <template> 里做 DOM 后处理:
 //   1. 给标题加 id(标题锚点链接才能跳)
 //   2. 图片:把包内相对引用换成 Blob URL;命不到的换成「图片未在包内」说明条
 //   3. 链接:包内 .md 内链转点击导航,外部链接新标签打开,命不到的标的为失效
-//   4. 表格外套一层横向滚动容器;GFM 任务列表 li 打标去项目符号
+//   4. 表格外套一层横向滚动容器
+//   5. 独占一段的图片转 <figure>,alt 当题注(阅读器里的「图 + 说明」排版)
+//   6. 代码块包一层 figure:语言标签 + 复制按钮(按钮由本站生成,
+//      markdown 原文里的 <button> 已在消毒阶段被禁掉)
+//   7. GFM 任务列表 li 打标去项目符号
 //
 // marked / dompurify 走静态 import:这是阅读器的核心功能,首屏就需要,无需延迟加载。
 
@@ -153,7 +157,52 @@ export async function renderDocument(opts: RenderOptions): Promise<DocumentFragm
     wrap.appendChild(table);
   }
 
-  // GFM 任务列表:li 内首个子节点是 checkbox 的,打标去项目符号
+  // 5. 独占一段的图片:转成 <figure>,alt 作题注。
+  //    marked 会把独立成段的图片包进 <p>,这里只认「p 里除空白文本外只剩一个 img」的情况,
+  //    避免把图文混排的段落也拆散。
+  for (const p of Array.from(root.querySelectorAll('p'))) {
+    const parts = Array.from(p.childNodes).filter(
+      (n) => !(n.nodeType === Node.TEXT_NODE && !(n.textContent || '').trim()),
+    );
+    const only = parts[0];
+    if (parts.length !== 1 || !(only instanceof HTMLImageElement)) continue;
+    const caption = only.getAttribute('alt') || '';
+    const fig = document.createElement('figure');
+    fig.className = 'md-figure';
+    p.replaceWith(fig);
+    fig.appendChild(only);
+    if (caption) {
+      const cap = document.createElement('figcaption');
+      cap.textContent = caption;
+      fig.appendChild(cap);
+    }
+  }
+
+  // 6. 代码块:包一层 figure,顶部给出语言标签与复制按钮。
+  //    复制逻辑在 MarkdownReader.vue 的 onDocClick 里兜(按 data-code-copy 找按钮)。
+  for (const pre of Array.from(root.querySelectorAll('pre'))) {
+    const code = pre.querySelector('code');
+    if (!code) continue;
+    const lang = ((code.getAttribute('class') || '').match(/language-([\w+#.-]+)/i) || [])[1] || '';
+    const fig = document.createElement('figure');
+    fig.className = 'md-code';
+    const head = document.createElement('figcaption');
+    head.className = 'md-code-head';
+    const label = document.createElement('span');
+    label.className = 'md-code-lang';
+    label.textContent = lang || 'code';
+    const copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'md-code-copy';
+    copy.setAttribute('data-code-copy', '');
+    copy.setAttribute('aria-label', 'Copy code');
+    copy.textContent = 'Copy';
+    head.append(label, copy);
+    pre.replaceWith(fig);
+    fig.append(head, pre);
+  }
+
+  // 7. GFM 任务列表:li 内首个子节点是 checkbox 的,打标去项目符号
   for (const li of root.querySelectorAll('li')) {
     const first = li.firstElementChild;
     if (first && first.tagName === 'INPUT' && first.getAttribute('type') === 'checkbox') {

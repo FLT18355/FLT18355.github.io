@@ -41,7 +41,18 @@ function fmtSize(bytes: number): string {
 
 <template>
   <div class="reader-font-panel" role="dialog" aria-label="Reading font" @keydown.esc="emit('close')">
-    <h2 class="reader-font-title">Reading font</h2>
+    <div class="reader-font-head">
+      <h2 class="reader-font-title">Reading font</h2>
+      <button type="button" class="reader-font-close" aria-label="Close" @click="emit('close')">
+        <ReaderIcon name="close" />
+      </button>
+    </div>
+
+    <!-- 实时样张:直接用当前阅读字体渲染,上传后立刻看到效果(纯装饰,读屏跳过) -->
+    <p class="reader-font-preview" aria-hidden="true">
+      <span class="reader-font-sample">Aa</span>
+      <span class="reader-font-sample">汉字 123 · The quick brown fox</span>
+    </p>
 
     <div class="reader-font-row">
       <span class="reader-font-label">Current</span>

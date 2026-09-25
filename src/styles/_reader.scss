@@ -5,7 +5,7 @@
                       会变成 fixed 子元素的包含块,把浮层关进卡里)
    .reader-bar        粘性工具条:压缩包标识 + Open ZIP / Font / 目录(窄屏)
    .reader-tree       目录树(桌面 sticky 自滚动;窄屏整页抽屉,见 .reader-drawer)
-   .reader-doc        渲染后的 Markdown(正文限宽 76ch)
+   .reader-doc        渲染后的 Markdown(正文限宽 78ch)
    .reader-drawer     窄屏抽屉层:遮罩 + 树面板(position:fixed,全高)
 
    色相:页面取 sky 作强调(导航第 6 条同色);动作控件仍固定 --primary;
@@ -16,7 +16,13 @@
         祖先一旦挂 filter / backdrop-filter 就会成为它们的包含块,浮层会被关进卡里;
         玻璃(--glass + blur)只给「浮在页面背景之上」的工具条与两个浮层,与 .block 同一套。
    圆角:14 卡 / 14 浮层 / 12 正文里的块 / 10 控件 / 8 输入框。
-   动效:只有工具条下的读取进度线一条;都挂 prefers-reduced-motion 关闭。 */
+   动效:文档切换时的内容入场、空态徽章的呼吸、工具条下的读取进度线;
+        一律挂 prefers-reduced-motion 关闭。
+        注意:不给 .reader 本体挂 transform / 不透明动画——那会给 fixed 浮层造包含块,
+        也会把浮层关进卡的层叠上下文里(与材质一段同因)。
+   视觉主线:工具条下沿 / h1 下沿 / hr 用同一笔 --grad-spectrum;
+        正文标题按级走一轮 Catppuccin 色相;目录当前项与链接同取页面色相 sky;
+        代码块自成一支(pink 描边 + 语言标签 + 复制按钮),与标题谱系色相分离。 */
 
 .reader {
   --acc: var(--sky);
@@ -26,6 +32,9 @@
      浏览器最后兜底字体。所以自定义字体要顶到这一栈的最前面,
      而不是只挂在 --reader-font 上(那一层管不到 code)。 */
   --reader-code-font: var(--mono), var(--sys-font);
+  /* 正文列宽:box-sizing 是 border-box,ch 值含左右内边距,
+     78ch 扣掉 padding 后正文约 66–68ch,正落在舒适阅读区间(65–75ch) */
+  --reader-measure: 78ch;
   font-family: var(--reader-font);
   position: relative;
   border-radius: 14px;
@@ -56,36 +65,48 @@
   border-bottom: 1px solid var(--border);
   /* 与 .block 同一套玻璃:桌面不粘,背景就是卡底,视觉上等于「透明 + 一条分隔线」;
      窄屏粘住时它才真正糊住下面滚过去的正文 */
-  background: var(--glass);
+  background-color: var(--glass);
   -webkit-backdrop-filter: blur(14px) saturate(1.3);
   backdrop-filter: blur(14px) saturate(1.3);
   border-radius: 14px 14px 0 0;
-  /* 工具条下沿:站点谱系线,和文档标题下沿同一笔(阅读器的分隔语言) */
-  background-image: var(--grad-spectrum);
-  background-repeat: no-repeat;
-  background-position: bottom left;
-  background-size: 100% 2px;
+  /* 两层图:左上角一层页面色相的柔光(把工具条从卡面上「抬」起来),
+     下沿一笔站点谱系线。写成 background-image 多层,别用简写,免得盖掉上面的底色。 */
+  background-image:
+    radial-gradient(130% 170% at 0% 0%, color-mix(in srgb, var(--acc) 13%, transparent), transparent 58%),
+    var(--grad-spectrum);
+  background-repeat: no-repeat, no-repeat;
+  background-position: top left, bottom left;
+  background-size: 100% 100%, 100% 2px;
 }
-/* 桌面:工具条不粘(有树 + 文档,滚动是页级);只有窄屏需要它跟手 */
+/* 桌面:工具条不粘(有树 + 文档,滚动是页级);只有窄屏需要它跟手。
+   角度保留 14px 14px 0 0——工具条现在带一层色相柔光,顶角若切成直角,
+   柔光会从卡片圆角外溢成一个小方角 */
 @media (min-width: 921px) {
   .reader-bar {
     position: static;
-    border-radius: 0;
   }
 }
 
 .reader-bar-title {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   min-width: 0;
   font-size: 0.92rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text);
 }
+/* 标识图标做成色相徽章:与 .block-header 的菱形、空态徽章同一手「色块即区块身份」 */
 .reader-bar-title .reader-ico {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  border-radius: 10px;
   color: var(--acc);
+  background: var(--acc-dim);
+  box-shadow: inset 0 0 0 1px var(--acc-dim), 0 0 16px var(--acc-dim);
 }
 .reader-zip {
   white-space: nowrap;
@@ -96,8 +117,10 @@
   flex: none;
   font-family: var(--mono);
   font-size: 0.68rem;
+  letter-spacing: 0.04em;
   color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
   border: 1px solid color-mix(in srgb, var(--acc) 32%, var(--border));
+  background: var(--acc-dim);
   border-radius: 999px;
   padding: 2px 8px;
 }
@@ -122,7 +145,8 @@
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s,
+    box-shadow 0.18s var(--ease-out), transform 0.15s var(--ease-out);
 }
 .reader-btn:hover:not(:disabled) {
   color: var(--primary);
@@ -144,6 +168,19 @@
   color: var(--primary);
   border-color: var(--primary-dim);
   background: var(--primary-glow);
+}
+/* 主操作(Open ZIP):工具条里只此一个实底按钮,打开压缩包就是这一页的第一动作。
+   与 search 页的 .search-go / 预览卡的 .preview-btn 同一套「实底 = 主操作」语言。 */
+.reader-btn--primary {
+  color: var(--bg);
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 4px 16px var(--primary-glow);
+}
+.reader-btn--primary:hover:not(:disabled) {
+  color: var(--bg);
+  border-color: var(--primary-hover);
+  background: var(--primary-hover);
 }
 /* 窄屏工具条按钮:大触控目标 */
 @media (max-width: 560px) {
@@ -226,7 +263,26 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  padding: 12px 10px 18px;
+  padding: 14px 10px 18px;
+}
+/* 目录标题:mono 小字 + 右侧淡出细线,和 rail 的 .rail-label 同一手 */
+.reader-tree-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 6px 8px;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+.reader-tree-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  /* 用带 alpha 的 --acc-dim,不支持 color-mix 的老浏览器同样能看到这条淡出线 */
+  background: linear-gradient(90deg, var(--acc-dim), transparent);
 }
 .reader-tree-head {
   display: flex;
@@ -248,6 +304,7 @@
   caret-color: var(--acc);
   font-size: 0.8rem;
   font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s var(--ease-out);
 }
 .reader-filter::placeholder {
   color: var(--text-muted);
@@ -261,6 +318,12 @@
   position: relative;
   flex: 1;
   min-width: 0;
+}
+.reader-search .reader-ico {
+  transition: color 0.15s;
+}
+.reader-search:focus-within .reader-ico {
+  color: var(--acc);
 }
 .reader-tree-head--drawer {
   margin: 0;
@@ -296,6 +359,7 @@
   margin: 1px 0;
 }
 .reader-node {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 7px;
@@ -313,7 +377,9 @@
   transition: color 0.12s, background-color 0.12s;
 }
 .reader-node:hover {
-  /* 和站内导航项同一手法:悬停铺一层本页色相,而不是中性灰 */
+  /* 和站内导航项同一手法:悬停铺一层本页色相,而不是中性灰。
+     不给按钮加位移:树的 overflow-y:auto 会让 overflow-x 一起变 auto,
+     2px 的 translateX 就能蹭出一条横向滚动条 */
   background: color-mix(in srgb, var(--acc) 9%, var(--surface-strong));
   color: var(--text);
 }
@@ -324,6 +390,7 @@
 .reader-node .reader-ico {
   flex: none;
   color: var(--text-muted);
+  transition: color 0.12s;
 }
 .reader-node-name {
   min-width: 0;
@@ -342,13 +409,32 @@
 .reader-node--dir .reader-ico--folder {
   color: color-mix(in srgb, var(--peach) 80%, var(--text-muted));
 }
-/* 文件节点:当前文档用页面色相高亮 */
+/* 文件节点:当前文档用页面色相高亮。
+   这里不用「左边一条彩色竖条」——和正文 blockquote 同一条理由:色条读起来像贴纸;
+   改用「淡底 + 内描边 + 右下角一颗实心光点」三件套表达「当前」,颜色之外还有形状。 */
 .reader-node--file[aria-current="true"] {
   background: var(--acc-dim);
   color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+  box-shadow: inset 0 0 0 1px var(--acc-dim);
+  padding-right: 22px;
 }
 .reader-node--file[aria-current="true"] .reader-ico {
   color: var(--acc);
+}
+.reader-node--file[aria-current="true"]::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--acc);
+  box-shadow: 0 0 10px var(--acc);
+}
+.reader-node--file[aria-current="true"]:hover {
+  background: color-mix(in srgb, var(--acc) 16%, transparent);
 }
 
 /* ---------- 文档区 ---------- */
@@ -356,14 +442,23 @@
   /* width:100% 是必须的:父级是 flex 容器时,auto 外边距会让 width:auto 退化成
      shrink-to-fit(短文档会缩成一条并居中),写死 100% 再由 max-width 收口 */
   width: 100%;
-  padding: 30px clamp(20px, 4vw, 44px) 72px;
-  max-width: 76ch;
+  padding: 34px clamp(20px, 4vw, 48px) 80px;
+  max-width: var(--reader-measure);
   margin: 0 auto;
   color: var(--text);
 }
 /* 空文档(还没打开任何文件):不占位,把整块阅读区让给空态提示 */
 .reader-doc:empty {
   display: none;
+}
+/* 切换文档时的一次性入场:只动内容块本身(它内部没有 fixed 元素,translateY 安全)。
+   不写 fill-mode:结束后属性回到基础值,不残留 transform 免得平白造一个包含块 */
+.reader-doc.is-fresh {
+  animation: readerDocIn 0.4s var(--ease-out);
+}
+@keyframes readerDocIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 /* 空态:在阅读区里双向居中 */
 .reader-hint {
@@ -378,16 +473,24 @@
   font-size: 0.95rem;
   line-height: 1.8;
 }
-/* 空态图标:页面色相的圆角徽章 + 与 .block-header 菱形同一手的柔光 */
+/* 空态图标:页面色相的圆角徽章 + 与 .block-header 菱形同一手的柔光;
+   外面再套一圈虚线描边,顺手把「把文件拖进来」的投放暗示画出来 */
 .reader-hint-ico {
-  width: 46px;
-  height: 46px;
-  padding: 12px;
-  margin-bottom: 12px;
-  border-radius: 14px;
+  width: 56px;
+  height: 56px;
+  padding: 15px;
+  margin-bottom: 18px;
+  border-radius: 16px;
   background: var(--acc-dim);
   color: var(--acc);
-  box-shadow: inset 0 0 0 1px var(--acc-dim), 0 0 22px var(--acc-dim);
+  box-shadow: inset 0 0 0 1px var(--acc-dim), 0 0 28px var(--acc-dim);
+  outline: 1px dashed var(--acc-dim);
+  outline-offset: 12px;
+  animation: readerFloat 6s ease-in-out infinite;
+}
+@keyframes readerFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
 }
 .reader-hint strong {
   color: var(--text);
@@ -435,6 +538,11 @@
   gap: 10px;
   padding: 14px 12px 10px 16px;
   border-bottom: 1px solid var(--border);
+  /* 抽屉标题下沿同样收一笔谱系线,与工具条、h1 一致 */
+  background-image: var(--grad-spectrum);
+  background-repeat: no-repeat;
+  background-position: bottom left;
+  background-size: 100% 2px;
 }
 .reader-drawer-title {
   flex: 1;
@@ -466,11 +574,12 @@
   background: var(--bg-card);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s;
 }
 .reader-drawer-close:hover {
   color: var(--text);
   border-color: var(--text-muted);
+  background: var(--surface-strong);
 }
 .reader-drawer-close:focus-visible {
   outline: 2px solid var(--primary);
@@ -491,7 +600,7 @@
   z-index: 50;
   top: 106px;
   right: 16px;
-  width: min(340px, calc(100vw - 32px));
+  width: min(360px, calc(100vw - 32px));
   padding: 16px;
   border-radius: 14px;
   border: 1px solid var(--glass-border);
@@ -501,11 +610,68 @@
   box-shadow: var(--edge), var(--shadow-lift);
   animation: readerFade 0.16s ease-out both;
 }
+.reader-font-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
 .reader-font-title {
+  flex: 1;
+  min-width: 0;
   font-size: 0.92rem;
   font-weight: 700;
-  margin-bottom: 12px;
   color: var(--text);
+}
+.reader-font-close {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.reader-font-close:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+.reader-font-close:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+/* 实时样张:走 --reader-font,所以上传后这里立刻换成新字体,不用等到正文刷新 */
+.reader-font-preview {
+  margin-bottom: 12px;
+  padding: 14px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  text-align: center;
+  font-family: var(--reader-font);
+  line-height: 1.3;
+  overflow: hidden;
+}
+.reader-font-sample {
+  display: block;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.reader-font-sample:first-child {
+  font-size: 1.7rem;
+  letter-spacing: -0.01em;
+}
+.reader-font-sample:last-child {
+  margin-top: 2px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 .reader-font-row {
   display: flex;
@@ -586,12 +752,13 @@
    - 分隔:工具条下沿与文档标题下沿都用站点谱系线(--grad-spectrum)。
    不用渐变文字,不用 1px 以上的彩色左边条。 */
 .reader-doc {
-  font-size: 0.97rem;
-  line-height: 1.75;
+  font-size: 1rem;
+  line-height: 1.8;
   /* 长 URL / 长单词不撑破正文列 */
   overflow-wrap: break-word;
 }
-/* 长标题换行平衡与正文对齐遵循全站令牌 */
+/* 长标题换行平衡与正文对齐遵循全站令牌。
+   scroll-margin-top:标题被 #锚点 / 内链跳过来时,要落在粘性导航(56px)+ 工具条之下 */
 .reader-doc h1,
 .reader-doc h2,
 .reader-doc h3,
@@ -599,13 +766,14 @@
 .reader-doc h5,
 .reader-doc h6 {
   text-wrap: balance;
+  scroll-margin-top: 88px;
   color: color-mix(in srgb, var(--md-h), var(--text) var(--hue-fg-mix));
 }
 .reader-doc h1 {
   --md-h: var(--mauve);
-  font-size: 1.72rem;
+  font-size: 1.78rem;
   line-height: 1.3;
-  margin: 0 0 26px;
+  margin: 0 0 24px;
   padding-bottom: 14px;
   letter-spacing: -0.02em;
 }
@@ -621,8 +789,8 @@
 }
 .reader-doc h2 {
   --md-h: var(--lavender);
-  font-size: 1.3rem;
-  margin: 40px 0 16px;
+  font-size: 1.32rem;
+  margin: 44px 0 16px;
   padding-bottom: 9px;
   letter-spacing: -0.015em;
   /* 小节线:从本级色相淡出到透明,不占额外元素 */
@@ -631,8 +799,8 @@
 }
 .reader-doc h3 {
   --md-h: var(--sapphire);
-  font-size: 1.12rem;
-  margin: 30px 0 12px;
+  font-size: 1.13rem;
+  margin: 32px 0 12px;
 }
 .reader-doc h4 {
   --md-h: var(--teal);
@@ -652,6 +820,13 @@
 .reader-doc p {
   margin: 0 0 16px;
   color: var(--text-secondary);
+  text-wrap: pretty;
+}
+/* 紧随 h1 的第一段当导语:字号略大、颜色提到正文级,给文档一个「开口」 */
+.reader-doc > h1 + p {
+  font-size: 1.06rem;
+  line-height: 1.75;
+  color: var(--text);
 }
 /* 链接:页面色相(与工具条、目录树当前项同色),悬停时下划线加粗 */
 .reader-doc a {
@@ -661,6 +836,7 @@
   text-decoration-thickness: 1px;
   text-decoration-color: color-mix(in srgb, var(--acc) 42%, transparent);
   border-radius: 3px;
+  transition: background-color 0.15s, text-decoration-color 0.15s;
 }
 .reader-doc a:hover {
   background: color-mix(in srgb, var(--acc) 15%, transparent);
@@ -779,11 +955,94 @@
   tab-size: 4;
   color: var(--text);
 }
+/* ---------- 代码块外壳(renderDocument 第 6 趟生成) ----------
+   描边 / 底色 / 圆角交给 .md-code,内部的 pre 只负责横向滚动,
+   顶部一条 .md-code-head 放语言标签与复制按钮。 */
+.reader-doc .md-code {
+  margin: 0 0 18px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--pink) 26%, var(--border));
+  background: var(--bg);
+  overflow: hidden;
+}
+.reader-doc .md-code > pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.reader-doc .md-code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px 6px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-strong);
+}
+.reader-doc .md-code-lang {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--reader-code-font);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--pink), var(--text) var(--hue-fg-mix));
+}
+.reader-doc .md-code-copy {
+  flex: none;
+  font-family: var(--reader-code-font);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
+}
+.reader-doc .md-code-copy:hover {
+  color: color-mix(in srgb, var(--pink), var(--text) var(--hue-fg-mix));
+  border-color: color-mix(in srgb, var(--pink) 55%, var(--border));
+  background: color-mix(in srgb, var(--pink) 10%, var(--bg-card));
+}
+.reader-doc .md-code-copy:active {
+  transform: scale(0.96);
+}
+.reader-doc .md-code-copy:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+/* 复制成功:按钮转绿 1.4s,由 MarkdownReader.vue 的计时器复位 */
+.reader-doc .md-code-copy.is-done {
+  color: var(--green);
+  border-color: color-mix(in srgb, var(--green) 55%, var(--border));
+}
+/* ---------- 独立图片:figure + 题注(renderDocument 第 5 趟生成) ---------- */
+.reader-doc .md-figure {
+  margin: 4px 0 18px;
+}
+.reader-doc .md-figure img {
+  margin: 0;
+}
+.reader-doc .md-figure figcaption {
+  margin-top: 8px;
+  font-family: var(--reader-code-font);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-align: center;
+}
 /* 表格:窄屏横向滚动(JS 给 table 包 .md-table 容器),描边与表头吃页面色相 */
 .reader-doc .md-table {
   margin: 0 0 18px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
   border: 1px solid color-mix(in srgb, var(--acc) 32%, var(--border));
   border-radius: 12px;
 }
@@ -797,6 +1056,10 @@
   padding: 9px 13px;
   border: 1px solid var(--border);
   text-align: left;
+}
+/* 数字等宽:表格里的数值列能对齐,不数字体不同宽度抖来抖去 */
+.reader-doc td {
+  font-variant-numeric: tabular-nums;
 }
 .reader-doc th {
   background: color-mix(in srgb, var(--acc) 14%, var(--surface-strong));
@@ -814,7 +1077,7 @@
 .reader-doc hr {
   border: 0;
   height: 2px;
-  margin: 30px 0;
+  margin: 32px 0;
   border-radius: 2px;
   background: var(--grad-spectrum);
   opacity: 0.35;
@@ -841,6 +1104,34 @@
   cursor: pointer;
 }
 
+/* ============ 细滚动条 ============ */
+.reader-tree::-webkit-scrollbar,
+.reader-drawer-panel .reader-tree-list::-webkit-scrollbar,
+.reader-doc pre::-webkit-scrollbar,
+.reader-doc .md-table::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.reader-tree::-webkit-scrollbar-track,
+.reader-drawer-panel .reader-tree-list::-webkit-scrollbar-track,
+.reader-doc pre::-webkit-scrollbar-track,
+.reader-doc .md-table::-webkit-scrollbar-track {
+  background: transparent;
+}
+.reader-tree::-webkit-scrollbar-thumb,
+.reader-drawer-panel .reader-tree-list::-webkit-scrollbar-thumb,
+.reader-doc pre::-webkit-scrollbar-thumb,
+.reader-doc .md-table::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--border);
+}
+.reader-tree::-webkit-scrollbar-thumb:hover,
+.reader-drawer-panel .reader-tree-list::-webkit-scrollbar-thumb:hover,
+.reader-doc pre::-webkit-scrollbar-thumb:hover,
+.reader-doc .md-table::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
 /* ============ 无障碍:视觉隐藏(页面暂无现成工具类) ============ */
 .reader-sr {
   position: absolute;
@@ -863,7 +1154,7 @@
     border-left: 0;
   }
   .reader-doc {
-    padding: 24px 18px 64px;
+    padding: 26px 18px 64px;
   }
   /* 桌面树隐藏,全部走抽屉 */
   .reader-tree {
@@ -878,7 +1169,10 @@
     display: none;
   }
   .reader-doc {
-    font-size: 1rem;
+    font-size: 0.98rem;
+  }
+  .reader-doc > h1 + p {
+    font-size: 1.02rem;
   }
 }
 
@@ -887,13 +1181,28 @@
   .reader-btn,
   .reader-node,
   .reader-node--dir .reader-ico--chev,
-  .reader-drawer-close {
+  .reader-drawer-close,
+  .reader-font-close,
+  .reader-filter,
+  .reader-doc a,
+  .reader-doc .md-code-copy,
+  .reader-search .reader-ico {
     transition: none;
+  }
+  .reader-node:hover,
+  .reader-node:active {
+    transform: none;
   }
   .reader-progress::after {
     animation: none;
     width: 100%;
     opacity: 0.5;
+  }
+  .reader-doc.is-fresh {
+    animation: none;
+  }
+  .reader-hint-ico {
+    animation: none;
   }
   .reader-drawer-panel {
     animation: none;

@@ -58,6 +58,8 @@ let injectedFont: InjectedFont | null = null;
 let lastFocused: HTMLElement | null = null;
 // 图片 Blob URL 缓存(按包内路径),切文档前清空并释放
 let blobCache = new Map<string, string>();
+// 代码块复制按钮的文案回退计时器:切文档 / 卸载时要清掉,别让旧计时器改到新节点
+let copyTimer: number | null = null;
 
 const docCount = computed(() => archive.value?.mdFiles.length ?? 0);
 
@@ -231,6 +233,10 @@ async function openDoc(path: string, anchor?: string) {
   if (host) {
     host.replaceChildren(fragment);
     host.onclick = onDocClick;
+    // 重放内容入场:先摘类并读一次布局,再挂回去,否则浏览器会把它当成同一次动画而不重放
+    host.classList.remove('is-fresh');
+    void host.offsetWidth;
+    host.classList.add('is-fresh');
     if (anchor) {
       // 跨文档锚点:等一帧让布局算完再滚,避免滚到旧位置
       requestAnimationFrame(() => {
@@ -247,8 +253,36 @@ async function openDoc(path: string, anchor?: string) {
   if (isNarrow.value) closeDrawer();
 }
 
-function onDocClick(e: MouseEvent) {
-  const a = (e.target as HTMLElement)?.closest('a[data-doc]') as HTMLAnchorElement | null;
+async function onDocClick(e: MouseEvent) {
+  const el = e.target as HTMLElement | null;
+
+  // 代码块的复制按钮:先于链接分支处理,避免被当成普通点击吞掉
+  const copyBtn = el?.closest<HTMLButtonElement>('button[data-code-copy]');
+  if (copyBtn) {
+    e.preventDefault();
+    const code = copyBtn.closest('.md-code')?.querySelector('code');
+    const text = code?.textContent ?? '';
+    let ok = false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      }
+    } catch {
+      ok = false;
+    }
+    copyBtn.textContent = ok ? 'Copied' : 'Copy failed';
+    copyBtn.classList.toggle('is-done', ok);
+    if (copyTimer !== null) window.clearTimeout(copyTimer);
+    copyTimer = window.setTimeout(() => {
+      copyBtn.textContent = 'Copy';
+      copyBtn.classList.remove('is-done');
+      copyTimer = null;
+    }, 1400);
+    return;
+  }
+
+  const a = el?.closest('a[data-doc]') as HTMLAnchorElement | null;
   if (!a) return;
   e.preventDefault();
   const target = a.getAttribute('data-doc') || '';
@@ -391,6 +425,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   revokeUrls();
+  if (copyTimer !== null) window.clearTimeout(copyTimer);
   if (injectedFont) removeFontFace(injectedFont);
   document.removeEventListener('keydown', onKey);
   document.removeEventListener('pointerdown', onPointerDown, true);
@@ -431,7 +466,7 @@ watch(isNarrow, (v) => {
           <ReaderIcon name="menu" />
           <span>Contents</span>
         </button>
-        <button type="button" class="reader-btn" @click="pickZip">
+        <button type="button" class="reader-btn reader-btn--primary" @click="pickZip">
           <ReaderIcon name="upload" />
           <span>Open ZIP</span>
         </button>
@@ -477,6 +512,7 @@ watch(isNarrow, (v) => {
     <!-- 主体 -->
     <div class="reader-body" :class="{ 'reader-body--solo': !archive }">
       <aside v-if="!isNarrow && archive" class="reader-tree" id="reader-tree">
+        <p class="reader-tree-label">Contents</p>
         <div class="reader-tree-head">
           <div class="reader-search">
             <ReaderIcon name="search" :style="searchIconStyle" />
