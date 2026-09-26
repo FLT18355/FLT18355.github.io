@@ -665,6 +665,171 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   }
 }
 
+/* ---------- Other Websites(projects 页) ----------
+   其他站点卡:整行横向布局,左图标 / 中信息 / 右出站按钮。
+   与项目卡同一套 --acc 色相语言,但扫光方向相反(由右向左),提示「离开本站」。 */
+.site-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.site-card {
+  --acc: var(--peach);
+  --acc-dim: var(--peach-dim);
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  background: var(--glass-item);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(10px) saturate(1.25);
+  backdrop-filter: blur(10px) saturate(1.25);
+  box-shadow: var(--edge), var(--shadow);
+  overflow: hidden;
+  transition: background-color 0.15s, border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
+}
+/* 站点卡色相:与项目卡同一组 .h-<hue> 类,数据里给 hue 即可 */
+$site-hues: 'peach', 'teal', 'mauve', 'sky', 'green', 'pink', 'yellow';
+@each $tok in $site-hues {
+  .site-card.h-#{$tok} {
+    --acc: var(--#{$tok});
+    --acc-dim: var(--#{$tok}-dim);
+  }
+}
+.site-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, color-mix(in srgb, var(--acc) 12%, transparent) 50%, transparent 70%);
+  transform: translateX(110%);
+  transition: transform 0.7s var(--ease-out);
+  pointer-events: none;
+}
+.site-card:hover::after { transform: translateX(-110%); }
+.site-card:hover {
+  border-color: var(--acc);
+  transform: translateY(-2px);
+  box-shadow: var(--edge), 0 2px 4px rgba(0, 0, 0, 0.2), 0 14px 34px color-mix(in srgb, var(--acc) 24%, transparent);
+}
+.site-card:active { transform: translateY(0) scale(0.99); }
+.site-card:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+.site-icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--acc-dim);
+  color: var(--acc);
+  border: 1px solid transparent;
+  transition: border-color 0.15s, transform 0.18s var(--ease-out);
+}
+.site-card:hover .site-icon {
+  border-color: var(--acc);
+  transform: scale(1.05);
+}
+
+.site-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.site-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+}
+.site-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  transition: color 0.15s;
+}
+.site-sub {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+.site-card:hover .site-title { color: var(--acc); }
+.site-card:hover .site-sub { color: var(--text-secondary); }
+.site-desc {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.site-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+.site-tags span {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  background: color-mix(in srgb, var(--acc) 8%, var(--surface-strong));
+  border: 1px solid transparent;
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+  transition: border-color 0.15s;
+}
+.site-card:hover .site-tags span {
+  border-color: color-mix(in srgb, var(--acc) 45%, transparent);
+}
+
+.site-go {
+  flex: none;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  background: var(--acc-dim);
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+  border: 1px solid transparent;
+  transition: background-color 0.15s, color 0.15s, transform 0.18s var(--ease-out);
+}
+.site-go svg { display: block; }
+.site-card:hover .site-go {
+  background: var(--acc);
+  color: var(--bg);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 560px) {
+  .site-card {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+  }
+  .site-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+  .site-go {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+
 /* ---------- GitHub profile card (projects 页) ----------
    数据来自 src/data/github.ts(构建时拉取),字段能上的全上:统计块 + 明细表 + 折叠的 API 端点。 */
 .gh-card {
@@ -948,6 +1113,82 @@ $gh-stat-hues: (
 .gh-cta:active { transform: translateY(0) scale(0.98); }
 .gh-cta:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .gh-cta svg { display: block; }
+
+/* ---------- 可折叠区块(projects 页 GitHub Profile) ----------
+   用原生 <details>:无 JS 也能折叠,关闭时摘要行仍带身份与关键数字。
+   摘要行直接复用 .block-header,收起时去掉分隔线与下方留白,收成干净的一行。 */
+.fold-head {
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  user-select: none;
+  /* 展开 / 收起时分隔线与留白一并过渡,不硬跳 */
+  transition: border-color 0.24s var(--ease-out), padding-bottom 0.24s var(--ease-out), margin-bottom 0.24s var(--ease-out);
+}
+.fold-head::-webkit-details-marker { display: none; }
+.fold-head h2 { flex: none; }
+.fold-tail {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  min-width: 0;
+}
+.fold-stat {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.fold-head:hover .fold-stat { color: var(--text-secondary); }
+.fold-caret {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin: 0 2px 4px;
+  border-right: 1.8px solid var(--acc);
+  border-bottom: 1.8px solid var(--acc);
+  transform: rotate(45deg);
+  transition: transform 0.26s var(--ease-out), border-color 0.15s;
+}
+.fold[open] .fold-caret { transform: rotate(225deg); }
+.fold-head:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
+/* 收起态:标题下那条分隔线与留白一并撤掉(悬停时再指出「这行可点」) */
+.fold:not([open]) > .fold-head {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom-color: transparent;
+}
+.fold:not([open]) > .fold-head::after { display: none; }
+.fold[open] > .fold-body { animation: foldIn 0.42s var(--ease-out) both; }
+@keyframes foldIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* 资料卡已经在外层 .block 的玻璃面之内:撤掉第二层玻璃、描边与内边距,
+   避免「卡中卡」的浑浊双层模糊,展开后头部直接对齐区块的内容边距 */
+.fold .gh-card,
+.fold .gh-card:hover {
+  padding: 0;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+@media (max-width: 560px) {
+  /* 覆盖 _responsive.scss 的 .block-header 竖排:摘要行保持一行,只留第一个数字 */
+  .block-header.fold-head {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  .fold-stat { display: none; }
+  .fold-stat:first-child { display: inline; }
+}
 
 @media (max-width: 560px) {
   .gh-card {

@@ -1,22 +1,33 @@
 ---
-// projects.astro - 重点项目 + GitHub 资料卡(构建时从 api.github.com 拉取)
+// projects.astro - 重点项目 + 其他站点 + GitHub 资料卡(构建时从 api.github.com 拉取)
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import SiteCard from '../components/SiteCard.astro';
 import GithubCard from '../components/GithubCard.astro';
-import { featuredProjects } from '../data/projects';
+import { featuredProjects, otherSites } from '../data/projects';
 import { getGithubUser } from '../data/github';
 
 const githubUser = await getGithubUser();
+
+/** GitHub 资料卡折叠时摘要行里的数字,与卡内统计块同源(同一份 data/github.ts 数据) */
+const ghSummary = githubUser
+  ? [
+      `@${githubUser.login}`,
+      `${githubUser.publicRepos} repos`,
+      `${githubUser.followers} followers`,
+    ]
+  : [];
 ---
 
 <Base
   title="FLT18355 - Projects"
-  description="FLT18355 的重点项目:终端配置、OpenTUI 音乐播放器 lxm 与 dotfiles。"
+  description="FLT18355 的重点项目:终端配置、OpenTUI 音乐播放器 lxm、dotfiles,以及其他站点与 GitHub 资料卡。"
   current="projects"
 >
   <section class="block b-projects">
     <div class="block-header">
       <h2>Featured Projects</h2>
+      <span class="block-note">{featuredProjects.length} repositories</span>
     </div>
     <div class="project-grid">
       {featuredProjects.map((p) => <ProjectCard project={p} />)}
@@ -24,12 +35,38 @@ const githubUser = await getGithubUser();
   </section>
 
   {
+    otherSites.length > 0 && (
+      <section class="block b-sites">
+        <div class="block-header">
+          <h2>Other Websites</h2>
+          <span class="block-note">{otherSites.length} site{otherSites.length > 1 ? 's' : ''}</span>
+        </div>
+        <div class="site-list">
+          {otherSites.map((s) => (
+            <SiteCard site={s} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
     githubUser && (
       <section class="block b-github">
-        <div class="block-header">
-          <h2>GitHub Profile</h2>
-        </div>
-        <GithubCard user={githubUser} />
+        <details class="fold">
+          <summary class="block-header fold-head">
+            <h2>GitHub Profile</h2>
+            <span class="fold-tail">
+              {ghSummary.map((item) => (
+                <span class="fold-stat">{item}</span>
+              ))}
+              <span class="fold-caret" aria-hidden="true" />
+            </span>
+          </summary>
+          <div class="fold-body">
+            <GithubCard user={githubUser} />
+          </div>
+        </details>
       </section>
     )
   }

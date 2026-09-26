@@ -128,6 +128,18 @@
   .leaderboard-row:hover .leaderboard-score-bar { background: var(--acc-dim); }
   .leaderboard-score-num { color: var(--acc); }
 
+  /* ---------- 6.5 其他站点卡(projects 页) ---------- */
+  .site-card::after {
+    background: linear-gradient(115deg, transparent 30%, var(--acc-dim) 50%, transparent 70%);
+  }
+  .site-card:hover { box-shadow: var(--shadow-lift); }
+  .site-tags span {
+    background: var(--surface-strong);
+    color: var(--text-muted);
+  }
+  .site-card:hover .site-tags span { border-color: transparent; }
+  .site-go { color: var(--acc); }
+
   /* ---------- 7. GitHub 资料卡(projects 页) ---------- */
   .gh-card:hover { border-color: var(--acc-dim); }
   .gh-avatar { border: 1px solid var(--glass-border); }

@@ -18,6 +18,17 @@
   .project-card::after {
     display: none;
   }
+  .site-card::after {
+    display: none;
+  }
+  /* 可折叠区块:展开动画与折角旋转直接跳变 */
+  .fold-head,
+  .fold-caret {
+    transition: none !important;
+  }
+  .fold[open] > .fold-body {
+    animation: none;
+  }
   /* GitHub 卡的展开折角:静态直接跳变 */
   .gh-api summary::before,
   .gh-cta {
@@ -80,5 +91,8 @@
     flex-direction: column;
     gap: 2px;
     align-items: flex-start;
+  }
+  .block-note {
+    margin-left: 0;
   }
 }

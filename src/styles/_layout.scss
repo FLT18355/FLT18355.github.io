@@ -291,6 +291,7 @@
 .block {
   --acc: var(--primary);
   --acc-dim: var(--primary-dim);
+  position: relative;
   background: var(--glass);
   -webkit-backdrop-filter: blur(16px) saturate(1.35);
   backdrop-filter: blur(16px) saturate(1.35);
@@ -299,6 +300,26 @@
   padding: 26px;
   box-shadow: var(--edge), var(--shadow);
   transition: border-color 0.2s, box-shadow 0.3s var(--ease-out);
+}
+/* 区块上沿的一道色相细线:把「一个区块一种颜色」提前写在最外层轮廓上,
+   静止时收在两角内,悬停时向两侧展开一点。用 --acc 纯色变量,不依赖 color-mix。 */
+.block::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--acc) 50%, transparent);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.25s var(--ease-out), left 0.35s var(--ease-out), right 0.35s var(--ease-out);
+}
+.block:hover::before {
+  left: 8px;
+  right: 8px;
+  opacity: 0.9;
 }
 html.motion-js .block { opacity: 0; }
 html.motion-js .block.in {
@@ -320,6 +341,7 @@ $block-hues: (
   'b-music': 'pink',
   'b-weather': 'sky',
   'b-projects': 'green',
+  'b-sites': 'peach',
   'b-github': 'lavender',
   'b-download': 'sky',
   'b-following': 'lavender',
@@ -365,6 +387,17 @@ $block-hues: (
   background: var(--acc);
   box-shadow: 0 0 12px color-mix(in srgb, var(--acc) 65%, transparent);
   transform: rotate(45deg);
+}
+/* 标题右侧的计数 / 副注:等宽小字,靠右对齐,给区块一个「规格行」的收尾 */
+.block-note {
+  margin-left: auto;
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 p {

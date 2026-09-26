@@ -71,6 +71,31 @@ export const featuredProjects: Project[] = [
   },
 ];
 
+/** 其他站点卡(projects 页 Other Websites 区):本站之外、自己维护的独立站点 */
+export interface SiteLink {
+  href: string;
+  /** 图标:行内 SVG HTML(站外站点用图形图标,与 GitHub 项目卡的字母图标区分) */
+  icon: string;
+  title: string;
+  /** 域名,作为卡片的次级标识 */
+  sub: string;
+  desc: string;
+  tags: string[];
+  hue?: Hue;
+}
+
+export const otherSites: SiteLink[] = [
+  {
+    href: 'https://flt18355.github.io/Lumen/',
+    icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.4"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>',
+    title: 'Lumen',
+    sub: 'flt18355.github.io/Lumen',
+    desc: 'A minimalist SVG renderer. Import, transform, optimize and export SVG right in the browser, with Catppuccin variables resolved on export.',
+    tags: ['svg', 'renderer', 'catppuccin'],
+    hue: 'peach',
+  },
+];
+
 export const followingProjects: Project[] = [
   {
     href: 'https://github.com/herdrdev/herdr',

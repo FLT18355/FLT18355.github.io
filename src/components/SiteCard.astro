@@ -1,0 +1,35 @@
+---
+// SiteCard.astro - 其他站点卡(projects 页 Other Websites)
+// 与 ProjectCard 的区别:整行横向布局,突出站点域名与出站动作,数量可变(竖向堆叠)。
+import type { SiteLink } from '../data/projects';
+
+interface Props {
+  site: SiteLink;
+}
+const { site } = Astro.props;
+---
+
+<a
+  href={site.href}
+  target="_blank"
+  rel="noopener"
+  class:list={['site-card', site.hue && `h-${site.hue}`]}
+>
+  <span class="site-icon" set:html={site.icon} aria-hidden="true"></span>
+  <span class="site-body">
+    <span class="site-head">
+      <span class="site-title">{site.title}</span>
+      <span class="site-sub">{site.sub}</span>
+    </span>
+    <span class="site-desc">{site.desc}</span>
+    <span class="site-tags">
+      {site.tags.map((tag) => <span>{tag}</span>)}
+    </span>
+  </span>
+  <span class="site-go">
+    <span class="site-go-label">Open</span>
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M7 17 17 7M8 7h9v9" />
+    </svg>
+  </span>
+</a>

@@ -7,7 +7,7 @@
 | 页面 | 内容 |
 |------|------|
 | [`index.html`](index.html) | 主页:关于我、兴趣、技术栈 + Test 音乐播放器 + 实时天气卡(浏览器定位 + Open-Meteo) |
-| [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles + GitHub 资料卡(构建时从 api.github.com 拉取) |
+| [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles / dsh-pet + 其他站点(Lumen)+ 可折叠的 GitHub 资料卡(构建时从 api.github.com 拉取) |
 | [`catppuccin.html`](catppuccin.html) | Catppuccin 色板:4 风味 × 26 色,点击复制 Hex(SSR 直出,无 JS 也可见) |
 | [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin(紫色重点卡 + 猫图标)/ neovim |
 | [`search.html`](search.html) | Bing 搜索页:实时时钟 / 快捷链接 / 最近搜索(无左栏单列布局) |
@@ -55,8 +55,8 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   ├── _nav.scss / _font-picker.scss / _responsive.scss
     ├── layouts/Base.astro   页面骨架(head 元信息 + 主题/字体恢复内联脚本;`rail={false}` 无左栏,再加 `wide` 即占满宽度)
     ├── components/
-    │   ├── Nav.astro / Rail.astro / Contacts.astro / Footline.astro / ProjectCard.astro
-    │   ├── GithubCard.astro  GitHub 资料卡(消费 data/github.ts)
+    │   ├── Nav.astro / Rail.astro / Contacts.astro / Footline.astro / ProjectCard.astro / SiteCard.astro
+    │   ├── GithubCard.astro  GitHub 资料卡(消费 data/github.ts,在 projects 页被可折叠壳包住)
     │   ├── MarkdownReader.vue 阅读器主组件 + ReaderTree / ReaderFontPanel / ReaderIcon(递归树 / 字体面板 / 描边图标)
     │   └── ThemeToggle.vue / FontPicker.vue / PaletteGrid.vue / SearchPanel.vue / MusicPlayer.vue / WeatherWidget.vue / StatsCounter.vue / Leaderboard.vue
     ├── lib/reader/       阅读器的纯逻辑(与 Vue 解耦,可在 node 里单测)
@@ -66,7 +66,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   └── icons.ts       阅读器图标 SVG 片段表
     ├── data/
     │   ├── site.ts       站点元信息 + 导航配置
-    │   ├── projects.ts   项目卡数据(projects / following 共用)
+    │   ├── projects.ts   项目卡数据(projects / following 共用,含 projects 页其他站点 otherSites)
     │   ├── palette.ts    Catppuccin 色板数据(4 风味 × 26 色)
     │   ├── music.ts      音乐播放器曲目(gh-proxy 直链 + 标题)
     │   ├── weather.ts    首页天气卡:定位链路 + Open-Meteo 端点 + WMO 天气码/图标
@@ -83,9 +83,10 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 ## 设计机制
 
 - **主题**：Mocha(深)/ Latte(浅)双 Catppuccin 风味,`@property` 注册实现颜色平滑过渡;系统偏好自动适配,`localStorage` 持久化;切换用 View Transition 圆形揭示(ThemeToggle.vue)
-- **多色强调**：Catppuccin 全色相令牌(`_tokens.scss`),每个区块、每条导航、每张项目卡各占一色(区块 `--acc` / 导航 `--nc` / 卡片数据 `hue` → `.h-<hue>`);页面底色是四色氛围网格 + 双光斑,身份卡顶部多色光晕 + 头像外一圈全色相色环,标题/时钟用品牌渐变裁字;动作控件与焦点环仍固定 `--primary`,保证注意力落点唯一
+- **多色强调**：Catppuccin 全色相令牌(`_tokens.scss`),每个区块、每条导航、每张项目卡各占一色(区块 `--acc` / 导航 `--nc` / 卡片数据 `hue` → `.h-<hue>`);每个 `.block` 上沿还有一道 `--acc` 渐隐细线(静止收在两角内、悬停向两侧展开);页面底色是四色氛围网格 + 双光斑,身份卡顶部多色光晕 + 头像外一圈全色相色环,标题/时钟用品牌渐变裁字;动作控件与焦点环仍固定 `--primary`,保证注意力落点唯一
 - **材质**：玻璃卡片统一 `--edge`(顶部 1px 内高光,浅色主题换成白色内描边) + 双层投影,静止时也有「浮起来」的厚度;系统开「减弱透明度」时与低配层同样去模糊、换不透明底
-- **GitHub 资料卡**(projects 页)：构建时调 `https://api.github.com/users/FLT18355`,把返回的字段尽量铺满卡片(统计块 + 明细表 + 折叠的 API 端点);拉不到(限流 / 断网)自动退回 `src/data/github-user.snapshot.json`,访客侧零请求、无 JS 也完整可见
+- **GitHub 资料卡**(projects 页)：构建时调 `https://api.github.com/users/FLT18355`,把返回的字段尽量铺满卡片(统计块 + 明细表 + 折叠的 API 端点);拉不到(限流 / 断网)自动退回 `src/data/github-user.snapshot.json`,访客侧零请求、无 JS 也完整可见。整块用原生 `<details>` 做成**可折叠**(默认收起,摘要行保留 `@login` / repos / followers 与折角,纯 CSS 实现,无 JS);展开后资料卡撤掉自己的玻璃层与描边(`.fold .gh-card`),避免 `.block` 之内出现「卡中卡」的双层模糊
+- **其他站点**(projects 页 Other Websites)：`src/data/projects.ts` 的 `otherSites`(当前一条:Lumen,一个简约 SVG 渲染器),由 `SiteCard.astro` 渲染成整行卡片,左图标 / 域名 / 描述 / 标签 / 右侧 Open 出站按钮;色相由数据里的 `hue` 驱动(`.h-<hue>`),扫光方向与项目卡相反(由右向左)用来提示「离开本站」。加站点只需往数组里追加一条
 - **低配适配**：head 内联脚本按省流量 / 内存 / 核心数判定 `html.lite`,精简层去掉玻璃模糊、固定渐变层与常驻动画(滚动与首屏优先);`?lite=1` / `?lite=0` 可手动对比
 - **老浏览器兜底**：颜色依赖的 `color-mix()` 缺失时由 `_compat.scss`(整块 `@supports not (...)`)给出等价纯色,颜色身份不丢、只是层次降一档
 - **Vue 岛**(client:load,共九个)：主题拨钮、首启字体选择、色板复制、搜索页(时钟/历史)、首页 Test 音乐播放器、首页统计数字、following 排行榜、首页天气卡、阅读器。除天气卡(内容取决于访客位置,只能在浏览器侧取)与阅读器(内容来自用户上传的压缩包)外,其余全部 SSR 直出静态内容,JS 不运行页面仍完整可用
