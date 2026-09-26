@@ -94,6 +94,15 @@ export const otherSites: SiteLink[] = [
     tags: ['svg', 'renderer', 'catppuccin'],
     hue: 'peach',
   },
+  {
+    href: 'https://flt18355.github.io/Lumen/music.html',
+    icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5.6l10-2v12.4"/><circle cx="6.4" cy="18" r="2.6"/><circle cx="16.4" cy="16" r="2.6"/></svg>',
+    title: 'Lumen Player',
+    sub: 'flt18355.github.io/Lumen/music',
+    desc: 'A music player. Local playlists with LRC lyrics, a 5-band equalizer, playback speed, sleep timer and a fullscreen visualizer, all running in the browser.',
+    tags: ['music', 'player', 'lrc'],
+    hue: 'mauve',
+  },
 ];
 
 export const followingProjects: Project[] = [
