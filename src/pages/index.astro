@@ -1,6 +1,7 @@
 ---
 // index.astro - 首页:关于 / 兴趣 / 技术栈 / 音乐 / 天气
 import Base from '../layouts/Base.astro';
+import CardFold from '../components/CardFold.astro';
 import MusicPlayer from '../components/MusicPlayer.vue';
 import StatsCounter from '../components/StatsCounter.vue';
 import WeatherWidget from '../components/WeatherWidget.vue';
@@ -11,10 +12,7 @@ import WeatherWidget from '../components/WeatherWidget.vue';
   description="FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。"
   current="home"
 >
-  <section class="block b-about">
-    <div class="block-header">
-      <h2>About Me</h2>
-    </div>
+  <CardFold id="b-about" class="b-about" title="About Me">
     <p class="about-lead">
       A <strong>Catppuccin</strong> enjoyer. Python user tinkering with dotfiles and TUI tools on
       Arch Linux.
@@ -25,12 +23,9 @@ import WeatherWidget from '../components/WeatherWidget.vue';
       <span class="flavor f-frappe"><i></i>Frappé</span>
       <span class="flavor f-macchiato"><i></i>Macchiato</span>
     </div>
-  </section>
+  </CardFold>
 
-  <section class="block b-interests">
-    <div class="block-header">
-      <h2>Interests</h2>
-    </div>
+  <CardFold id="b-interests" class="b-interests" title="Interests">
     <div class="interest-list">
       <span class="interest">Terminal &amp; dotfiles</span>
       <span class="interest">Catppuccin theming</span>
@@ -38,12 +33,9 @@ import WeatherWidget from '../components/WeatherWidget.vue';
       <span class="interest">Open source</span>
       <span class="interest">TUI tools</span>
     </div>
-  </section>
+  </CardFold>
 
-  <section class="block b-tech">
-    <div class="block-header">
-      <h2>Tech Stack</h2>
-    </div>
+  <CardFold id="b-tech" class="b-tech" title="Tech Stack">
     <div class="tech-grid">
       <span class="tech-tag main t-blue tech-tag--icon">
         <span class="tech-ico" aria-hidden="true">
@@ -64,14 +56,11 @@ import WeatherWidget from '../components/WeatherWidget.vue';
       <span class="tech-tag t-peach">HTML</span>
       <span class="tech-tag t-mauve">Lua</span>
     </div>
-  </section>
+  </CardFold>
 
-  <section class="block b-stats">
-    <div class="block-header">
-      <h2>By the Numbers</h2>
-    </div>
+  <CardFold id="b-stats" class="b-stats" title="By the Numbers">
     <StatsCounter client:load />
-  </section>
+  </CardFold>
 
   <MusicPlayer client:load />
 

@@ -144,100 +144,107 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="block b-search">
-    <div class="search-clock" role="timer">
-      <div class="search-time" id="searchTime">
-        <span class="search-time-main">{{ timeMain }}</span><span class="search-time-sec">{{ timeSec }}</span>
+  <details class="block b-search fold card-fold" data-fold="b-search" open>
+    <summary class="block-header fold-head">
+      <h2>Search</h2>
+      <span class="fold-tail"><span class="fold-caret" aria-hidden="true" /></span>
+    </summary>
+
+    <div class="fold-body">
+      <div class="search-clock" role="timer">
+        <div class="search-time" id="searchTime">
+          <span class="search-time-main">{{ timeMain }}</span><span class="search-time-sec">{{ timeSec }}</span>
+        </div>
+        <div class="search-date" id="searchDate">{{ dateText }}</div>
       </div>
-      <div class="search-date" id="searchDate">{{ dateText }}</div>
-    </div>
-    <div class="search-greeting" aria-hidden="true">
-      <span class="search-greeting-line"></span>
-      <span class="search-greeting-text">Search the web</span>
-      <span class="search-greeting-line"></span>
-    </div>
-    <form
-      class="search-form"
-      :action="engineAction"
-      method="get"
-      target="_blank"
-      rel="noopener"
-      role="search"
-      @submit="onSubmit"
-    >
-      <span class="search-form-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      </span>
-      <input
-        class="search-input"
-        type="search"
-        name="q"
-        id="searchQ"
-        v-model="query"
-        :placeholder="'Search with ' + ENGINES[engineIdx].label"
-        :aria-label="'Search with ' + ENGINES[engineIdx].label"
-        autocomplete="off"
-        spellcheck="false"
-        @keydown="onInputKeydown"
-      />
-      <button class="search-go" type="submit">Search</button>
-    </form>
-    <div class="search-quicklinks" aria-label="Quick links">
-      <a class="quicklink q-github" href="https://github.com" target="_blank" rel="noopener">
-            <span class="quicklink-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.75 2.69 1.25 3.34.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.06.78 2.14v3.17c0 .3.2.67.8.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
-            </span>
-            <span class="quicklink-name">GitHub</span>
-          </a>
-      <a class="quicklink q-bilibili" href="https://space.bilibili.com/517296410" target="_blank" rel="noopener">
-            <span class="quicklink-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373Z"/></svg>
-            </span>
-            <span class="quicklink-name">Bilibili</span>
-          </a>
-      <a class="quicklink q-youtube" href="https://www.youtube.com" target="_blank" rel="noopener">
-            <span class="quicklink-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
-            </span>
-            <span class="quicklink-name">YouTube</span>
-          </a>
-      <a class="quicklink q-mdn" href="https://developer.mozilla.org" target="_blank" rel="noopener">
-            <span class="quicklink-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M9 11h2"/></svg>
-            </span>
-            <span class="quicklink-name">MDN</span>
-          </a>
-    </div>
-    <div class="search-history" id="searchHistory" :hidden="!hasHistory">
-      <div class="search-history-head">
-        <span class="search-label">Recent</span>
-        <button type="button" class="search-clear" id="searchClear" @click="onClear">Clear</button>
+      <div class="search-greeting" aria-hidden="true">
+        <span class="search-greeting-line"></span>
+        <span class="search-greeting-text">Search the web</span>
+        <span class="search-greeting-line"></span>
       </div>
-      <div class="search-chips" id="searchChips">
-        <a
-          v-for="q in history"
-          :key="q"
-          class="search-chip"
-          :href="engineAction + '?q=' + encodeURIComponent(q)"
-          target="_blank"
-          rel="noopener"
-        >{{ q }}</a>
+      <form
+        class="search-form"
+        :action="engineAction"
+        method="get"
+        target="_blank"
+        rel="noopener"
+        role="search"
+        @submit="onSubmit"
+      >
+        <span class="search-form-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </span>
+        <input
+          class="search-input"
+          type="search"
+          name="q"
+          id="searchQ"
+          v-model="query"
+          :placeholder="'Search with ' + ENGINES[engineIdx].label"
+          :aria-label="'Search with ' + ENGINES[engineIdx].label"
+          autocomplete="off"
+          spellcheck="false"
+          @keydown="onInputKeydown"
+        />
+        <button class="search-go" type="submit">Search</button>
+      </form>
+      <div class="search-quicklinks" aria-label="Quick links">
+        <a class="quicklink q-github" href="https://github.com" target="_blank" rel="noopener">
+              <span class="quicklink-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.15c-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.75 2.69 1.25 3.34.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.27 5.68.41.36.78 1.06.78 2.14v3.17c0 .3.2.67.8.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+              </span>
+              <span class="quicklink-name">GitHub</span>
+            </a>
+        <a class="quicklink q-bilibili" href="https://space.bilibili.com/517296410" target="_blank" rel="noopener">
+              <span class="quicklink-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373Z"/></svg>
+              </span>
+              <span class="quicklink-name">Bilibili</span>
+            </a>
+        <a class="quicklink q-youtube" href="https://www.youtube.com" target="_blank" rel="noopener">
+              <span class="quicklink-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+              </span>
+              <span class="quicklink-name">YouTube</span>
+            </a>
+        <a class="quicklink q-mdn" href="https://developer.mozilla.org" target="_blank" rel="noopener">
+              <span class="quicklink-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6M9 11h2"/></svg>
+              </span>
+              <span class="quicklink-name">MDN</span>
+            </a>
       </div>
+      <div class="search-history" id="searchHistory" :hidden="!hasHistory">
+        <div class="search-history-head">
+          <span class="search-label">Recent</span>
+          <button type="button" class="search-clear" id="searchClear" @click="onClear">Clear</button>
+        </div>
+        <div class="search-chips" id="searchChips">
+          <a
+            v-for="q in history"
+            :key="q"
+            class="search-chip"
+            :href="engineAction + '?q=' + encodeURIComponent(q)"
+            target="_blank"
+            rel="noopener"
+          >{{ q }}</a>
+        </div>
+      </div>
+      <div class="search-engines" role="group" aria-label="Search engine">
+        <button
+          v-for="(e, i) in ENGINES"
+          :key="e.key"
+          type="button"
+          class="search-engine"
+          :class="{ 'is-active': engineIdx === i }"
+          :aria-pressed="engineIdx === i"
+          @click="selectEngine(i)"
+        >{{ e.label }}</button>
+        <button type="button" class="clock-toggle" :aria-pressed="use24h" @click="toggleClock">
+          {{ use24h ? '24h' : '12h' }}
+        </button>
+      </div>
+      <p class="search-note">Press <kbd>/</kbd> to focus, results open in a new tab</p>
     </div>
-    <div class="search-engines" role="group" aria-label="Search engine">
-      <button
-        v-for="(e, i) in ENGINES"
-        :key="e.key"
-        type="button"
-        class="search-engine"
-        :class="{ 'is-active': engineIdx === i }"
-        :aria-pressed="engineIdx === i"
-        @click="selectEngine(i)"
-      >{{ e.label }}</button>
-      <button type="button" class="clock-toggle" :aria-pressed="use24h" @click="toggleClock">
-        {{ use24h ? '24h' : '12h' }}
-      </button>
-    </div>
-    <p class="search-note">Press <kbd>/</kbd> to focus, results open in a new tab</p>
-  </section>
+  </details>
 </template>

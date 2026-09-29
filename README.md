@@ -7,12 +7,14 @@
 | 页面 | 内容 |
 |------|------|
 | [`index.html`](index.html) | 主页:关于我、兴趣、技术栈 + Test 音乐播放器 + 实时天气卡(浏览器定位 + Open-Meteo) |
-| [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles / dsh-pet + 其他站点(Lumen)+ 可折叠的 GitHub 资料卡(构建时从 api.github.com 拉取) |
+| [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles / dsh-pet + 其他站点(Lumen)+ GitHub 资料卡(构建时从 api.github.com 拉取) |
 | [`catppuccin.html`](catppuccin.html) | Catppuccin 色板:4 风味 × 26 色,点击复制 Hex(SSR 直出,无 JS 也可见) |
 | [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin(紫色重点卡 + 猫图标)/ neovim |
 | [`search.html`](search.html) | Bing 搜索页:实时时钟 / 快捷链接 / 最近搜索(无左栏单列布局) |
 | [`reader.html`](reader.html) | Markdown 阅读器:上传 ZIP 递归解析目录、只收 .md、渲染 GFM、包内图片与内链、自定义字体持久化(无左栏、占满宽度) |
 | [`404.html`](404.html) | 品牌化 404 页(猫 + 返回首页) |
+
+> 页面上每张区块卡都可折叠,**默认全部展开**;右下角折叠坞可一键收起 / 展开,详见「设计机制 · 卡片折叠」。阅读器页是单一工具面板、404 页是单张错误卡,不参与折叠。
 
 ## 构建
 
@@ -46,6 +48,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   ├── _lite.scss    低配精简层(html.lite 门控)
     │   ├── _layout.scss  两栏壳 / 左栏身份卡 / 联系方式 / 页脚
     │   ├── _cards.scss   标签筹码 / 色板 / 项目卡
+    │   ├── _fold.scss    卡片折叠(标题行即摘要行)+ 右下角全站折叠坞
     │   ├── _toggle.scss  主题拨钮(拖拽 / 键盘 / 圆形揭示)
     │   ├── _search.scss  search 页样式
     │   ├── _music.scss   音乐播放器样式
@@ -55,8 +58,9 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   ├── _nav.scss / _font-picker.scss / _responsive.scss
     ├── layouts/Base.astro   页面骨架(head 元信息 + 主题/字体恢复内联脚本;`rail={false}` 无左栏,再加 `wide` 即占满宽度)
     ├── components/
+    │   ├── CardFold.astro    可折叠卡片壳(原生 `<details>` + `<summary>`,默认展开;区块卡统一用它)
     │   ├── Nav.astro / Rail.astro / Contacts.astro / Footline.astro / ProjectCard.astro / SiteCard.astro
-    │   ├── GithubCard.astro  GitHub 资料卡(消费 data/github.ts,在 projects 页被可折叠壳包住)
+    │   ├── GithubCard.astro  GitHub 资料卡(消费 data/github.ts,在 projects 页被 CardFold 包住)
     │   ├── MarkdownReader.vue 阅读器主组件 + ReaderTree / ReaderFontPanel / ReaderIcon(递归树 / 字体面板 / 描边图标)
     │   └── ThemeToggle.vue / FontPicker.vue / PaletteGrid.vue / SearchPanel.vue / MusicPlayer.vue / WeatherWidget.vue / StatsCounter.vue / Leaderboard.vue
     ├── lib/reader/       阅读器的纯逻辑(与 Vue 解耦,可在 node 里单测)
@@ -74,7 +78,8 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   └── github-user.snapshot.json  api.github.com 响应快照(兜底,`npm run snapshot:github` 刷新)
     ├── scripts/
     │   ├── motion.ts     动效编排(滚动入场、光斑、倾斜、进度线)
-    │   └── nav.ts        导航指示条定位
+    │   ├── nav.ts        导航指示条定位
+    │   └── fold.ts       卡片折叠增强(状态记忆 / 折叠坞 / 快捷键 / 深链)
     └── pages/            index / projects / catppuccin / following / search / reader / 404
 ```
 
@@ -85,7 +90,8 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 - **主题**：Mocha(深)/ Latte(浅)双 Catppuccin 风味,`@property` 注册实现颜色平滑过渡;系统偏好自动适配,`localStorage` 持久化;切换用 View Transition 圆形揭示(ThemeToggle.vue)
 - **多色强调**：Catppuccin 全色相令牌(`_tokens.scss`),每个区块、每条导航、每张项目卡各占一色(区块 `--acc` / 导航 `--nc` / 卡片数据 `hue` → `.h-<hue>`);每个 `.block` 上沿还有一道 `--acc` 渐隐细线(静止收在两角内、悬停向两侧展开);页面底色是四色氛围网格 + 双光斑,身份卡顶部多色光晕 + 头像外一圈全色相色环,标题/时钟用品牌渐变裁字;动作控件与焦点环仍固定 `--primary`,保证注意力落点唯一
 - **材质**：玻璃卡片统一 `--edge`(顶部 1px 内高光,浅色主题换成白色内描边) + 双层投影,静止时也有「浮起来」的厚度;系统开「减弱透明度」时与低配层同样去模糊、换不透明底
-- **GitHub 资料卡**(projects 页)：构建时调 `https://api.github.com/users/FLT18355`,把返回的字段尽量铺满卡片(统计块 + 明细表 + 折叠的 API 端点);拉不到(限流 / 断网)自动退回 `src/data/github-user.snapshot.json`,访客侧零请求、无 JS 也完整可见。整块用原生 `<details>` 做成**可折叠**(默认收起,摘要行保留 `@login` / repos / followers 与折角,纯 CSS 实现,无 JS);展开后资料卡撤掉自己的玻璃层与描边(`.fold .gh-card`),避免 `.block` 之内出现「卡中卡」的双层模糊
+- **卡片折叠**(全站)：每张区块卡都是原生 `<details>`(默认展开),标题行即 `<summary>`,右侧折角随状态旋转,无 JS 也能点标题收起。Astro 页统一走 `CardFold.astro`,Vue 岛内是同一套 `<details class="block … fold card-fold">` 标记。`src/scripts/fold.ts` 在此之上做渐进增强:按「页面 + 卡片键」把折叠状态存进 `localStorage`(`site-fold`),右下角折叠坞显示「已展开 / 总数」并提供 Fold all / Unfold all,快捷键 `[` 收起全部 / `]` 展开全部(光标在输入框内不抢键),URL hash 命中卡片时强制展开并滚动到它;展开动画由 `html.fold-anim` 门控,只在用户操作后播,首屏不与区块入场(`blockIn`)叠成两层。`.block-note` / `.fold-stat` 放在摘要行右侧,收起时仍保留数量信息
+- **GitHub 资料卡**(projects 页)：构建时调 `https://api.github.com/users/FLT18355`,把返回的字段尽量铺满卡片(统计块 + 明细表 + 折叠的 API 端点);拉不到(限流 / 断网)自动退回 `src/data/github-user.snapshot.json`,访客侧零请求、无 JS 也完整可见。整块走全站统一的 `CardFold`(**默认展开**),摘要行保留 `@login` / repos / followers 与折角;展开后资料卡撤掉自己的玻璃层与描边(`.fold .gh-card`),避免 `.block` 之内出现「卡中卡」的双层模糊。卡内的 API 端点列表仍是独立的原生 `<details>`,默认收起
 - **其他站点**(projects 页 Other Websites)：`src/data/projects.ts` 的 `otherSites`(当前两条:Lumen,一个简约 SVG 渲染器;Lumen Player,一个浏览器内的音乐播放器),由 `SiteCard.astro` 渲染成整行卡片,左图标 / 域名 / 描述 / 标签 / 右侧 Open 出站按钮;色相由数据里的 `hue` 驱动(`.h-<hue>`),扫光方向与项目卡相反(由右向左)用来提示「离开本站」。加站点只需往数组里追加一条
 - **低配适配**：head 内联脚本按省流量 / 内存 / 核心数判定 `html.lite`,精简层去掉玻璃模糊、固定渐变层与常驻动画(滚动与首屏优先);`?lite=1` / `?lite=0` 可手动对比
 - **老浏览器兜底**：颜色依赖的 `color-mix()` 缺失时由 `_compat.scss`(整块 `@supports not (...)`)给出等价纯色,颜色身份不丢、只是层次降一档
@@ -104,6 +110,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 - **`dist/` 与根目录产物都是生成物**,不要手改;改内容一律改 `src/`,然后 `npm run build` + `bash scripts/deploy.sh`。
 - **字体门控**:`Maple Mono NF CN` 只允许出现在 `html[data-font="maple"]` 的覆盖里(默认用户不能触发 `font.woff2` 下载)。新增可见文案后必须重跑 `python3 subset-font.py`,否则新字符缺字(豆腐块);全量字体在 `public/font-full.woff2`,不会丢字形。
 - **新增玻璃面**必须用 `box-shadow: var(--edge), var(--shadow)`(写在同一条里,否则老浏览器整条阴影失效),并同步登记到 `_lite.scss` 的模糊关闭清单与 `prefers-reduced-transparency` 段。
+- **新增区块卡**一律用 `CardFold.astro`(Vue 岛用同款 `<details class="block … fold card-fold">`):标题放进 `<summary class="block-header fold-head">`,正文包进 `.fold-body`,并给 `id` / `data-fold` 一个页内唯一键(折叠状态按它持久化);默认带 `open`,保证「默认未折叠」。
 - **新增 `color-mix()`** 时,若丢掉该声明会让元素变透明 / 失色相,要去 `_compat.scss` 的 `@supports not (...)` 块里补一条等价纯色(不能就地写两行,压缩器会删掉后一条)。
 - **新增动效**必须补 `prefers-reduced-motion` 分支;除拨钮场景动画外全部尊重该偏好。
 - **色相落位**只改 `_tokens.scss` 里的令牌:区块 `--acc`(`_layout.scss` 的 `$block-hues`)、导航 `--nc`(`_nav.scss` 的 `$nav-hues`,顺序即 `data/site.ts` 的 NAV 数组)、卡片数据 `hue`。**动作控件与焦点环固定用 `--primary`**,不要换成区块色相。彩色文字用 `color-mix(in srgb, var(--hue), var(--text) var(--hue-fg-mix))`。
@@ -117,6 +124,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 npm run build                                  # 应输出 7 page(s) built,无报错
 ls dist/*.html                                 # 恰好 7 个
 grep -rn '{{' dist/*.html                      # 应无输出(残留占位符)
+grep -c 'card-fold' dist/*.html                # 每页区块卡数(index 6 / projects 4 / following 2 / catppuccin 1 / search 1;404 与 reader 为 0)
 grep -o 'aria-current="page"' dist/reader.html # 每页恰一处,指向当前页(脚本里的选择器字符串会再出现一次)
 bash scripts/deploy.sh                         # 同步到根目录,Pages 才生效
 ```

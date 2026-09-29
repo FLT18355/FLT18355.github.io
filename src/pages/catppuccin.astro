@@ -1,6 +1,7 @@
 ---
 // catppuccin.astro - Catppuccin 色板页
 import Base from '../layouts/Base.astro';
+import CardFold from '../components/CardFold.astro';
 import PaletteGrid from '../components/PaletteGrid.vue';
 import { FLAVORS } from '../data/palette';
 ---
@@ -10,10 +11,7 @@ import { FLAVORS } from '../data/palette';
   description="Catppuccin full palette: 4 flavors × 26 colors, click a swatch to copy the CSS variable."
   current="palette"
 >
-  <section class="block b-palette">
-    <div class="block-header">
-      <h2>Catppuccin Palette</h2>
-    </div>
+  <CardFold id="b-palette" class="b-palette" title="Catppuccin Palette">
     <p class="about-lead">4 flavors × 26 colors, <strong>click a swatch</strong> to copy the CSS variable name.</p>
 
     <div class="palette-preview">
@@ -66,5 +64,5 @@ import { FLAVORS } from '../data/palette';
     </div>
 
     <PaletteGrid client:load />
-  </section>
+  </CardFold>
 </Base>

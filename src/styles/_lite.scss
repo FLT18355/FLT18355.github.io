@@ -28,7 +28,8 @@ html.lite .gh-card,
 html.lite .reader-bar,
 html.lite .reader-font-panel,
 html.lite .reader-drawer-panel,
-html.lite .font-picker {
+html.lite .font-picker,
+html.lite .fold-dock {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
@@ -109,7 +110,8 @@ html.lite .search-time {
   .reader-bar,
   .reader-font-panel,
   .reader-drawer-panel,
-  .font-picker {
+  .font-picker,
+  .fold-dock {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

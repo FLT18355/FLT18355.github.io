@@ -1,6 +1,7 @@
 ---
 // projects.astro - 重点项目 + 其他站点 + GitHub 资料卡(构建时从 api.github.com 拉取)
 import Base from '../layouts/Base.astro';
+import CardFold from '../components/CardFold.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import SiteCard from '../components/SiteCard.astro';
 import GithubCard from '../components/GithubCard.astro';
@@ -24,57 +25,43 @@ const ghSummary = githubUser
   description="FLT18355 的重点项目:终端配置、OpenTUI 音乐播放器 lxm、dotfiles,以及其他站点与 GitHub 资料卡。"
   current="projects"
 >
-  <section class="block b-projects">
-    <div class="block-header">
-      <h2>Featured Projects</h2>
-      <span class="block-note">{featuredProjects.length} repositories</span>
-    </div>
+  <CardFold
+    id="b-projects"
+    class="b-projects"
+    title="Featured Projects"
+    note={`${featuredProjects.length} repositories`}
+  >
     <div class="project-grid">
       {featuredProjects.map((p) => <ProjectCard project={p} />)}
     </div>
-  </section>
+  </CardFold>
 
   {
     otherSites.length > 0 && (
-      <section class="block b-sites">
-        <div class="block-header">
-          <h2>Other Websites</h2>
-          <span class="block-note">{otherSites.length} site{otherSites.length > 1 ? 's' : ''}</span>
-        </div>
+      <CardFold
+        id="b-sites"
+        class="b-sites"
+        title="Other Websites"
+        note={`${otherSites.length} site${otherSites.length > 1 ? 's' : ''}`}
+      >
         <div class="site-list">
           {otherSites.map((s) => (
             <SiteCard site={s} />
           ))}
         </div>
-      </section>
+      </CardFold>
     )
   }
 
   {
     githubUser && (
-      <section class="block b-github">
-        <details class="fold">
-          <summary class="block-header fold-head">
-            <h2>GitHub Profile</h2>
-            <span class="fold-tail">
-              {ghSummary.map((item) => (
-                <span class="fold-stat">{item}</span>
-              ))}
-              <span class="fold-caret" aria-hidden="true" />
-            </span>
-          </summary>
-          <div class="fold-body">
-            <GithubCard user={githubUser} />
-          </div>
-        </details>
-      </section>
+      <CardFold id="b-github" class="b-github" title="GitHub Profile" meta={ghSummary}>
+        <GithubCard user={githubUser} />
+      </CardFold>
     )
   }
 
-  <section class="block b-download">
-    <div class="block-header">
-      <h2>Download</h2>
-    </div>
+  <CardFold id="b-download" class="b-download" title="Download">
     <a
       class="download-card"
       href="https://v4.gh-proxy.org/https://github.com/FLT18355/dsh-pet-inAndroid/releases/download/1.0.1/app-release.apk"
@@ -90,5 +77,5 @@ const ghSummary = githubUser
       </span>
       <span class="download-go">Download</span>
     </a>
-  </section>
+  </CardFold>
 </Base>

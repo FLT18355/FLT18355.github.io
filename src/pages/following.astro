@@ -1,6 +1,7 @@
 ---
 // following.astro - 关注项目
 import Base from '../layouts/Base.astro';
+import CardFold from '../components/CardFold.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import Leaderboard from '../components/Leaderboard.vue';
 import { followingProjects } from '../data/projects';
@@ -11,14 +12,11 @@ import { followingProjects } from '../data/projects';
   description="FLT18355 正在关注的项目:herdr / oh-my-pi / catppuccin / neovim。"
   current="following"
 >
-  <section class="block b-following">
-    <div class="block-header">
-      <h2>Recently Following</h2>
-    </div>
+  <CardFold id="b-following" class="b-following" title="Recently Following">
     <div class="project-grid">
       {followingProjects.map((p) => <ProjectCard project={p} />)}
     </div>
-  </section>
+  </CardFold>
 
   <Leaderboard client:load />
 </Base>

@@ -27,7 +27,7 @@
     transition: none !important;
   }
   .fold[open] > .fold-body {
-    animation: none;
+    animation: none !important;
   }
   /* GitHub 卡的展开折角:静态直接跳变 */
   .gh-api summary::before,

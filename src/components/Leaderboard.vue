@@ -55,46 +55,50 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="block b-leaderboard">
-    <div class="block-header">
+  <details class="block b-leaderboard fold card-fold" data-fold="b-leaderboard" open>
+    <summary class="block-header fold-head">
       <h2>AI Coding Leaderboard</h2>
-    </div>
-    <p class="leaderboard-note">
-      Top 10 models by coding ability, from BenchLM
-      <template v-if="updated"> · Updated {{ updated }}</template>
-    </p>
+      <span class="fold-tail"><span class="fold-caret" aria-hidden="true" /></span>
+    </summary>
 
-    <div v-if="failed" class="leaderboard-state" role="alert">Failed to load leaderboard.</div>
-    <div v-else-if="!loaded" class="leaderboard-state">Loading...</div>
-    <div v-else>
-      <div class="leaderboard-head" aria-hidden="true">
-        <span class="leaderboard-head-rank">#</span>
-        <span class="leaderboard-head-model">Model</span>
-        <span class="leaderboard-head-score">Coding</span>
-      </div>
-      <div class="leaderboard-list" role="list">
-        <div
-          v-for="m in visible"
-          :key="m.rank"
-          class="leaderboard-row"
-          :class="'leaderboard-row--' + m.rank"
-          role="listitem"
-        >
-          <span class="leaderboard-rank">
-            <span v-if="m.rank <= 3" class="leaderboard-medal" v-html="MEDALS[m.rank - 1]"></span>
-            <span v-else>{{ m.rank }}</span>
-          </span>
-          <span class="leaderboard-name">
-            <span class="leaderboard-model">{{ m.model }}</span>
-            <span class="leaderboard-creator">{{ m.creator }}</span>
-          </span>
-          <span class="leaderboard-score">
-            <span class="leaderboard-score-bar" :style="{ width: barWidth(m) }"></span>
-            <span class="leaderboard-score-num">{{ fmt(m.categoryScores && m.categoryScores.coding) }}</span>
-            <span class="leaderboard-score-label">coding</span>
-          </span>
+    <div class="fold-body">
+      <p class="leaderboard-note">
+        Top 10 models by coding ability, from BenchLM
+        <template v-if="updated"> · Updated {{ updated }}</template>
+      </p>
+
+      <div v-if="failed" class="leaderboard-state" role="alert">Failed to load leaderboard.</div>
+      <div v-else-if="!loaded" class="leaderboard-state">Loading...</div>
+      <div v-else>
+        <div class="leaderboard-head" aria-hidden="true">
+          <span class="leaderboard-head-rank">#</span>
+          <span class="leaderboard-head-model">Model</span>
+          <span class="leaderboard-head-score">Coding</span>
+        </div>
+        <div class="leaderboard-list" role="list">
+          <div
+            v-for="m in visible"
+            :key="m.rank"
+            class="leaderboard-row"
+            :class="'leaderboard-row--' + m.rank"
+            role="listitem"
+          >
+            <span class="leaderboard-rank">
+              <span v-if="m.rank <= 3" class="leaderboard-medal" v-html="MEDALS[m.rank - 1]"></span>
+              <span v-else>{{ m.rank }}</span>
+            </span>
+            <span class="leaderboard-name">
+              <span class="leaderboard-model">{{ m.model }}</span>
+              <span class="leaderboard-creator">{{ m.creator }}</span>
+            </span>
+            <span class="leaderboard-score">
+              <span class="leaderboard-score-bar" :style="{ width: barWidth(m) }"></span>
+              <span class="leaderboard-score-num">{{ fmt(m.categoryScores && m.categoryScores.coding) }}</span>
+              <span class="leaderboard-score-label">coding</span>
+            </span>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </details>
 </template>
