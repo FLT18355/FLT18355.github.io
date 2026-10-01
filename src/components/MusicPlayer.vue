@@ -182,6 +182,8 @@ onUnmounted(() => {
               <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z" />
             </svg>
           </div>
+          <!-- 播放中浮在封面上的均衡器:纯装饰,状态语义仍由 .music-status 承担 -->
+          <span class="music-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         </div>
 
         <div class="music-body">

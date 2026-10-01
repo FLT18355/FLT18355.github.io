@@ -57,7 +57,11 @@
   if (fine && !lite) {
     const TILT = 5.5;
     const cards = Array.prototype.slice.call(document.querySelectorAll('.project-card'));
-    const spots = blocks.concat(cards);
+    /* 行卡(其他站点 / 下载)是横向布局,不做 3D 倾斜,只参与指针光斑 */
+    const listCards = Array.prototype.slice.call(
+      document.querySelectorAll('.site-card, .download-card')
+    );
+    const spots = blocks.concat(cards, listCards);
 
     function spotlight(el: Element) {
       let raf: number | null = null,
@@ -124,20 +128,42 @@
     spots.forEach(spotlight);
     cards.forEach(tilt);
 
-    /* 2.5 背景光斑视差:全局指针驱动 --mx/--my(-0.5..0.5) */
+    /* 2.5 指针柔光 + 背景光斑视差:共用一次 pointermove 与一次 rAF。
+       背景光斑(--mx / --my)直接跟手;指针柔光用惯性插值追上去,
+       比瞬移更接近一枚有重量的柔光。 */
+    const cursorGlow = document.createElement('div');
+    cursorGlow.className = 'cursor-glow';
+    cursorGlow.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(cursorGlow);
+
     let gRaf: number | null = null,
       gx = 0,
-      gy = 0;
+      gy = 0,
+      cx = window.innerWidth / 2,
+      cy = window.innerHeight / 2,
+      tx = cx,
+      ty = cy;
+
     function glowApply() {
       gRaf = null;
       root.style.setProperty('--mx', gx.toFixed(3));
       root.style.setProperty('--my', gy.toFixed(3));
+      cx += (tx - cx) * 0.14;
+      cy += (ty - cy) * 0.14;
+      cursorGlow.style.transform =
+        'translate3d(' + cx.toFixed(1) + 'px, ' + cy.toFixed(1) + 'px, 0)';
+      /* 还没追上就继续追:停下后不再空转 rAF */
+      if (Math.abs(tx - cx) > 0.4 || Math.abs(ty - cy) > 0.4) {
+        gRaf = requestAnimationFrame(glowApply);
+      }
     }
     window.addEventListener(
       'pointermove',
       (e: PointerEvent) => {
         gx = e.clientX / window.innerWidth - 0.5;
         gy = e.clientY / window.innerHeight - 0.5;
+        tx = e.clientX;
+        ty = e.clientY;
         if (!gRaf) gRaf = requestAnimationFrame(glowApply);
       },
       { passive: true }
@@ -156,6 +182,8 @@
     const max = document.documentElement.scrollHeight - window.innerHeight;
     const p = max > 0 ? window.scrollY / max : 0;
     bar.style.setProperty('--p', p.toFixed(4));
+    /* 顺带给出「已滚过顶部」的信号:与进度线共用这次回调,不另开监听 */
+    root.classList.toggle('nav-scrolled', window.scrollY > 8);
   }
   window.addEventListener(
     'scroll',

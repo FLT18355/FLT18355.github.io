@@ -13,6 +13,9 @@
 @use 'nav';
 @use 'font-picker';
 @use 'reader';
+/* 精修层:材质 / 分层入场 / 微交互。排在组件之后,可覆盖前面的组件样式;
+   又必须排在 responsive / compat / lite 之前,让环境兜底与低配熄火始终压在最上层。 */
+@use 'polish';
 @use 'responsive';
 /* 环境层放最后:老浏览器兜底(无 color-mix)与低配精简层 */
 @use 'compat';

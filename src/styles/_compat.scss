@@ -337,4 +337,39 @@
   .reader-doc .md-code-copy.is-done {
     border-color: var(--green);
   }
+
+  /* ---------- 14. 精修层(_polish.scss)新增面 ----------
+     只补「丢掉后会变透明 / 失色相 / 丢阴影」的声明,纯装饰性的扫光与光斑不在此列。 */
+  /* 滚动条胶囊:丢掉混色会没有滑块,退回输入框底色 */
+  ::-webkit-scrollbar-thumb {
+    background: var(--bg-input);
+  }
+  /* 色环与头像之间的 1px 描边(原来是 .avatar-ring 的 inset box-shadow,
+     被旋转色层盖住后用 ::after 重画,这里补等价描边) */
+  .avatar-ring::after {
+    box-shadow: inset 0 0 0 1px var(--glass-border);
+  }
+  /* 行卡指针光斑:与第 4 节 .block::after 同样的处理 */
+  html.motion-js .site-card::before,
+  html.motion-js .download-card::before {
+    background: radial-gradient(
+      240px circle at var(--sx, 50%) var(--sy, 50%),
+      var(--acc-dim),
+      transparent 62%
+    );
+  }
+  /* 骨架屏占位条:丢掉渐变会变成全透明的空行,加载中看起来像坏了 */
+  .skel-line,
+  .skel-chip {
+    background: var(--surface-strong);
+  }
+  /* 指针柔光:丢掉混色就什么都看不见了,退回同色相的淡光令牌 */
+  .cursor-glow {
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 62%);
+  }
+  /* 播放中封面高亮 */
+  .music-player.is-playing .music-cover {
+    border-color: var(--acc);
+    box-shadow: var(--shadow);
+  }
 }

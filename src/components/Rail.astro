@@ -6,6 +6,8 @@ import Contacts from './Contacts.astro';
 <aside class="rail">
   <div class="profile">
     <span class="avatar-ring">
+      <!-- 旋转色环层:与 .avatar-ring 的静态 conic 底同色,motion-js 下绕中心缓转成流动色轮 -->
+      <span class="avatar-halo" aria-hidden="true"></span>
       <img class="avatar-logo" src="/images/avatar.webp" alt="FLT18355" width="256" height="256" decoding="async" />
     </span>
     <h1>FLT18355</h1>

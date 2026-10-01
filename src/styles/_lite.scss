@@ -84,7 +84,49 @@ html.lite .search-time {
   filter: none;
 }
 
-/* ---------- 7. 系统「减弱透明度」偏好(Safari / macOS 辅助功能开关):
+/* ---------- 7. 精修层(_polish.scss)的常驻动效与材质:
+   滚动入场这类的「一次性」动效保留(与 motion.ts 的取舍一致),
+   逐帧重绘的常驻动效、以及固定层全屏噪点,低配下一并熄火。 */
+html.lite body::after {
+  display: none;
+}
+html.lite .cursor-glow {
+  display: none;
+}
+html.lite .avatar-halo,
+html.lite .rail h1,
+html.lite .search-time,
+html.lite .weather-temp,
+html.lite .music-player.is-playing .music-cover--placeholder svg {
+  animation: none;
+}
+/* 均衡器同理:必须写成与 _polish.scss 同等特异性的完整选择器,
+   否则那条 (0,4,2) 的 animation 规则会压过这里的 animation:none。 */
+html.lite .music-player.is-playing .music-eq i {
+  animation: none;
+}
+/* 扫光图层停住会变成一块静止的浅色斜条:把图层退回单层品牌渐变 */
+html.lite .rail h1,
+html.lite .search-time,
+html.lite .weather-temp {
+  background-image: var(--grad-brand);
+  background-size: auto;
+}
+/* 骨架屏停住后保留静态占位色,仍然读得出「这里在加载」 */
+html.lite .skel-line,
+html.lite .skel-chip {
+  animation: none;
+  background: var(--surface-strong);
+}
+/* 均衡器停住:四根柱子错开高度,静态也看得出「正在播放」 */
+html.lite .music-player.is-playing .music-eq i {
+  transform: scaleY(0.45);
+}
+html.lite .music-player.is-playing .music-eq i:nth-child(2) { transform: scaleY(0.85); }
+html.lite .music-player.is-playing .music-eq i:nth-child(3) { transform: scaleY(0.6); }
+html.lite .music-player.is-playing .music-eq i:nth-child(4) { transform: scaleY(0.35); }
+
+/* ---------- 8. 系统「减弱透明度」偏好(Safari / macOS 辅助功能开关):
    玻璃层换成不透明底并去掉模糊,和低配层同一套处理,只是触发条件是用户偏好而非硬件 */
 @media (prefers-reduced-transparency: reduce) {
   :root {
@@ -114,5 +156,10 @@ html.lite .search-time {
   .fold-dock {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+  /* 全屏噪点与指针柔光都是「透明度玩的东西」,用户关掉透明度就别硬塞 */
+  body::after,
+  .cursor-glow {
+    display: none;
   }
 }

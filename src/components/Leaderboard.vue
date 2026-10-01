@@ -68,7 +68,31 @@ onMounted(async () => {
       </p>
 
       <div v-if="failed" class="leaderboard-state" role="alert">Failed to load leaderboard.</div>
-      <div v-else-if="!loaded" class="leaderboard-state">Loading...</div>
+      <!-- 加载中用与最终行同形的骨架屏,而不是一行「Loading...」:
+           版式不跳动,数据到达时是「填进来」而不是「换一屏」 -->
+      <div
+        v-else-if="!loaded"
+        class="leaderboard-list leaderboard-list--skeleton"
+        role="status"
+        aria-busy="true"
+        aria-label="Loading leaderboard"
+      >
+        <div
+          v-for="n in 3"
+          :key="'skel-' + n"
+          class="leaderboard-row leaderboard-skel"
+          aria-hidden="true"
+        >
+          <span class="leaderboard-rank skel-chip"></span>
+          <span class="leaderboard-name">
+            <span class="skel-line skel-line--title"></span>
+            <span class="skel-line skel-line--sub"></span>
+          </span>
+          <span class="leaderboard-score">
+            <span class="skel-line skel-line--score"></span>
+          </span>
+        </div>
+      </div>
       <div v-else>
         <div class="leaderboard-head" aria-hidden="true">
           <span class="leaderboard-head-rank">#</span>

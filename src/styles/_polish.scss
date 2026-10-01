@@ -1,0 +1,540 @@
+/* _polish.scss - 精修层:材质、分层入场与微交互
+   本文件只做「增量美化」,不改任何布局结构与内容语义,所有规则都可整段删除而无副作用。
+
+   沿用本站既有三条纪律(见 AGENTS.md「低配与老浏览器」「动效」):
+     1. 动效由 html.motion-js 门控(motion.ts 在「支持 IntersectionObserver 且未开启
+        「减弱动效」」时加上),JS 未就绪 / 用户要求减弱时规则整体惰性;
+     2. html.lite(低配精简)下的熄火规则统一写在 _lite.scss;
+     3. 新增 color-mix 的声明,凡「丢失后会变透明 / 失色相 / 丢阴影」的,都在 _compat.scss
+        补了等价兜底 —— 维护时请一并遵守这条规则。
+   级联位置:global.scss 里排在 reader 之后、responsive / compat / lite 之前,
+   因此可以覆盖前面的组件样式,又不会被环境兜底层盖掉。 */
+
+/* ============================================================
+   0. 新增令牌
+   ============================================================ */
+:root {
+  /* 渐变文字的扫光色。不用 color-mix:这一层要参与 background-image 列表,
+     一旦被老浏览器整条丢弃,会把底下的品牌渐变一起带走。 */
+  --sheen: rgba(255, 255, 255, 0.42);
+}
+:root[data-theme="latte"] {
+  /* 浅色主题的品牌渐变本身是深色相,白色扫光过曝,改成极淡的一层 */
+  --sheen: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================================
+   1. 材质:全页噪点
+   固定层铺一层去饱和的分形噪声,给「大块纯色玻璃」一点颗粒感。
+   刻意压在 z-index:0(与 body::before 氛围层同层,内容 .shell 是 1),
+   这样它只做背景材质,不参与内容的合成,滚动时不产生额外的混合开销;
+   也不用 mix-blend-mode —— 固定层 + 混合模式会在每次滚动重新混合整屏。
+   ============================================================ */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.055;
+  background-repeat: repeat;
+  background-size: 160px 160px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+:root[data-theme="latte"] body::after {
+  opacity: 0.04;
+}
+
+/* ============================================================
+   2. 滚动条:换成主题色,与 scrollbar-color 双轨(WebKit / 标准属性各管一半)
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  /* 用底色描边做出「浮在轨道上」的胶囊,而不是贴边的方块 */
+  border: 3px solid var(--bg);
+  background: color-mix(in srgb, var(--mauve) 46%, var(--bg-input));
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mauve);
+}
+::-webkit-scrollbar-corner {
+  background: var(--bg);
+}
+
+/* ============================================================
+   3. 入口动效:区块用「位移 + 轻微缩放」,比纯位移更稳、更有落点
+   (_layout.scss 的 blockIn 在此被同优先级、更靠后的规则覆盖)
+   ============================================================ */
+@keyframes polishBlockIn {
+  from { opacity: 0; transform: translateY(26px) scale(0.994); }
+  55%  { opacity: 1; }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+html.motion-js .block.in {
+  animation: polishBlockIn 0.72s var(--ease-out) both;
+  animation-delay: var(--d, 0s);
+}
+
+/* 标题:从左侧轻推入,和已有的「强调线从左画出」同一方向,读起来是一件事 */
+@keyframes polishTitleIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+html.motion-js .block.in > .block-header > h2 {
+  animation: polishTitleIn 0.6s var(--ease-out) backwards;
+  animation-delay: calc(var(--d, 0s) + 0.04s);
+}
+/* 标题行右侧的小注 / 统计:比标题再晚一拍,形成 标题 → 规格行 的阅读顺序 */
+html.motion-js .block.in > .block-header .fold-tail > * {
+  animation: polishTitleIn 0.5s var(--ease-out) backwards;
+  animation-delay: calc(var(--d, 0s) + 0.14s);
+}
+
+/* 卡片正文:按 DOM 顺序逐级入场。用 backwards 而不是 both ——
+   动画结束后必须把 transform 还给元素本身,否则 .download-card 之类的
+   悬停位移会被残留的填充值吃掉。 */
+@keyframes polishItemIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+html.motion-js .block.in .fold-body > * {
+  animation: polishItemIn 0.58s var(--ease-out) backwards;
+}
+@for $i from 1 through 8 {
+  html.motion-js .block.in .fold-body > *:nth-child(#{$i}) {
+    animation-delay: calc(var(--d, 0s) + #{0.16s + ($i - 1) * 0.07s});
+  }
+}
+/* 超过 8 项后不再累加延迟,否则长页面最后一个区块要等太久 */
+html.motion-js .block.in .fold-body > *:nth-child(n+9) {
+  animation-delay: calc(var(--d, 0s) + 0.65s);
+}
+
+/* ============================================================
+   3.5 指针柔光
+   一枚跟随光标的固定柔光(元素由 motion.ts 在「精确指针且非低配」时插入)。
+   负 margin 让 transform 里的坐标直接等于 clientX / clientY,JS 侧不用再算半径。
+   压在 z-index:0,只当背景光,不参与内容的命中与合成。
+   ============================================================ */
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 420px;
+  height: 420px;
+  margin: -210px 0 0 -210px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--primary) 15%, transparent) 0%,
+    transparent 62%
+  );
+}
+
+/* ============================================================
+   4. 身份卡:色环缓转 + 卡面扫光
+   ============================================================ */
+/* 头像外的色环改成「旋转的 conic 层」:方形色层绕中心转,被 overflow:hidden
+   圆裁后正好是一圈流动的色轮。内接圆对中心旋转不变,所以任何角度都不会露缝。 */
+.avatar-halo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: conic-gradient(
+    from 210deg,
+    var(--primary),
+    var(--mauve),
+    var(--pink),
+    var(--peach),
+    var(--yellow),
+    var(--green),
+    var(--teal),
+    var(--sky),
+    var(--lavender),
+    var(--primary)
+  );
+}
+html.motion-js .avatar-halo {
+  animation: ringSpin 16s linear infinite;
+}
+@keyframes ringSpin {
+  to { transform: rotate(360deg); }
+}
+/* 色环与头像之间的 1px 底色描边。原来写在 .avatar-ring 的 inset box-shadow 上,
+   会被上面这层旋转色层盖住,这里用 ::after 重新画在色层之上。 */
+.avatar-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bg) 58%, transparent);
+}
+.avatar-logo {
+  position: relative;
+  z-index: 1;
+}
+/* 顺手修一个既有失效点:.avatar-ring 的 logoIn 动画带 fill:both,会把 transform
+   一直占住(动画在层叠里压过普通声明),于是 _layout.scss 里 .profile:hover
+   .avatar-ring 的位移与放大从来没生效过。这里改用独立的 scale 属性 ——
+   它与 transform 分开合成,不会被动画覆盖,也不必去动那段动画本身。 */
+.avatar-ring {
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out),
+    scale 0.3s var(--ease-out);
+}
+.profile:hover .avatar-ring {
+  scale: 1.03;
+}
+
+/* 卡面斜向扫光:悬停时从左上掠过一道柔光,像玻璃反光。 */
+.profile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    color-mix(in srgb, var(--text) 12%, transparent) 50%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.9s var(--ease-out);
+}
+.profile:hover::after {
+  transform: translateX(120%);
+}
+/* 身份卡整体抬起一档:默认不动,悬停时才浮起来,不动基础观感 */
+.profile {
+  transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out),
+    border-color 0.35s var(--ease-out);
+}
+.profile:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--glass-border));
+  box-shadow: var(--edge), var(--shadow-lift);
+}
+
+/* ============================================================
+   5. 品牌渐变文字的扫光
+   .rail h1 / .search-time / .weather-temp 都是 background-clip:text 的渐变字。
+   在品牌渐变之上再叠一层「无色的扫光」图层并平移它,底色渐变保持 0 0 不动,
+   因此不会有循环接缝(渐变首尾色并不相同,直接平移底色会看到一道硬边)。 */
+.rail h1,
+.search-time,
+.weather-temp {
+  background-image: linear-gradient(
+      115deg,
+      transparent 36%,
+      var(--sheen) 50%,
+      transparent 64%
+    ),
+    var(--grad-brand);
+  background-size: 240% 100%, auto;
+  background-repeat: no-repeat, no-repeat;
+  background-position: 0% 50%, 0 0;
+}
+html.motion-js .rail h1,
+html.motion-js .search-time,
+html.motion-js .weather-temp {
+  animation: textSheen 7.5s var(--ease-out) infinite;
+}
+@keyframes textSheen {
+  /* 前 62% 停在「扫光在画面外」的位置当作停顿,只在最后一小段掠过 */
+  0%, 62% { background-position: 0% 50%, 0 0; }
+  100%    { background-position: 100% 50%, 0 0; }
+}
+
+/* ============================================================
+   6. 导航:滚动后抬起 + 指示条发光
+   ============================================================ */
+html.motion-js .nav-indicator {
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ni, var(--primary)) 60%, transparent);
+}
+html.motion-js .nav-item:hover:not(:active) {
+  transform: translateY(-1px);
+}
+
+/* 滚出顶部后导航抬起:底色压实、下沿点亮、补一层同色投影。
+   由 motion.ts 在已有的滚动 rAF 里切换 .nav-scrolled(与阅读进度线共用一次回调)。
+   刻意不用 CSS 滚动时间线:animation-duration 在进度型时间线上的取值在各引擎间
+   仍有歧义,一旦被当成 0s,fill:both 会把导航永久钉在「已滚过」的样子。 */
+html.motion-js .site-nav {
+  transition: background-color 0.24s var(--ease-out), border-color 0.24s var(--ease-out),
+    box-shadow 0.24s var(--ease-out);
+}
+html.motion-js .site-nav.nav-scrolled {
+  background-color: color-mix(in srgb, var(--bg) 94%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--primary) 30%, var(--border));
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+/* ============================================================
+   7. 列表卡(其他站点 / 下载)的指针光斑
+   .project-card 已有 3D 倾斜 + 光斑;这两类是「横向行卡」,不做倾斜,
+   只补同款柔光,和 motion.ts 里扩展的 spotlight 目标一一对应。
+   ============================================================ */
+.download-card {
+  position: relative;
+}
+html.motion-js .site-card::before,
+html.motion-js .download-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    240px circle at var(--sx, 50%) var(--sy, 50%),
+    color-mix(in srgb, var(--acc) 18%, transparent),
+    transparent 62%
+  );
+  transition: opacity 0.3s var(--ease-out);
+}
+html.motion-js .site-card.hot::before,
+html.motion-js .download-card.hot::before {
+  opacity: 1;
+}
+/* 光斑层要压在内容之下,行卡的内容块显式抬一层 */
+html.motion-js .site-body,
+html.motion-js .site-icon,
+html.motion-js .site-go,
+html.motion-js .download-icon,
+html.motion-js .download-info,
+html.motion-js .download-go {
+  position: relative;
+  z-index: 2;
+}
+
+/* ============================================================
+   8. 音乐卡:播放中显示均衡器 + 封面高亮
+   ============================================================ */
+.music-cover-wrap {
+  position: relative;
+}
+html.motion-js .music-player.is-playing .music-cover--placeholder svg {
+  animation: coverSpin 8s linear infinite;
+}
+@keyframes coverSpin {
+  to { transform: rotate(360deg); }
+}
+/* 播放中,封面描边与投影切到区块色相(--acc = pink) */
+.music-cover {
+  transition: border-color 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+}
+.music-player.is-playing .music-cover {
+  border-color: color-mix(in srgb, var(--acc) 55%, var(--border));
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--acc) 30%, transparent);
+}
+
+.music-eq {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  height: 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 3px 4px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--bg) 62%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+  pointer-events: none;
+}
+.music-player.is-playing .music-eq {
+  opacity: 1;
+  transform: none;
+}
+.music-eq i {
+  display: block;
+  width: 2px;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--acc);
+  transform: scaleY(0.28);
+  transform-origin: bottom center;
+}
+/* 四根柱子错开相位,看起来才像在跳而不是齐刷刷地闪。
+   注意:animation 简写会把 animation-delay 一并重置成 0s,而上面那条规则的
+   特异性更高,所以延迟必须写成同等特异性的完整选择器,不能只写 :nth-child。 */
+html.motion-js .music-player.is-playing .music-eq i {
+  animation: eqBar 0.9s ease-in-out infinite;
+}
+html.motion-js .music-player.is-playing .music-eq i:nth-child(1) { animation-delay: -0.62s; }
+html.motion-js .music-player.is-playing .music-eq i:nth-child(2) { animation-delay: -0.24s; }
+html.motion-js .music-player.is-playing .music-eq i:nth-child(3) { animation-delay: -0.47s; }
+html.motion-js .music-player.is-playing .music-eq i:nth-child(4) { animation-delay: -0.09s; }
+@keyframes eqBar {
+  0%, 100% { transform: scaleY(0.28); }
+  50%      { transform: scaleY(1); }
+}
+
+/* ============================================================
+   9. 骨架屏:排行榜加载中用与最终行同形的占位,而不是干等一行字
+   ============================================================ */
+.skel-line,
+.skel-chip {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--surface-strong) 25%,
+    color-mix(in srgb, var(--text) 13%, var(--surface-strong)) 50%,
+    var(--surface-strong) 75%
+  );
+  background-size: 220% 100%;
+}
+html.motion-js .skel-line,
+html.motion-js .skel-chip {
+  animation: skelSweep 1.4s linear infinite;
+}
+@keyframes skelSweep {
+  from { background-position: 120% 0; }
+  to   { background-position: -20% 0; }
+}
+.skel-chip {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+}
+.skel-line--title {
+  width: 44%;
+  height: 11px;
+}
+.skel-line--sub {
+  width: 28%;
+  height: 9px;
+  margin-top: 5px;
+}
+.skel-line--score {
+  width: 62px;
+  height: 11px;
+  margin-left: auto;
+}
+/* 占位行不参与悬停反馈:它不是可点的内容 */
+.leaderboard-skel:hover {
+  border-color: var(--glass-border);
+  transform: none;
+}
+.leaderboard-skel .leaderboard-name,
+.leaderboard-skel .leaderboard-score {
+  display: flex;
+  flex-direction: column;
+}
+.leaderboard-skel .leaderboard-score {
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* ============================================================
+   10. 天气卡:刷新按钮在请求中转圈
+   ============================================================ */
+html.motion-js .weather-refresh:disabled svg {
+  animation: iconSpin 1.1s linear infinite;
+}
+@keyframes iconSpin {
+  to { transform: rotate(360deg); }
+}
+.weather-now[aria-busy="true"] .weather-temp {
+  opacity: 0.55;
+}
+.weather-temp {
+  transition: opacity 0.3s var(--ease-out);
+}
+
+/* ============================================================
+   11. 搜索页:快捷入口逐个浮起
+   ============================================================ */
+@for $i from 1 through 5 {
+  html.motion-js .block.in .search-quicklinks > *:nth-child(#{$i}) {
+    animation: polishItemIn 0.5s var(--ease-out) backwards;
+    animation-delay: calc(var(--d, 0s) + #{0.2s + ($i - 1) * 0.06s});
+  }
+}
+html.motion-js .block.in .search-quicklinks > *:nth-child(n+6) {
+  animation: polishItemIn 0.5s var(--ease-out) backwards;
+  animation-delay: calc(var(--d, 0s) + 0.5s);
+}
+
+/* ============================================================
+   12. 节奏微调:内容列间距
+   注意:这里刻意不改 .block 的内边距 —— .b-search 自己写了 padding: 40px 28px,
+   两边同为 (0,1,0),本文件排在 _search.scss 之后会把那条盖掉。
+   ============================================================ */
+.content {
+  gap: 20px;
+}
+
+/* ============================================================
+   13. 减弱动效:本文件新增的动效整体熄火(其余规则来自 _responsive.scss)
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html.motion-js .block.in,
+  html.motion-js .block.in > .block-header > h2,
+  html.motion-js .block.in > .block-header .fold-tail > *,
+  html.motion-js .block.in .fold-body > *,
+  html.motion-js .block.in .search-quicklinks > *,
+  html.motion-js .avatar-halo,
+  html.motion-js .rail h1,
+  html.motion-js .search-time,
+  html.motion-js .weather-temp,
+  html.motion-js .music-eq i,
+  html.motion-js .music-player.is-playing .music-cover--placeholder svg,
+  html.motion-js .skel-line,
+  html.motion-js .skel-chip,
+  html.motion-js .weather-refresh:disabled svg {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+  html.motion-js .nav-item:hover:not(:active) {
+    transform: none;
+  }
+  /* 均衡器停住:柱子错开高度,静态也读得出「正在播放」 */
+  html.motion-js .music-eq i:nth-child(1) { transform: scaleY(0.45); }
+  html.motion-js .music-eq i:nth-child(2) { transform: scaleY(0.85); }
+  html.motion-js .music-eq i:nth-child(3) { transform: scaleY(0.6); }
+  html.motion-js .music-eq i:nth-child(4) { transform: scaleY(0.35); }
+  .profile::after,
+  html.motion-js .site-card::before,
+  html.motion-js .download-card::before {
+    display: none;
+  }
+  /* 扫光图层留在原地会变成一块静止的浅色斜条,直接撤掉图层尺寸与动画 */
+  .rail h1,
+  .search-time,
+  .weather-temp {
+    background-image: var(--grad-brand);
+    background-size: auto;
+  }
+  .music-cover,
+  .weather-temp {
+    transition: none;
+  }
+  .profile,
+  .profile:hover {
+    transition: none;
+    transform: none;
+  }
+  .avatar-ring,
+  .profile:hover .avatar-ring {
+    transition: none;
+    scale: 1;
+  }
+}
