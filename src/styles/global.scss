@@ -19,6 +19,9 @@
 /* 布局编排层:首页 bento 网格 + 版面尺度。排在 polish 之后、响应式之前,
    让它能覆盖组件样式,又被 responsive / compat / lite 的环境兜底收口。 */
 @use 'bento';
+/* 纸质浮雕材质层:分层纸面 / 等高线 / 点阵 / 虚线瓦片 / 节点连线 + 浮雕高光。
+   排在环境兜底之前,低配与响应式层可以整块关掉它。 */
+@use 'paper';
 @use 'responsive';
 /* 环境层放最后:老浏览器兜底(无 color-mix)与低配精简层 */
 @use 'compat';

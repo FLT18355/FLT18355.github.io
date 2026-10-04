@@ -1,0 +1,273 @@
+/* _paper.scss - 纸质浮雕材质层
+   参照 demo/readme-banner.webp 右侧的语言:分层纸面 + 等高线线稿 + 点阵 +
+   虚线圆角瓦片 + 节点连线,近单色、无硬边框、柔和大扩散阴影。
+
+   全部由 CSS 渐变与内联 SVG 生成,不引入图片与运行时依赖。
+   级联位置:global.scss 里排在 bento 之后、responsive / compat / lite 之前,
+   因此可以覆盖组件样式,又被低配 / 响应式 / 老浏览器兜底收口。
+
+   维护纪律(与 _polish.scss 一致):
+     1. 新增的常驻动效统一在文件末尾补 prefers-reduced-motion 分支;
+     2. 固定大层与常驻动画在 _lite.scss 里整块熄火;
+     3. 本文件不使用 color-mix 上色(材质靠 --paper-* / --emboss-* / --art-* 令牌),
+        因此不需要在 _compat.scss 补兜底。 */
+
+/* ============================================================
+   0. 氛围光降档:纸面材质要压过彩色光斑,把已有两枚 glow 调淡,
+      纸层与品牌色共存而不是互相打架。
+   ============================================================ */
+.glow-a { opacity: 0.68; }
+.glow-b { opacity: 0.46; }
+
+/* ============================================================
+   1. 背景画布:固定层,只做背景,不参与命中
+   ============================================================ */
+.bg-art {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ---------- 1.1 分层纸面:三枚由深到浅的巨弧,叠在右下角 ---------- */
+.bg-art__sheets {
+  position: absolute;
+  inset: 0;
+}
+.bg-art__sheets i {
+  position: absolute;
+  border-radius: 50%;
+  /* 上沿受光 + 下沿投影:整套材质只用这一个光源方向 */
+  box-shadow: 0 -22px 48px -22px var(--art-shade), inset 0 1px 0 var(--emboss-light);
+}
+.bg-art__sheets i:nth-child(1) {
+  right: -46vw;
+  bottom: -60vw;
+  width: 122vw;
+  height: 92vw;
+  background: var(--paper-1);
+}
+.bg-art__sheets i:nth-child(2) {
+  right: -34vw;
+  bottom: -48vw;
+  width: 104vw;
+  height: 78vw;
+  background: var(--paper-2);
+}
+.bg-art__sheets i:nth-child(3) {
+  right: -22vw;
+  bottom: -36vw;
+  width: 86vw;
+  height: 64vw;
+  background: var(--paper-3);
+}
+/* 指针视差:与 .glow 共用 motion.ts 写在根元素上的 --mx / --my,不新增 JS */
+html.motion-js .bg-art__sheets {
+  transition: transform 1.6s var(--ease-out);
+  transform: translate3d(calc(var(--mx, 0) * -12px), calc(var(--my, 0) * -9px), 0);
+}
+
+/* ---------- 1.2 点阵与等高线:薄线稿要渐隐收边,用 mask 做,不支持就整块不画 ---------- */
+.bg-art__dots,
+.bg-art__contour {
+  display: none;
+}
+@supports ((mask-image: radial-gradient(#000, transparent)) or (-webkit-mask-image: radial-gradient(#000, transparent))) {
+  .bg-art__dots,
+  .bg-art__contour {
+    display: block;
+    position: absolute;
+  }
+  .bg-art__dots {
+    left: -4vw;
+    bottom: -6vh;
+    width: 52vw;
+    height: 62vh;
+    background-image: radial-gradient(var(--art-dot) 1.1px, transparent 1.2px);
+    background-size: 22px 22px;
+    -webkit-mask-image: radial-gradient(70% 70% at 30% 82%, #000 0%, transparent 72%);
+    mask-image: radial-gradient(70% 70% at 30% 82%, #000 0%, transparent 72%);
+  }
+  .bg-art__contour {
+    left: -12vw;
+    top: -20vh;
+    width: 56vw;
+    height: 56vw;
+    background-image: repeating-radial-gradient(
+      circle at 0% 0%,
+      transparent 0 26px,
+      var(--art-line) 26px 27px
+    );
+    -webkit-mask-image: radial-gradient(62% 62% at 0% 0%, #000 0%, transparent 78%);
+    mask-image: radial-gradient(62% 62% at 0% 0%, #000 0%, transparent 78%);
+  }
+}
+
+/* ---------- 1.3 瓦片:a 是虚线「+」瓦片(对应 banner 的加号块),b 是实底圆点瓦片 ---------- */
+.bg-art__tile {
+  position: absolute;
+  border-radius: 22px;
+  border: 1.5px dashed var(--art-line);
+  background: var(--paper-2);
+  box-shadow: 0 12px 26px -14px var(--art-shade), inset 0 1px 0 var(--emboss-light);
+}
+.bg-art__tile--a {
+  top: 15vh;
+  right: 3.5vw;
+  width: 74px;
+  height: 74px;
+}
+.bg-art__tile--b {
+  left: 3vw;
+  bottom: 15vh;
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  border-style: solid;
+  border-color: var(--glass-border);
+  background: var(--paper-3);
+}
+/* 「+」用两条伪元素画:不引字体、不引图片 */
+.bg-art__tile::before,
+.bg-art__tile::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 2px;
+  background: var(--art-line);
+}
+.bg-art__tile::before {
+  width: 20px;
+  height: 2px;
+  transform: translate(-50%, -50%);
+}
+.bg-art__tile::after {
+  width: 2px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+}
+/* b 只留一枚圆点,和虚线 + 拉开辨识度 */
+.bg-art__tile--b::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.bg-art__tile--b::after {
+  display: none;
+}
+
+/* ---------- 1.4 节点连线:一条贝塞尔 + 三枚端点圆点 ---------- */
+.bg-art__nodes {
+  position: absolute;
+  left: 1.5vw;
+  bottom: 7vh;
+  width: min(420px, 40vw);
+  height: auto;
+  color: var(--art-line);
+}
+.bg-art__nodes path {
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+.bg-art__nodes circle {
+  fill: var(--paper-3);
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+
+/* ============================================================
+   2. 身份卡浮雕瓦片组:呼应 banner 右侧的圆角方块阵列
+   ============================================================ */
+.profile-tiles {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--art-line);
+}
+.profile-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--edge), 0 8px 18px -12px var(--art-shade);
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+}
+/* 三块各取一色:与全站「一区块一色相」的既定语言一致 */
+.profile-tile:nth-child(1) { color: var(--primary); }
+.profile-tile:nth-child(2) { color: var(--mauve); }
+.profile-tile:nth-child(3) { color: var(--teal); }
+.profile-tile svg {
+  display: block;
+}
+.profile-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--edge), 0 14px 24px -14px var(--art-shade);
+}
+/* 虚线空瓦片:纸面上「还没填」的一格 */
+.profile-tile--ghost {
+  background: transparent;
+  border: 1.5px dashed var(--art-line);
+  box-shadow: none;
+  position: relative;
+}
+.profile-tile--ghost::before,
+.profile-tile--ghost::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 2px;
+  background: var(--art-line);
+}
+.profile-tile--ghost::before {
+  width: 14px;
+  height: 1.6px;
+  transform: translate(-50%, -50%);
+}
+.profile-tile--ghost::after {
+  width: 1.6px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+}
+.profile-tile--ghost:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ============================================================
+   3. 统计卡的虚线内框:把 banner 里虚线圆角块的语言落到真实内容上
+   ============================================================ */
+.stat-card {
+  position: relative;
+}
+.stat-card::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 10px;
+  border: 1px dashed var(--art-line);
+  pointer-events: none;
+}
+
+/* ============================================================
+   4. 减弱动效:本文件只引入一处视差,就地熄火
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html.motion-js .bg-art__sheets {
+    transition: none;
+    transform: none;
+  }
+  .profile-tile,
+  .profile-tile:hover {
+    transition: none;
+    transform: none;
+  }
+}

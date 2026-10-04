@@ -13,7 +13,8 @@
   :root {
     --surface: #393a4d;
     --surface-strong: #3f4154;
-    /* --edge 默认值含 color-mix,丢掉会让所有玻璃卡的 box-shadow 整条失效,这里给等价纯色 */
+    /* --edge 现在只用 rgba 令牌拼(--emboss-light / --emboss-dark),不再依赖 color-mix;
+       这里仍留一条纯色兜底,保证老浏览器卡面始终有内高光 */
     --edge: inset 0 1px 0 rgba(205, 214, 244, 0.08);
   }
   :root[data-theme="latte"] {

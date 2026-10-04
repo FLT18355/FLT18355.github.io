@@ -41,7 +41,7 @@ const ldJson = JSON.stringify(
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#1e1e2e" />
+    <meta name="theme-color" content="#1c1b26" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={title} />
@@ -108,6 +108,22 @@ const ldJson = JSON.stringify(
     </script>
   </head>
   <body>
+    <!-- 背景纸层(纯装饰,aria-hidden):分层纸面 + 点阵 + 等高线 + 虚线瓦片 + 节点连线。
+         参照 demo/readme-banner.webp 右侧的纸质浮雕语言;低配层在 _lite.scss 里整块关掉。 -->
+    <div class="bg-art" aria-hidden="true">
+      <span class="bg-art__sheets"><i></i><i></i><i></i></span>
+      <span class="bg-art__dots"></span>
+      <span class="bg-art__contour"></span>
+      <span class="bg-art__tile bg-art__tile--a"></span>
+      <span class="bg-art__tile bg-art__tile--b"></span>
+      <svg class="bg-art__nodes" viewBox="0 0 420 220" fill="none">
+        <path d="M10 186C104 186 118 30 214 30c96 0 108 138 196 138" />
+        <circle cx="10" cy="186" r="3.5" />
+        <circle cx="214" cy="30" r="3.5" />
+        <circle cx="410" cy="168" r="3.5" />
+      </svg>
+    </div>
+
     <div class="glow glow-a" aria-hidden="true"></div>
     <div class="glow glow-b" aria-hidden="true"></div>
 

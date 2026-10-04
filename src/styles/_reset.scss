@@ -14,8 +14,9 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* 全页多色氛围层:固定的 Catppuccin 光谱网格,给整站提供彩色底色。
-   固定定位 + z-index:0,内容(.shell z-index:1)与导航(z-index:40)始终在其上。 */
+/* 全页氛围层:固定定位,z-index:0,内容(.shell z-index:1)与导航(z-index:40)始终在其上。
+   最上面一层是顶部受光(纸面被从上方照亮),下面四层是压淡后的 Catppuccin 色晕,
+   纸质背景层(.bg-art)会盖住右下角,所以色晕刻意收在各角。 */
 body::before {
   content: "";
   position: fixed;
@@ -23,10 +24,11 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(58vw 42vw at 10% -6%, color-mix(in srgb, var(--primary) 20%, transparent), transparent 64%),
-    radial-gradient(52vw 40vw at 97% 4%, color-mix(in srgb, var(--mauve) 19%, transparent), transparent 66%),
-    radial-gradient(56vw 44vw at 84% 98%, color-mix(in srgb, var(--pink) 15%, transparent), transparent 68%),
-    radial-gradient(50vw 40vw at 12% 94%, color-mix(in srgb, var(--teal) 15%, transparent), transparent 68%);
+    radial-gradient(120vw 72vh at 50% -18%, var(--art-light), transparent 70%),
+    radial-gradient(58vw 42vw at 10% -6%, color-mix(in srgb, var(--primary) 13%, transparent), transparent 64%),
+    radial-gradient(52vw 40vw at 97% 4%, color-mix(in srgb, var(--mauve) 13%, transparent), transparent 66%),
+    radial-gradient(56vw 44vw at 84% 98%, color-mix(in srgb, var(--pink) 10%, transparent), transparent 68%),
+    radial-gradient(50vw 40vw at 12% 94%, color-mix(in srgb, var(--teal) 10%, transparent), transparent 68%);
 }
 
 /* 启用 Maple Mono 后才引用 woff2;默认不触发字体下载,页面秒开。

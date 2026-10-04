@@ -15,8 +15,8 @@ $anim-tokens: (
   'text': #cdd6f4,
   'text-secondary': #bac2de,
   'text-muted': #9399b2,
-  'bg': #1e1e2e,
-  'bg-card': #313244,
+  'bg': #1c1b26,
+  'bg-card': #333243,
   'bg-input': #45475a,
   'border': #45475a,
   /* Catppuccin 全色相:多色强调由这些令牌驱动,区块/导航/卡片各取一色 */
@@ -49,8 +49,8 @@ $anim-tokens: (
 );
 
 $glass-tokens: (
-  'glass': rgba(49, 50, 68, 0.62),
-  'glass-item': rgba(69, 71, 90, 0.48),
+  'glass': rgba(44, 43, 57, 0.72),
+  'glass-item': rgba(60, 59, 76, 0.6),
   'glass-border': rgba(203, 214, 244, 0.1),
 );
 
@@ -63,13 +63,13 @@ $latte-tokens: (
   'text': #4c4f69,
   'text-secondary': #5c5f77,
   'text-muted': #6c6f85,
-  'bg': #eff1f5,
-  'bg-card': #ccd0da,
-  'bg-input': #bcc0cc,
-  'border': #bcc0cc,
-  'glass': rgba(255, 255, 255, 0.58),
-  'glass-item': rgba(255, 255, 255, 0.72),
-  'glass-border': rgba(76, 79, 105, 0.16),
+  'bg': #f1ece6,
+  'bg-card': #d6d1c8,
+  'bg-input': #c9c4b9,
+  'border': #c9c4b9,
+  'glass': rgba(255, 253, 249, 0.72),
+  'glass-item': rgba(255, 255, 255, 0.8),
+  'glass-border': rgba(88, 82, 70, 0.14),
   'rosewater': #dc8a78,
   'flamingo': #dd7878,
   'pink': #ea76cb,
@@ -152,12 +152,25 @@ $transitions: ();
   /* 色相文字的掺色比例:深色主题纯色相(浅色字在深底上对比足够),
      浅色主题掺入 --text 压深(latte 覆盖为 55%),否则黄/桃/粉在浅底上对比度不达标 */
   --hue-fg-mix: 0%;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 16px rgba(0, 0, 0, 0.18);
-  --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.22);
+  /* ---------- 纸质浮雕材质 ----------
+     参照 demo/readme-banner.webp 右侧:近单色的分层纸面 + 柔和大扩散阴影,
+     高光从左上、暗边在右下(单一光源)。--edge 只用 rgba 令牌拼,不再引用 color-mix,
+     这样老浏览器不会把整条 box-shadow 带下去。 */
+  --emboss-light: rgba(255, 255, 255, 0.075);
+  --emboss-dark: rgba(0, 0, 0, 0.3);
+  /* 背景纸层:三层从深到浅,叠出「纸叠纸」的层差 */
+  --paper-1: #23222f;
+  --paper-2: #272633;
+  --paper-3: #2c2b3a;
+  /* 等高线 / 点阵 / 纸层投影,三处都用同一组变量,双主题各调一次 */
+  --art-line: rgba(205, 214, 244, 0.16);
+  --art-dot: rgba(205, 214, 244, 0.1);
+  --art-shade: rgba(0, 0, 0, 0.5);
+  --art-light: rgba(255, 255, 255, 0.045);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.34), 0 10px 24px -8px rgba(0, 0, 0, 0.52);
+  --shadow-lift: 0 2px 5px rgba(0, 0, 0, 0.36), 0 20px 46px -14px rgba(0, 0, 0, 0.62);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  /* 玻璃卡片的顶部内高光:材质感的来源。必须与投影同写一条 box-shadow,
-     写成独立属性会在不支持 color-mix 的浏览器里把整条阴影带下去(见 _compat.scss)。 */
-  --edge: inset 0 1px 0 color-mix(in srgb, var(--text) 8%, transparent);
+  --edge: inset 0 1px 0 var(--emboss-light), inset 0 -1px 0 var(--emboss-dark);
   --surface: color-mix(in srgb, var(--text) 5%, var(--bg-card));
   --surface-strong: color-mix(in srgb, var(--text) 9%, var(--bg-card));
   --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
@@ -174,9 +187,18 @@ $transitions: ();
   @each $name, $val in $latte-tokens {
     --#{$name}: #{$val};
   }
-  --shadow: 0 1px 2px rgba(76, 79, 105, 0.06), 0 4px 16px rgba(76, 79, 105, 0.08);
-  --shadow-lift: 0 2px 4px rgba(76, 79, 105, 0.08), 0 12px 32px rgba(76, 79, 105, 0.14);
-  /* 浅色主题:白玻璃上的白色内高光几乎不可见,改用一条极淡的内收边,
-     让卡片上沿仍有「切出来的」轮廓,而不是和背景糊成一片 */
-  --edge: inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 rgba(76, 79, 105, 0.05);
+  /* 浅色主题:暖白纸面。高光是几乎不透明的白(纸的受光面),
+     暗边是极淡的暖灰(纸的背光面),两者都压在 0.1 以下,避免变成硬边描线 */
+  --emboss-light: rgba(255, 255, 255, 0.95);
+  --emboss-dark: rgba(124, 110, 90, 0.07);
+  --paper-1: #f7f3ec;
+  --paper-2: #fcf9f4;
+  --paper-3: #ffffff;
+  --art-line: rgba(108, 103, 92, 0.24);
+  --art-dot: rgba(108, 103, 92, 0.18);
+  --art-shade: rgba(124, 110, 90, 0.16);
+  --art-light: rgba(255, 255, 255, 0.6);
+  --shadow: 0 1px 2px rgba(124, 110, 90, 0.07), 0 10px 24px -8px rgba(124, 110, 90, 0.18);
+  --shadow-lift: 0 2px 6px rgba(124, 110, 90, 0.09), 0 20px 46px -14px rgba(124, 110, 90, 0.28);
+  --edge: inset 0 1px 0 var(--emboss-light), inset 0 -1px 0 var(--emboss-dark);
 }

@@ -6,12 +6,12 @@
 /* ---------- 1. 玻璃模糊:整站最贵的一笔(每个玻璃层每帧都要重采样背后的像素),
    低配下换成不透明度更高的纯色玻璃,观感几乎一致,逐帧开销归零 ---------- */
 html.lite {
-  --glass: rgba(48, 49, 66, 0.95);
-  --glass-item: rgba(60, 62, 82, 0.95);
+  --glass: rgba(44, 43, 57, 0.96);
+  --glass-item: rgba(60, 59, 76, 0.96);
 }
 html.lite[data-theme="latte"] {
-  --glass: rgba(255, 255, 255, 0.96);
-  --glass-item: rgba(255, 255, 255, 0.98);
+  --glass: rgba(255, 253, 249, 0.97);
+  --glass-item: rgba(255, 255, 255, 0.99);
 }
 html.lite .site-nav,
 html.lite .profile,
@@ -126,15 +126,25 @@ html.lite .music-player.is-playing .music-eq i:nth-child(2) { transform: scaleY(
 html.lite .music-player.is-playing .music-eq i:nth-child(3) { transform: scaleY(0.6); }
 html.lite .music-player.is-playing .music-eq i:nth-child(4) { transform: scaleY(0.35); }
 
-/* ---------- 8. 系统「减弱透明度」偏好(Safari / macOS 辅助功能开关):
+/* ---------- 8. 纸质背景层(_paper.scss):固定大层 + 指针视差 + 虚线装饰,
+   低配下整块关掉,页面回到 body 上的静态渐变底纹(第 3 节)。
+   身份卡里的浮雕瓦片是内容级的小元素,保留。 ---------- */
+html.lite .bg-art {
+  display: none;
+}
+html.lite .stat-card::after {
+  display: none;
+}
+
+/* ---------- 9. 系统「减弱透明度」偏好(Safari / macOS 辅助功能开关):
    玻璃层换成不透明底并去掉模糊,和低配层同一套处理,只是触发条件是用户偏好而非硬件 */
 @media (prefers-reduced-transparency: reduce) {
   :root {
-    --glass: rgba(48, 49, 66, 0.97);
-    --glass-item: rgba(60, 62, 82, 0.97);
+    --glass: rgba(44, 43, 57, 0.97);
+    --glass-item: rgba(60, 59, 76, 0.97);
   }
   :root[data-theme="latte"] {
-    --glass: rgba(255, 255, 255, 0.98);
+    --glass: rgba(255, 253, 249, 0.98);
     --glass-item: rgba(255, 255, 255, 0.99);
   }
   .site-nav,

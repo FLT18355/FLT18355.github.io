@@ -49,6 +49,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   ├── _layout.scss  两栏壳 / 左栏身份卡 / 联系方式 / 页脚
     │   ├── _cards.scss   标签筹码 / 色板 / 项目卡
     │   ├── _bento.scss   首页 12 栏 bento 网格 / 版面尺度 / 项目首卡整行
+    │   ├── _paper.scss   纸质浮雕材质层(背景纸层 / 浮雕瓦片 / 虚线细节)
     │   ├── _fold.scss    卡片折叠(标题行即摘要行)+ 右下角全站折叠坞
     │   ├── _toggle.scss  主题拨钮(拖拽 / 键盘 / 圆形揭示)
     │   ├── _search.scss  search 页样式
@@ -91,7 +92,8 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 - **主题**：Mocha(深)/ Latte(浅)双 Catppuccin 风味,`@property` 注册实现颜色平滑过渡;系统偏好自动适配,`localStorage` 持久化;切换用 View Transition 圆形揭示(ThemeToggle.vue)
 - **多色强调**：Catppuccin 全色相令牌(`_tokens.scss`),每个区块、每条导航、每张项目卡各占一色(区块 `--acc` / 导航 `--nc` / 卡片数据 `hue` → `.h-<hue>`);每个 `.block` 上沿还有一道 `--acc` 渐隐细线(静止收在两角内、悬停向两侧展开);页面底色是四色氛围网格 + 双光斑,身份卡顶部多色光晕 + 头像外一圈全色相色环,标题/时钟用品牌渐变裁字;动作控件与焦点环仍固定 `--primary`,保证注意力落点唯一
 - **布局**：shell 上限 1240px(左栏 320px + 间距 48px,导航同步);首页在 ≥1120px 切成 12 栏 bento 网格(关于 7 / 统计 5、技术栈 5 / 兴趣 7、音乐 6 / 天气 6),行内卡片由 `align-items:stretch` 拉成等高、短卡片的筹码组垂直居中;projects 页首张项目卡占满整行(featuredProjects 共 5 条,其余 4 条正好铺满 2x2),卡片标签行贴底对齐。更窄屏回落单列堆叠。规则集中在 `_bento.scss`
-- **材质**：玻璃卡片统一 `--edge`(顶部 1px 内高光,浅色主题换成白色内描边) + 双层投影,静止时也有「浮起来」的厚度;系统开「减弱透明度」时与低配层同样去模糊、换不透明底
+- **材质(纸质浮雕)**：整套卡面按「上沿受光、下沿暗边、单一光源」组织。`--edge` 改成 `inset 0 1px 0 var(--emboss-light), inset 0 -1px 0 var(--emboss-dark)`,投影换成暖灰(浅色)/纯黑(深色)的大扩散双层阴影(`--shadow` / `--shadow-lift`),纸面更厚、边界更软;玻璃不透明度提到 0.72,卡片读起来是「叠在纸上的纸」而不是「发光的玻璃」。`--edge` 不再引用 `color-mix`,老浏览器不会把整条 box-shadow 带下去;系统开「减弱透明度」时与低配层同样去模糊、换不透明底
+- **背景纸层**：`Base.astro` 新增固定装饰层 `.bg-art`(纯 CSS 渐变 + 内联 SVG,不引图片与依赖):右下角三层由深到浅的巨弧纸面、左上角同心等高线、左下角点阵、两枚虚线 / 实底瓦片、一条节点连线;氛围色晕压淡并叠一层顶部受光(`--art-light`)。身份卡里新增 4 枚浮雕瓦片(终端 / Catppuccin / 音乐 + 虚线空格瓦片),统计卡加虚线内框。线稿靠 `mask-image` 渐隐,不支持 mask 的浏览器整块不画;纸层视差复用 `motion.ts` 写在根元素上的 `--mx` / `--my`,不新增 JS;低配层在 `_lite.scss` 里整块 `display: none`
 - **卡片折叠**(全站)：每张区块卡都是原生 `<details>`(默认展开),标题行即 `<summary>`,右侧折角随状态旋转,无 JS 也能点标题收起。Astro 页统一走 `CardFold.astro`,Vue 岛内是同一套 `<details class="block … fold card-fold">` 标记。`src/scripts/fold.ts` 在此之上做渐进增强:按「页面 + 卡片键」把折叠状态存进 `localStorage`(`site-fold`),右下角折叠坞显示「已展开 / 总数」并提供 Fold all / Unfold all,快捷键 `[` 收起全部 / `]` 展开全部(光标在输入框内不抢键),URL hash 命中卡片时强制展开并滚动到它;展开动画由 `html.fold-anim` 门控,只在用户操作后播,首屏不与区块入场(`blockIn`)叠成两层。`.block-note` / `.fold-stat` 放在摘要行右侧,收起时仍保留数量信息
 - **GitHub 资料卡**(projects 页)：构建时调 `https://api.github.com/users/FLT18355`,把返回的字段尽量铺满卡片(统计块 + 明细表 + 折叠的 API 端点);拉不到(限流 / 断网)自动退回 `src/data/github-user.snapshot.json`,访客侧零请求、无 JS 也完整可见。整块走全站统一的 `CardFold`(**默认展开**),摘要行保留 `@login` / repos / followers 与折角;展开后资料卡撤掉自己的玻璃层与描边(`.fold .gh-card`),避免 `.block` 之内出现「卡中卡」的双层模糊。卡内的 API 端点列表仍是独立的原生 `<details>`,默认收起
 - **其他站点**(projects 页 Other Websites)：`src/data/projects.ts` 的 `otherSites`(当前两条:Lumen,一个简约 SVG 渲染器;Lumen Player,一个浏览器内的音乐播放器),由 `SiteCard.astro` 渲染成整行卡片,左图标 / 域名 / 描述 / 标签 / 右侧 Open 出站按钮;色相由数据里的 `hue` 驱动(`.h-<hue>`),扫光方向与项目卡相反(由右向左)用来提示「离开本站」。加站点只需往数组里追加一条
