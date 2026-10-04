@@ -178,72 +178,7 @@ html.motion-js .bg-art__sheets {
 }
 
 /* ============================================================
-   2. 身份卡浮雕瓦片组:呼应 banner 右侧的圆角方块阵列
-   ============================================================ */
-.profile-tiles {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px dashed var(--art-line);
-}
-.profile-tile {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
-  background: var(--surface);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--edge), 0 8px 18px -12px var(--art-shade);
-  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
-}
-/* 三块各取一色:与全站「一区块一色相」的既定语言一致 */
-.profile-tile:nth-child(1) { color: var(--primary); }
-.profile-tile:nth-child(2) { color: var(--mauve); }
-.profile-tile:nth-child(3) { color: var(--teal); }
-.profile-tile svg {
-  display: block;
-}
-.profile-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--edge), 0 14px 24px -14px var(--art-shade);
-}
-/* 虚线空瓦片:纸面上「还没填」的一格 */
-.profile-tile--ghost {
-  background: transparent;
-  border: 1.5px dashed var(--art-line);
-  box-shadow: none;
-  position: relative;
-}
-.profile-tile--ghost::before,
-.profile-tile--ghost::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  border-radius: 2px;
-  background: var(--art-line);
-}
-.profile-tile--ghost::before {
-  width: 14px;
-  height: 1.6px;
-  transform: translate(-50%, -50%);
-}
-.profile-tile--ghost::after {
-  width: 1.6px;
-  height: 14px;
-  transform: translate(-50%, -50%);
-}
-.profile-tile--ghost:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-/* ============================================================
-   3. 统计卡的虚线内框:把 banner 里虚线圆角块的语言落到真实内容上
+   2. 统计卡的虚线内框:把虚线圆角块的语言落到真实内容上
    ============================================================ */
 .stat-card {
   position: relative;
@@ -258,15 +193,10 @@ html.motion-js .bg-art__sheets {
 }
 
 /* ============================================================
-   4. 减弱动效:本文件只引入一处视差,就地熄火
+   3. 减弱动效:本文件只引入一处视差,就地熄火
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   html.motion-js .bg-art__sheets {
-    transition: none;
-    transform: none;
-  }
-  .profile-tile,
-  .profile-tile:hover {
     transition: none;
     transform: none;
   }

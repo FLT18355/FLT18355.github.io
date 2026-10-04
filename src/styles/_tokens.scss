@@ -49,9 +49,9 @@ $anim-tokens: (
 );
 
 $glass-tokens: (
-  'glass': rgba(44, 43, 57, 0.72),
-  'glass-item': rgba(60, 59, 76, 0.6),
-  'glass-border': rgba(203, 214, 244, 0.1),
+  'glass': rgba(38, 37, 50, 0.42),
+  'glass-item': rgba(56, 55, 72, 0.32),
+  'glass-border': rgba(203, 214, 244, 0.13),
 );
 
 /* latte 覆盖:只列与 mocha 不同的值(含 glass 三项) */
@@ -67,9 +67,9 @@ $latte-tokens: (
   'bg-card': #d6d1c8,
   'bg-input': #c9c4b9,
   'border': #c9c4b9,
-  'glass': rgba(255, 253, 249, 0.72),
-  'glass-item': rgba(255, 255, 255, 0.8),
-  'glass-border': rgba(88, 82, 70, 0.14),
+  'glass': rgba(255, 253, 249, 0.4),
+  'glass-item': rgba(255, 255, 255, 0.36),
+  'glass-border': rgba(88, 82, 70, 0.16),
   'rosewater': #dc8a78,
   'flamingo': #dd7878,
   'pink': #ea76cb,
@@ -158,10 +158,11 @@ $transitions: ();
      这样老浏览器不会把整条 box-shadow 带下去。 */
   --emboss-light: rgba(255, 255, 255, 0.075);
   --emboss-dark: rgba(0, 0, 0, 0.3);
-  /* 背景纸层:三层从深到浅,叠出「纸叠纸」的层差 */
-  --paper-1: #23222f;
-  --paper-2: #272633;
-  --paper-3: #2c2b3a;
+  /* 背景纸层:三层从深到浅,叠出「纸叠纸」的层差。
+     卡片是半透明的,这一层就是隔着卡面能看见的层次,差值给足 */
+  --paper-1: #201f2c;
+  --paper-2: #292838;
+  --paper-3: #343346;
   /* 等高线 / 点阵 / 纸层投影,三处都用同一组变量,双主题各调一次 */
   --art-line: rgba(205, 214, 244, 0.16);
   --art-dot: rgba(205, 214, 244, 0.1);
@@ -191,8 +192,8 @@ $transitions: ();
      暗边是极淡的暖灰(纸的背光面),两者都压在 0.1 以下,避免变成硬边描线 */
   --emboss-light: rgba(255, 255, 255, 0.95);
   --emboss-dark: rgba(124, 110, 90, 0.07);
-  --paper-1: #f7f3ec;
-  --paper-2: #fcf9f4;
+  --paper-1: #ebe5da;
+  --paper-2: #f6f2ea;
   --paper-3: #ffffff;
   --art-line: rgba(108, 103, 92, 0.24);
   --art-dot: rgba(108, 103, 92, 0.18);
