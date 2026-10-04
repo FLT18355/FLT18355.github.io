@@ -1,5 +1,5 @@
 ---
-// index.astro - 首页:关于 / 兴趣 / 技术栈 / 音乐 / 天气
+// index.astro - 首页:关于 / 统计 / 技术栈 / 兴趣 / 音乐 / 天气(≥1120px 走 bento 网格)
 import Base from '../layouts/Base.astro';
 import CardFold from '../components/CardFold.astro';
 import MusicPlayer from '../components/MusicPlayer.vue';
@@ -11,6 +11,7 @@ import WeatherWidget from '../components/WeatherWidget.vue';
   title="FLT18355 - Home"
   description="FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。"
   current="home"
+  contentClass="content--bento"
 >
   <CardFold id="b-about" class="b-about" title="About Me">
     <p class="about-lead">
@@ -25,15 +26,8 @@ import WeatherWidget from '../components/WeatherWidget.vue';
     </div>
   </CardFold>
 
-  <CardFold id="b-interests" class="b-interests" title="Interests">
-    <div class="interest-list">
-      <span class="interest">Terminal &amp; dotfiles</span>
-      <span class="interest">Catppuccin theming</span>
-      <span class="interest">Music</span>
-      <span class="interest">Open source</span>
-      <span class="interest">TUI tools</span>
-      <span class="interest">Vibe coding</span>
-    </div>
+  <CardFold id="b-stats" class="b-stats" title="By the Numbers">
+    <StatsCounter client:load />
   </CardFold>
 
   <CardFold id="b-tech" class="b-tech" title="Tech Stack">
@@ -59,8 +53,15 @@ import WeatherWidget from '../components/WeatherWidget.vue';
     </div>
   </CardFold>
 
-  <CardFold id="b-stats" class="b-stats" title="By the Numbers">
-    <StatsCounter client:load />
+  <CardFold id="b-interests" class="b-interests" title="Interests">
+    <div class="interest-list">
+      <span class="interest">Terminal &amp; dotfiles</span>
+      <span class="interest">Catppuccin theming</span>
+      <span class="interest">Music</span>
+      <span class="interest">Open source</span>
+      <span class="interest">TUI tools</span>
+      <span class="interest">Vibe coding</span>
+    </div>
   </CardFold>
 
   <MusicPlayer client:load />

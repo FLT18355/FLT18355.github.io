@@ -6,7 +6,7 @@
 
 | 页面 | 内容 |
 |------|------|
-| [`index.html`](index.html) | 主页:关于我、兴趣、技术栈 + Test 音乐播放器 + 实时天气卡(浏览器定位 + Open-Meteo) |
+| [`index.html`](index.html) | 主页:关于我、统计、技术栈、兴趣(bento 网格,≥1120px)+ Test 音乐播放器 + 实时天气卡(浏览器定位 + Open-Meteo) |
 | [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles / dsh-pet / gitx + 其他站点(Lumen)+ GitHub 资料卡(构建时从 api.github.com 拉取) |
 | [`catppuccin.html`](catppuccin.html) | Catppuccin 色板:4 风味 × 26 色,点击复制 Hex(SSR 直出,无 JS 也可见) |
 | [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin(紫色重点卡 + 猫图标)/ neovim |
@@ -48,6 +48,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   ├── _lite.scss    低配精简层(html.lite 门控)
     │   ├── _layout.scss  两栏壳 / 左栏身份卡 / 联系方式 / 页脚
     │   ├── _cards.scss   标签筹码 / 色板 / 项目卡
+    │   ├── _bento.scss   首页 12 栏 bento 网格 / 版面尺度 / 项目首卡整行
     │   ├── _fold.scss    卡片折叠(标题行即摘要行)+ 右下角全站折叠坞
     │   ├── _toggle.scss  主题拨钮(拖拽 / 键盘 / 圆形揭示)
     │   ├── _search.scss  search 页样式
@@ -89,6 +90,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 
 - **主题**：Mocha(深)/ Latte(浅)双 Catppuccin 风味,`@property` 注册实现颜色平滑过渡;系统偏好自动适配,`localStorage` 持久化;切换用 View Transition 圆形揭示(ThemeToggle.vue)
 - **多色强调**：Catppuccin 全色相令牌(`_tokens.scss`),每个区块、每条导航、每张项目卡各占一色(区块 `--acc` / 导航 `--nc` / 卡片数据 `hue` → `.h-<hue>`);每个 `.block` 上沿还有一道 `--acc` 渐隐细线(静止收在两角内、悬停向两侧展开);页面底色是四色氛围网格 + 双光斑,身份卡顶部多色光晕 + 头像外一圈全色相色环,标题/时钟用品牌渐变裁字;动作控件与焦点环仍固定 `--primary`,保证注意力落点唯一
+- **布局**：shell 上限 1240px(左栏 320px + 间距 48px,导航同步);首页在 ≥1120px 切成 12 栏 bento 网格(关于 7 / 统计 5、技术栈 5 / 兴趣 7、音乐 6 / 天气 6),行内卡片由 `align-items:stretch` 拉成等高、短卡片的筹码组垂直居中;projects 页首张项目卡占满整行(featuredProjects 共 5 条,其余 4 条正好铺满 2x2),卡片标签行贴底对齐。更窄屏回落单列堆叠。规则集中在 `_bento.scss`
 - **材质**：玻璃卡片统一 `--edge`(顶部 1px 内高光,浅色主题换成白色内描边) + 双层投影,静止时也有「浮起来」的厚度;系统开「减弱透明度」时与低配层同样去模糊、换不透明底
 - **卡片折叠**(全站)：每张区块卡都是原生 `<details>`(默认展开),标题行即 `<summary>`,右侧折角随状态旋转,无 JS 也能点标题收起。Astro 页统一走 `CardFold.astro`,Vue 岛内是同一套 `<details class="block … fold card-fold">` 标记。`src/scripts/fold.ts` 在此之上做渐进增强:按「页面 + 卡片键」把折叠状态存进 `localStorage`(`site-fold`),右下角折叠坞显示「已展开 / 总数」并提供 Fold all / Unfold all,快捷键 `[` 收起全部 / `]` 展开全部(光标在输入框内不抢键),URL hash 命中卡片时强制展开并滚动到它;展开动画由 `html.fold-anim` 门控,只在用户操作后播,首屏不与区块入场(`blockIn`)叠成两层。`.block-note` / `.fold-stat` 放在摘要行右侧,收起时仍保留数量信息
 - **GitHub 资料卡**(projects 页)：构建时调 `https://api.github.com/users/FLT18355`,把返回的字段尽量铺满卡片(统计块 + 明细表 + 折叠的 API 端点);拉不到(限流 / 断网)自动退回 `src/data/github-user.snapshot.json`,访客侧零请求、无 JS 也完整可见。整块走全站统一的 `CardFold`(**默认展开**),摘要行保留 `@login` / repos / followers 与折角;展开后资料卡撤掉自己的玻璃层与描边(`.fold .gh-card`),避免 `.block` 之内出现「卡中卡」的双层模糊。卡内的 API 端点列表仍是独立的原生 `<details>`,默认收起

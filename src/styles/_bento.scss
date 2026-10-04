@@ -1,0 +1,86 @@
+/* _bento.scss - 布局编排层:bento 网格、版面尺度与层级
+   只做「布局与尺度」,不新增颜色语义;所有色相仍来自 _tokens.scss 的令牌。
+
+   级联位置:global.scss 里排在 polish 之后、responsive / compat / lite 之前,
+   因此可以覆盖前面的组件样式,又会被环境兜底层(响应式 / 老浏览器 / 低配)收口。
+
+   三条纪律(与 _polish.scss 一致):
+     1. 新增动效由 html.motion-js 门控;本文件未引入新动效,只改布局与字号;
+     2. 新增 color-mix 的声明若丢失会失色相,须去 _compat.scss 补等价兜底(本文件未新增);
+     3. 响应式断点统一在 _responsive.scss 之外单独声明,避免两处断点打架。 */
+
+/* ============================================================
+   1. 首页:12 栏 bento 网格
+   只在 shell 两栏都撑得开时生效(≥1120px)。更窄时保持单列堆叠 ——
+   该宽度下内容列会被压到 700px 以下,再切 12 栏会让卡片过于局促。
+   行内卡片由 align-items:stretch 补足到整行高度,短卡片的筹码组垂直居中,
+   读起来是刻意的留白,而不是「没排满」。
+   ============================================================ */
+@media (min-width: 1120px) {
+  .content--bento {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+  }
+  .content--bento > details.block {
+    display: flex;
+    flex-direction: column;
+  }
+  .content--bento > details.block > .fold-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .content--bento > .b-about     { grid-column: span 7; }
+  .content--bento > .b-stats     { grid-column: span 5; }
+  .content--bento > .b-tech      { grid-column: span 5; }
+  .content--bento > .b-interests { grid-column: span 7; }
+  .content--bento > .b-music     { grid-column: span 6; }
+  .content--bento > .b-weather   { grid-column: span 6; }
+  .content--bento > .footline    { grid-column: 1 / -1; }
+
+  /* 筹码组在拉伸后的卡片里居中 */
+  .content--bento .b-tech > .fold-body,
+  .content--bento .b-interests > .fold-body {
+    justify-content: center;
+  }
+  /* 统计块在 5 栏卡里从 4 列改 2 列,数字才有呼吸空间 */
+  .content--bento .b-stats .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ============================================================
+   2. 版面尺度:区块标题更大更紧,导语更大更松
+   只调尺度与字距,不动字形与颜色。
+   ============================================================ */
+.block-header h2 {
+  font-size: clamp(1.22rem, 1.05rem + 0.5vw, 1.42rem);
+  letter-spacing: -0.025em;
+}
+.about-lead {
+  font-size: clamp(1.12rem, 1rem + 0.6vw, 1.42rem);
+  line-height: 1.62;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* ============================================================
+   3. 重点项目:首卡整行,标签行贴底
+   featuredProjects 共 5 条:首卡占满整行,其余 4 条正好铺满 2 x 2,
+   不产生空格子。following 页只有 4 条,不加此规则,避免留下空位。
+   ============================================================ */
+@media (min-width: 760px) {
+  .b-projects .project-grid > :first-child {
+    grid-column: 1 / -1;
+  }
+  .b-projects .project-grid > :first-child .project-desc {
+    max-width: 76ch;
+  }
+}
+/* 卡片内容长短不一时,标签行贴到卡片底部,
+   同一行里的卡片标签形成一条干净的水平线 */
+.project-card .project-meta {
+  margin-top: auto;
+}

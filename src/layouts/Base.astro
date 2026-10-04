@@ -16,9 +16,11 @@ interface Props {
   rail?: boolean;
   /** 仅在 rail=false 时有效:去掉限宽,让内容占满 shell 宽度(reader 页) */
   wide?: boolean;
+  /** 内容列附加类:首页传 content--bento 切成 12 栏 bento 网格 */
+  contentClass?: string;
 }
 
-const { title, description, current, rail = true, wide = false } = Astro.props;
+const { title, description, current, rail = true, wide = false, contentClass = '' } = Astro.props;
 
 const ldJson = JSON.stringify(
   {
@@ -116,7 +118,7 @@ const ldJson = JSON.stringify(
     <div class:list={['shell', !rail && 'shell--bare', !rail && wide && 'shell--wide']}>
       {rail && <Rail />}
       <!-- ============ Right column: content ============ -->
-      <main class="content">
+      <main class:list={['content', contentClass]}>
         <slot />
 
         <Footline />
