@@ -7,7 +7,7 @@
 | 页面 | 内容 |
 |------|------|
 | [`index.html`](index.html) | 主页:关于我、兴趣、技术栈 + Test 音乐播放器 + 实时天气卡(浏览器定位 + Open-Meteo) |
-| [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles / dsh-pet + 其他站点(Lumen)+ GitHub 资料卡(构建时从 api.github.com 拉取) |
+| [`projects.html`](projects.html) | 重点项目:terminal / lxm / dotfiles / dsh-pet / gitx + 其他站点(Lumen)+ GitHub 资料卡(构建时从 api.github.com 拉取) |
 | [`catppuccin.html`](catppuccin.html) | Catppuccin 色板:4 风味 × 26 色,点击复制 Hex(SSR 直出,无 JS 也可见) |
 | [`following.html`](following.html) | 关注项目:herdr / oh-my-pi / catppuccin(紫色重点卡 + 猫图标)/ neovim |
 | [`search.html`](search.html) | Bing 搜索页:实时时钟 / 快捷链接 / 最近搜索(无左栏单列布局) |

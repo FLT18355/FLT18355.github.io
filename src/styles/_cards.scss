@@ -57,13 +57,14 @@
   font-size: 0.82rem;
   transition: border-color 0.15s, color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
 }
-/* 兴趣筹码依次轮转色相,五个一组 */
+/* 兴趣筹码依次轮转色相,六个一组 */
 $interest-hues: (
   1: 'primary',
   2: 'mauve',
   3: 'pink',
   4: 'peach',
   5: 'teal',
+  6: 'sky',
 );
 @each $i, $tok in $interest-hues {
   .interest:nth-child(#{$i}) {

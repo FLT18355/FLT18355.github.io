@@ -69,6 +69,16 @@ export const featuredProjects: Project[] = [
     tags: ['android', 'kotlin', 'catppuccin'],
     hue: 'sky',
   },
+  {
+    href: 'https://github.com/FLT18355/gitx',
+    icon: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6.5" cy="6" r="2.4"/><circle cx="6.5" cy="18" r="2.4"/><circle cx="17.5" cy="9" r="2.4"/><path d="M6.5 8.4v7.2M17.5 11.4c0 3.1-2.6 4.2-5.2 4.6"/></svg>',
+    iconSvg: true,
+    title: 'gitx',
+    sub: 'FLT18355/gitx',
+    desc: 'A GitHub accelerator and sync CLI for Chinese users. Clone, download, push, pull, branch, stash, tag and commit through fast mirrors, all in one command.',
+    tags: ['python', 'cli', 'github'],
+    hue: 'green',
+  },
 ];
 
 /** 其他站点卡(projects 页 Other Websites 区):本站之外、自己维护的独立站点 */

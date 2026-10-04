@@ -26,7 +26,7 @@ export interface Stat {
 
 /** 首页 By the Numbers 统计(真实数据,来自各数据源) */
 export const STATS: Stat[] = [
-  { value: 4, label: 'Featured Projects' },
+  { value: 5, label: 'Featured Projects' },
   { value: 104, label: 'Palette Swatches' },
   { value: 3, label: 'Music Tracks' },
   { value: 7, label: 'Pages' },
