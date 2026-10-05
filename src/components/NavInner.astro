@@ -1,0 +1,32 @@
+---
+// NavInner.astro - 导航条内容(品牌 + 链接 + 主题拨钮)
+// 单独拆出来是因为 Nav.astro 有两种形态(浮动玻璃胶囊 / reader 页的整条玻璃栏),
+// 内容必须完全一致,不想在两种形态里各写一遍。
+import ThemeToggle from './ThemeToggle.vue';
+import { NAV } from '../data/site';
+import type { PageKey } from '../data/site';
+
+interface Props {
+  current: PageKey;
+}
+const { current } = Astro.props;
+---
+
+<div class="nav-inner">
+  <a class="nav-brand" href="/index.html" aria-label="FLT18355 - Home">
+    <img class="nav-brand-logo logo-mocha" src="/images/1544x1544_circle.png" alt="" width="26" height="26" loading="lazy" />
+    <img class="nav-brand-logo logo-latte" src="/images/latte_circle.png" alt="" width="26" height="26" loading="lazy" />
+    <span class="nav-brand-name">FLT18355</span>
+  </a>
+  <nav class="nav-list" aria-label="页面导航">
+    {NAV.map((item) => (
+      <a class="nav-item" href={item.href} aria-current={item.key === current ? 'page' : undefined}>
+        {item.label}
+      </a>
+    ))}
+    <span class="nav-indicator" aria-hidden="true"></span>
+  </nav>
+  <span class="toggle-scale">
+    <ThemeToggle client:load />
+  </span>
+</div>

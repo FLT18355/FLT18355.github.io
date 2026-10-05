@@ -14,6 +14,7 @@ html.lite[data-theme="latte"] {
   --glass-item: rgba(255, 255, 255, 0.99);
 }
 html.lite .site-nav,
+html.lite .site-nav--float .nav-inner,
 html.lite .profile,
 html.lite .contact-item,
 html.lite .block,
@@ -149,6 +150,7 @@ html.lite .stat-card::after {
     --glass-item: rgba(255, 255, 255, 0.99);
   }
   .site-nav,
+  .site-nav--float .nav-inner,
   .profile,
   .contact-item,
   .block,

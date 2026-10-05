@@ -61,7 +61,8 @@
 /* ============ Left rail: identity (sticky) ============ */
 .rail {
   position: sticky;
-  top: 76px;
+  /* 88 = 浮动导航胶囊的总高(10 + 56 + 10)再加 12 的呼吸位,与 scroll-margin-top 同一套数 */
+  top: 88px;
   display: flex;
   flex-direction: column;
   gap: 20px;

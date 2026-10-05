@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@astrojs/vue": "^7.0.2",
+    "@liquidglassjs/core": "^0.6.0",
+    "@liquidglassjs/element": "^0.6.0",
     "astro": "^7.3.1",
     "dompurify": "^3.4.16",
     "jszip": "^3.10.2",

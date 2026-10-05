@@ -1,6 +1,8 @@
 ---
 // 404.astro - 独立错误页(不挂导航壳,只带主题/字体恢复与全局令牌)
 import '../styles/global.scss';
+/* liquid-glass 的 chrome 装饰层样式(固定部分);挂载闸门见 scripts/glass.ts */
+import '@liquidglassjs/core/css';
 import { SITE } from '../data/site';
 ---
 
@@ -218,34 +220,41 @@ import { SITE } from '../data/site';
     <div class="glow glow-b" aria-hidden="true"></div>
 
     <div class="err404">
-      <div class="font-picker-card err404-card">
-        <div class="err404-paws" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><ellipse cx="6" cy="9" rx="2.2" ry="2.8"/><ellipse cx="12" cy="6.5" rx="2.4" ry="3"/><ellipse cx="18" cy="9" rx="2.2" ry="2.8"/><path d="M12 11c-3 0-5 2-5 4.5S9 20 12 20s5-2 5-4.5S15 11 12 11z"/></svg>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><ellipse cx="6" cy="9" rx="2.2" ry="2.8"/><ellipse cx="12" cy="6.5" rx="2.4" ry="3"/><ellipse cx="18" cy="9" rx="2.2" ry="2.8"/><path d="M12 11c-3 0-5 2-5 4.5S9 20 12 20s5-2 5-4.5S15 11 12 11z"/></svg>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><ellipse cx="6" cy="9" rx="2.2" ry="2.8"/><ellipse cx="12" cy="6.5" rx="2.4" ry="3"/><ellipse cx="18" cy="9" rx="2.2" ry="2.8"/><path d="M12 11c-3 0-5 2-5 4.5S9 20 12 20s5-2 5-4.5S15 11 12 11z"/></svg>
+      <!-- 玻璃外壳:错误卡本体(.font-picker-card)在低配 / 无 JS 时仍是自己的 CSS 玻璃 -->
+      <liquid-glass class="err404-glass" radius={14} strength={6} blur={6} chroma={0.35}>
+        <div class="font-picker-card err404-card">
+          <div class="err404-paws" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><ellipse cx="6" cy="9" rx="2.2" ry="2.8"/><ellipse cx="12" cy="6.5" rx="2.4" ry="3"/><ellipse cx="18" cy="9" rx="2.2" ry="2.8"/><path d="M12 11c-3 0-5 2-5 4.5S9 20 12 20s5-2 5-4.5S15 11 12 11z"/></svg>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><ellipse cx="6" cy="9" rx="2.2" ry="2.8"/><ellipse cx="12" cy="6.5" rx="2.4" ry="3"/><ellipse cx="18" cy="9" rx="2.2" ry="2.8"/><path d="M12 11c-3 0-5 2-5 4.5S9 20 12 20s5-2 5-4.5S15 11 12 11z"/></svg>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><ellipse cx="6" cy="9" rx="2.2" ry="2.8"/><ellipse cx="12" cy="6.5" rx="2.4" ry="3"/><ellipse cx="18" cy="9" rx="2.2" ry="2.8"/><path d="M12 11c-3 0-5 2-5 4.5S9 20 12 20s5-2 5-4.5S15 11 12 11z"/></svg>
+          </div>
+          <svg
+            class="err404-cat"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          ><path d="M6.6 9.4 4.8 3.2l6 2.6" /><path d="M17.4 9.4l1.8-6.2-6 2.6" /><path d="M12 3.4c-4.6 0-7.8 3-7.8 7 0 4.4 3.3 7.2 7.8 7.2s7.8-2.8 7.8-7.2c0-4-3.2-7-7.8-7Z" /><circle cx="9.3" cy="11.2" r="1.1" /><circle cx="14.7" cy="11.2" r="1.1" /><path d="M12 13.4v2.2" /></svg>
+          <div class="err404-code">404</div>
+          <p id="err404Msg">This page is missing or moved.</p>
+          <form class="err404-search" action="https://www.bing.com/search" method="get" target="_blank" rel="noopener" role="search">
+            <input class="err404-search-input" type="search" name="q" placeholder="Search..." aria-label="Search the site" autocomplete="off" spellcheck="false" />
+            <button class="err404-search-go" type="submit">Search</button>
+          </form>
+          <a class="err404-back" href="/index.html">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Back to Home
+          </a>
         </div>
-        <svg
-          class="err404-cat"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        ><path d="M6.6 9.4 4.8 3.2l6 2.6" /><path d="M17.4 9.4l1.8-6.2-6 2.6" /><path d="M12 3.4c-4.6 0-7.8 3-7.8 7 0 4.4 3.3 7.2 7.8 7.2s7.8-2.8 7.8-7.2c0-4-3.2-7-7.8-7Z" /><circle cx="9.3" cy="11.2" r="1.1" /><circle cx="14.7" cy="11.2" r="1.1" /><path d="M12 13.4v2.2" /></svg>
-        <div class="err404-code">404</div>
-        <p id="err404Msg">This page is missing or moved.</p>
-        <form class="err404-search" action="https://www.bing.com/search" method="get" target="_blank" rel="noopener" role="search">
-          <input class="err404-search-input" type="search" name="q" placeholder="Search..." aria-label="Search the site" autocomplete="off" spellcheck="false" />
-          <button class="err404-search-go" type="submit">Search</button>
-        </form>
-        <a class="err404-back" href="/index.html">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-          Back to Home
-        </a>
-      </div>
+      </liquid-glass>
     </div>
+    <script>
+      /* liquid-glass 挂载闸门:低配 / 减弱透明度 / 老浏览器直接跳过,错误卡保持 CSS 玻璃 */
+      import '../scripts/glass.ts';
+    </script>
     <script>
       (function () {
         var msgs = [

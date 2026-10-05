@@ -1,18 +1,24 @@
 ---
 // Rail.astro - 左栏:身份卡 + 联系方式
+//
+// 身份卡套一层 <liquid-glass>:玻璃面画在外壳上,原 .profile 的内部结构
+// (头像色环 / 渐变标题 / 顶部光晕 / 悬停扫光)一行没动。低配时外壳不升级,
+// .profile 回到自己的 CSS 玻璃。
 import Contacts from './Contacts.astro';
 ---
 
 <aside class="rail">
-  <div class="profile">
-    <span class="avatar-ring">
-      <!-- 旋转色环层:与 .avatar-ring 的静态 conic 底同色,motion-js 下绕中心缓转成流动色轮 -->
-      <span class="avatar-halo" aria-hidden="true"></span>
-      <img class="avatar-logo" src="/images/avatar.webp" alt="FLT18355" width="256" height="256" decoding="async" />
-    </span>
-    <h1>FLT18355</h1>
-    <div class="handle">@FLT18355</div>
-    <p class="tagline">Python. Arch. Catppuccin.</p>
-  </div>
+  <liquid-glass class="profile-glass" radius={14} strength={6} blur={7} chroma={0.4}>
+    <div class="profile">
+      <span class="avatar-ring">
+        <!-- 旋转色环层:与 .avatar-ring 的静态 conic 底同色,motion-js 下绕中心缓转成流动色轮 -->
+        <span class="avatar-halo" aria-hidden="true"></span>
+        <img class="avatar-logo" src="/images/avatar.webp" alt="FLT18355" width="256" height="256" decoding="async" />
+      </span>
+      <h1>FLT18355</h1>
+      <div class="handle">@FLT18355</div>
+      <p class="tagline">Python. Arch. Catppuccin.</p>
+    </div>
+  </liquid-glass>
   <Contacts />
 </aside>

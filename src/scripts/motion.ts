@@ -19,6 +19,9 @@
 
   /* ---------- 1. 区块滚动入场:一次性,触发后取消观察 ---------- */
   const blocks = Array.prototype.slice.call(document.querySelectorAll('.block'));
+  /* 玻璃外壳(.glass-card)与内层 .block 一起观察:入场动画整体挂在壳上,
+     内层只负责标题 / 正文 / 筹码的错峰入场,否则两层动画会叠起来(见 _glass.scss)。 */
+  const glassHosts = Array.prototype.slice.call(document.querySelectorAll('.glass-card'));
   const footline = document.querySelector('.footline');
 
   /* 启动层在场时(首启加载 / 回访过渡)先把入场挂起:入场动画若在遮罩后面播完,
@@ -45,7 +48,7 @@
       },
       { threshold: 0, rootMargin: '0px 0px -6% 0px' }
     );
-    blocks.forEach((b) => io.observe(b));
+    blocks.concat(glassHosts).forEach((b) => io.observe(b));
 
     if (footline) {
       const ioFoot = new IntersectionObserver(

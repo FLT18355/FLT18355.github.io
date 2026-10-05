@@ -55,74 +55,78 @@ onMounted(async () => {
 </script>
 
 <template>
-  <details class="block b-leaderboard fold card-fold" data-fold="b-leaderboard" open>
-    <summary class="block-header fold-head">
-      <h2>AI Coding Leaderboard</h2>
-      <span class="fold-tail"><span class="fold-caret" aria-hidden="true" /></span>
-    </summary>
+  <!-- 外层 <liquid-glass> 是玻璃面,内层 <details> 仍是折叠本体;色相类挂在外壳上,
+       --acc 继承进卡片(见 src/styles/_glass.scss 与 scripts/glass.ts) -->
+  <liquid-glass class="glass-card b-leaderboard" radius="14" strength="6" blur="7" chroma="0.4">
+    <details class="block fold card-fold" data-fold="b-leaderboard" open>
+      <summary class="block-header fold-head">
+        <h2>AI Coding Leaderboard</h2>
+        <span class="fold-tail"><span class="fold-caret" aria-hidden="true" /></span>
+      </summary>
 
-    <div class="fold-body">
-      <p class="leaderboard-note">
-        Top 10 models by coding ability, from BenchLM
-        <template v-if="updated"> · Updated {{ updated }}</template>
-      </p>
+      <div class="fold-body">
+        <p class="leaderboard-note">
+          Top 10 models by coding ability, from BenchLM
+          <template v-if="updated"> · Updated {{ updated }}</template>
+        </p>
 
-      <div v-if="failed" class="leaderboard-state" role="alert">Failed to load leaderboard.</div>
-      <!-- 加载中用与最终行同形的骨架屏,而不是一行「Loading...」:
-           版式不跳动,数据到达时是「填进来」而不是「换一屏」 -->
-      <div
-        v-else-if="!loaded"
-        class="leaderboard-list leaderboard-list--skeleton"
-        role="status"
-        aria-busy="true"
-        aria-label="Loading leaderboard"
-      >
+        <div v-if="failed" class="leaderboard-state" role="alert">Failed to load leaderboard.</div>
+        <!-- 加载中用与最终行同形的骨架屏,而不是一行「Loading...」:
+             版式不跳动,数据到达时是「填进来」而不是「换一屏」 -->
         <div
-          v-for="n in 3"
-          :key="'skel-' + n"
-          class="leaderboard-row leaderboard-skel"
-          aria-hidden="true"
+          v-else-if="!loaded"
+          class="leaderboard-list leaderboard-list--skeleton"
+          role="status"
+          aria-busy="true"
+          aria-label="Loading leaderboard"
         >
-          <span class="leaderboard-rank skel-chip"></span>
-          <span class="leaderboard-name">
-            <span class="skel-line skel-line--title"></span>
-            <span class="skel-line skel-line--sub"></span>
-          </span>
-          <span class="leaderboard-score">
-            <span class="skel-line skel-line--score"></span>
-          </span>
-        </div>
-      </div>
-      <div v-else>
-        <div class="leaderboard-head" aria-hidden="true">
-          <span class="leaderboard-head-rank">#</span>
-          <span class="leaderboard-head-model">Model</span>
-          <span class="leaderboard-head-score">Coding</span>
-        </div>
-        <div class="leaderboard-list" role="list">
           <div
-            v-for="m in visible"
-            :key="m.rank"
-            class="leaderboard-row"
-            :class="'leaderboard-row--' + m.rank"
-            role="listitem"
+            v-for="n in 3"
+            :key="'skel-' + n"
+            class="leaderboard-row leaderboard-skel"
+            aria-hidden="true"
           >
-            <span class="leaderboard-rank">
-              <span v-if="m.rank <= 3" class="leaderboard-medal" v-html="MEDALS[m.rank - 1]"></span>
-              <span v-else>{{ m.rank }}</span>
-            </span>
+            <span class="leaderboard-rank skel-chip"></span>
             <span class="leaderboard-name">
-              <span class="leaderboard-model">{{ m.model }}</span>
-              <span class="leaderboard-creator">{{ m.creator }}</span>
+              <span class="skel-line skel-line--title"></span>
+              <span class="skel-line skel-line--sub"></span>
             </span>
             <span class="leaderboard-score">
-              <span class="leaderboard-score-bar" :style="{ width: barWidth(m) }"></span>
-              <span class="leaderboard-score-num">{{ fmt(m.categoryScores && m.categoryScores.coding) }}</span>
-              <span class="leaderboard-score-label">coding</span>
+              <span class="skel-line skel-line--score"></span>
             </span>
           </div>
         </div>
+        <div v-else>
+          <div class="leaderboard-head" aria-hidden="true">
+            <span class="leaderboard-head-rank">#</span>
+            <span class="leaderboard-head-model">Model</span>
+            <span class="leaderboard-head-score">Coding</span>
+          </div>
+          <div class="leaderboard-list" role="list">
+            <div
+              v-for="m in visible"
+              :key="m.rank"
+              class="leaderboard-row"
+              :class="'leaderboard-row--' + m.rank"
+              role="listitem"
+            >
+              <span class="leaderboard-rank">
+                <span v-if="m.rank <= 3" class="leaderboard-medal" v-html="MEDALS[m.rank - 1]"></span>
+                <span v-else>{{ m.rank }}</span>
+              </span>
+              <span class="leaderboard-name">
+                <span class="leaderboard-model">{{ m.model }}</span>
+                <span class="leaderboard-creator">{{ m.creator }}</span>
+              </span>
+              <span class="leaderboard-score">
+                <span class="leaderboard-score-bar" :style="{ width: barWidth(m) }"></span>
+                <span class="leaderboard-score-num">{{ fmt(m.categoryScores && m.categoryScores.coding) }}</span>
+                <span class="leaderboard-score-label">coding</span>
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </details>
+    </details>
+  </liquid-glass>
 </template>

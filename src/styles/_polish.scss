@@ -278,6 +278,22 @@ html.motion-js .site-nav.nav-scrolled {
   border-bottom-color: color-mix(in srgb, var(--primary) 30%, var(--border));
   box-shadow: 0 8px 28px color-mix(in srgb, var(--primary) 10%, transparent);
 }
+/* 浮动胶囊版:整条 header 保持透明,「抬起」的是胶囊本身。
+   玻璃挂上时给胶囊补一层同色柔光,未挂上(低配 / 无 JS)时加强 .nav-inner 的投影。 */
+html.motion-js .site-nav--float.nav-scrolled {
+  background-color: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+}
+html.motion-js .nav-glass {
+  transition: box-shadow 0.24s var(--ease-out);
+}
+html.motion-js .site-nav--float.nav-scrolled .nav-glass.ps-glass {
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+html.motion-js .site-nav--float.nav-scrolled .nav-glass:not(.ps-glass) .nav-inner {
+  box-shadow: inset 0 0 0 1px var(--glass-border), var(--edge), var(--shadow-lift);
+}
 
 /* ============================================================
    7. 列表卡(其他站点 / 下载)的指针光斑

@@ -155,108 +155,112 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <details class="block b-music fold card-fold" data-fold="b-music" open>
-    <summary class="block-header fold-head">
-      <h2>Music Player - Test</h2>
-      <span class="fold-tail"><span class="fold-caret" aria-hidden="true" /></span>
-    </summary>
+  <!-- 外层 <liquid-glass> 是玻璃面,内层 <details> 仍是折叠本体;色相类挂在外壳上,
+       --acc 继承进卡片(见 src/styles/_glass.scss 与 scripts/glass.ts) -->
+  <liquid-glass class="glass-card b-music" radius="14" strength="6" blur="7" chroma="0.4">
+    <details class="block fold card-fold" data-fold="b-music" open>
+      <summary class="block-header fold-head">
+        <h2>Music Player - Test</h2>
+        <span class="fold-tail"><span class="fold-caret" aria-hidden="true" /></span>
+      </summary>
 
-    <div class="fold-body">
-      <div class="music-player" :class="{ 'is-playing': playing }">
-        <button
-          class="music-nav"
-          type="button"
-          aria-label="Previous track"
-          :disabled="TRACKS.length < 2"
-          @click="prev"
-        >
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M6 6h2v12H6zM20 6v12L9 12z" />
-          </svg>
-        </button>
-
-        <div class="music-cover-wrap">
-          <img v-if="hasCover" class="music-cover" :src="track.cover" :alt="track.title" width="96" height="96" />
-          <div v-else class="music-cover music-cover--placeholder" role="img" aria-label="No cover art">
+      <div class="fold-body">
+        <div class="music-player" :class="{ 'is-playing': playing }">
+          <button
+            class="music-nav"
+            type="button"
+            aria-label="Previous track"
+            :disabled="TRACKS.length < 2"
+            @click="prev"
+          >
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z" />
+              <path d="M6 6h2v12H6zM20 6v12L9 12z" />
             </svg>
+          </button>
+
+          <div class="music-cover-wrap">
+            <img v-if="hasCover" class="music-cover" :src="track.cover" :alt="track.title" width="96" height="96" />
+            <div v-else class="music-cover music-cover--placeholder" role="img" aria-label="No cover art">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z" />
+              </svg>
+            </div>
+            <!-- 播放中浮在封面上的均衡器:纯装饰,状态语义仍由 .music-status 承担 -->
+            <span class="music-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           </div>
-          <!-- 播放中浮在封面上的均衡器:纯装饰,状态语义仍由 .music-status 承担 -->
-          <span class="music-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+
+          <div class="music-body">
+            <div class="music-head">
+              <div class="music-meta">
+                <span class="music-title">{{ track.title }}</span>
+                <span class="music-artist">{{ track.artist }}</span>
+              </div>
+              <button
+                class="music-toggle"
+                type="button"
+                :aria-label="playing ? 'Pause' : 'Play'"
+                :aria-pressed="playing"
+                @click="toggle"
+              >
+                <svg v-if="playing" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+                </svg>
+                <svg v-else viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="music-bar">
+              <input
+                class="music-seek"
+                type="range"
+                min="0"
+                :max="duration || 0"
+                step="0.1"
+                :value="current"
+                :disabled="!duration"
+                :aria-label="'Seek'"
+                @input="onSeek"
+              />
+              <div class="music-time">
+                <span>{{ fmt(current) }}</span>
+                <span class="music-status" role="status">
+                  {{ failed ? 'Load failed' : loading ? 'Buffering...' : playing ? 'Playing' : 'Paused' }}
+                </span>
+                <span>{{ fmt(duration) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="music-nav"
+            type="button"
+            aria-label="Next track"
+            :disabled="TRACKS.length < 2"
+            @click="next"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M16 6h2v12h-2zM4 6v12l11-6z" />
+            </svg>
+          </button>
         </div>
 
-        <div class="music-body">
-          <div class="music-head">
-            <div class="music-meta">
-              <span class="music-title">{{ track.title }}</span>
-              <span class="music-artist">{{ track.artist }}</span>
-            </div>
-            <button
-              class="music-toggle"
-              type="button"
-              :aria-label="playing ? 'Pause' : 'Play'"
-              :aria-pressed="playing"
-              @click="toggle"
-            >
-              <svg v-if="playing" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
-              </svg>
-              <svg v-else viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </button>
-          </div>
-
-          <div class="music-bar">
-            <input
-              class="music-seek"
-              type="range"
-              min="0"
-              :max="duration || 0"
-              step="0.1"
-              :value="current"
-              :disabled="!duration"
-              :aria-label="'Seek'"
-              @input="onSeek"
-            />
-            <div class="music-time">
-              <span>{{ fmt(current) }}</span>
-              <span class="music-status" role="status">
-                {{ failed ? 'Load failed' : loading ? 'Buffering...' : playing ? 'Playing' : 'Paused' }}
-              </span>
-              <span>{{ fmt(duration) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <button
-          class="music-nav"
-          type="button"
-          aria-label="Next track"
-          :disabled="TRACKS.length < 2"
-          @click="next"
-        >
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M16 6h2v12h-2zM4 6v12l11-6z" />
-          </svg>
-        </button>
+        <audio
+          ref="audioEl"
+          :src="track.src"
+          :key="track.src"
+          preload="auto"
+          @timeupdate="onTime"
+          @loadedmetadata="onMeta"
+          @durationchange="onMeta"
+          @play="onPlay"
+          @pause="onPause"
+          @waiting="onWaiting"
+          @error="onError"
+          @ended="onEnded"
+        ></audio>
       </div>
-
-      <audio
-        ref="audioEl"
-        :src="track.src"
-        :key="track.src"
-        preload="auto"
-        @timeupdate="onTime"
-        @loadedmetadata="onMeta"
-        @durationchange="onMeta"
-        @play="onPlay"
-        @pause="onPause"
-        @waiting="onWaiting"
-        @error="onError"
-        @ended="onEnded"
-      ></audio>
-    </div>
-  </details>
+    </details>
+  </liquid-glass>
 </template>

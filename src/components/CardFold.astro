@@ -2,12 +2,17 @@
 // CardFold.astro - 可折叠卡片壳:卡片本身就是原生 <details>,标题行是 <summary>
 // 默认展开(未折叠);折叠 / 展开由浏览器原生实现,无 JS 也能点标题收起。
 // 状态记忆、右下角折叠坞、快捷键与深链展开见 src/scripts/fold.ts;样式见 src/styles/_fold.scss。
+//
+// 外面套一层 <liquid-glass>(components/Glass.astro):玻璃面画在这层上,<details> 仍是
+// 折叠能力的本体。色相类(cls)挂在玻璃壳上,--acc 继承进卡片,原来的 .b-xxx 选择器不受影响。
+import Glass from './Glass.astro';
+
 interface Props {
   /** 卡片标题(纯文本) */
   title: string;
   /** 页内唯一键:折叠状态持久化与深链(#id)都用它 */
   id?: string;
-  /** 附加类:区块色相 b-xxx 等 */
+  /** 附加类:区块色相 b-xxx 等(挂在玻璃壳上) */
   class?: string;
   /** 标题右侧的等宽小注(数量 / 单位) */
   note?: string;
@@ -19,16 +24,18 @@ interface Props {
 const { title, id, class: cls = '', note, meta = [], open = true } = Astro.props;
 ---
 
-<details class:list={['block', 'fold', 'card-fold', cls]} id={id} data-fold={id} open={open}>
-  <summary class="block-header fold-head">
-    <h2>{title}</h2>
-    <span class="fold-tail">
-      {meta.map((item) => <span class="fold-stat">{item}</span>)}
-      {note && <span class="block-note">{note}</span>}
-      <span class="fold-caret" aria-hidden="true"></span>
-    </span>
-  </summary>
-  <div class="fold-body">
-    <slot />
-  </div>
-</details>
+<Glass class={cls}>
+  <details class="block fold card-fold" id={id} data-fold={id} open={open}>
+    <summary class="block-header fold-head">
+      <h2>{title}</h2>
+      <span class="fold-tail">
+        {meta.map((item) => <span class="fold-stat">{item}</span>)}
+        {note && <span class="block-note">{note}</span>}
+        <span class="fold-caret" aria-hidden="true"></span>
+      </span>
+    </summary>
+    <div class="fold-body">
+      <slot />
+    </div>
+  </details>
+</Glass>

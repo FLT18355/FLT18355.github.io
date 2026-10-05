@@ -1,0 +1,149 @@
+/* _glass.scss - liquid-glass 集成层(@liquidglassjs/element 的 <liquid-glass>)
+   玻璃本身由 scripts/glass.ts 在浏览器侧挂载;本文件只负责「玻璃长什么样」
+   以及「玻璃接管之后,组件自己的 CSS 玻璃怎么让位」。
+
+   级联位置:global.scss 里排在 paper 之后、responsive / compat / lite 之前:
+   既能盖掉组件自己的 CSS 玻璃与阴影,又会被环境兜底层(响应式 / 老浏览器 / 低配)收口。
+
+   三条纪律(同 _polish.scss / _bento.scss):
+     1. 新增动效由 html.motion-js 门控;
+     2. 新增 color-mix 的声明若丢失会失色相 / 丢阴影,须去 _compat.scss 补等价兜底;
+     3. 低配(html.lite)与「减弱透明度」下的熄火写在 _lite.scss / 本文件末节。
+
+   低配与老浏览器怎么退回:glass.ts 在三条闸门任一命中时都不注册自定义元素,
+   <liquid-glass> 就只是一个 display:block 的普通盒子,本文件里所有 .ps-glass
+   规则整段失效,内层卡片照旧使用自己的 --glass + backdrop-filter。 */
+
+/* ============================================================
+   0. 令牌:玻璃面上沿的一层柔光(单一光源,左上受光)
+   ============================================================ */
+:root {
+  --glass-sheen: rgba(255, 255, 255, 0.08);
+}
+:root[data-theme="latte"] {
+  /* 浅色纸面反光更明显,压到 0.45 才读得出「一层光」而不是「一块白」 */
+  --glass-sheen: rgba(255, 255, 255, 0.45);
+}
+
+/* ============================================================
+   1. 外壳:升级前是普通盒子,升级后是玻璃本体
+   ============================================================ */
+liquid-glass {
+  display: block;
+  position: relative;
+  border-radius: var(--radius);
+  /* 库把「纸色 / 墨色 / 兜底磨砂底」做成了三个可覆盖变量,这里全部接站内令牌,
+     玻璃的色温才不会跑出 Catppuccin 之外。 */
+  --glass-paper: var(--bg-card);
+  --glass-ink: var(--text);
+  --glass-frost-bg: var(--glass);
+  /* 悬停描边用的色相:区块卡由 .b-xxx 覆盖,身份卡 / 导航 / 折叠坞用主色 */
+  --acc: var(--primary);
+}
+
+/* 内容抬到 chrome 层之上:库把 surface / tint / rim 三层绝对定位节点追加在内容之后,
+   不抬的话它们会压在正文上。三层之外的一切直接子元素都是「内容」。 */
+liquid-glass > :not(.ps-glass__surface):not(.ps-glass__tint):not(.ps-glass__rim) {
+  position: relative;
+  z-index: 1;
+}
+
+/* 库的 overflow:hidden 写在 :where() 里(零特异性),这里放开:
+   卡片的投影画在 rim 上,裁掉就整站扁平了;圆角由各层自己的 border-radius 保证。 */
+liquid-glass.ps-glass {
+  overflow: visible;
+}
+
+/* ============================================================
+   2. 玻璃接管:内层卡片自己的 CSS 玻璃让位
+   背景 / 模糊 / 描边 / 投影全部撤掉,底子交给 glass__surface(--glass)+ tint,
+   否则两层半透明底会叠成一块实心板,玻璃就白做了。
+   ============================================================ */
+.ps-glass > .block,
+.ps-glass > .profile,
+.ps-glass > .nav-inner,
+.ps-glass > .err404-card,
+.fold-dock.ps-glass {
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* ============================================================
+   3. 玻璃的边:换成站内「纸质浮雕」语言
+   去掉库里的通用黑色投影,改用主题感知的 --edge / --shadow,
+   再补一层左上柔光,静止时也读得出玻璃有厚度。
+   ============================================================ */
+/* 404 页:错误卡原本是 flex 居中项,宽度交给外壳,内层只管内部排版 */
+.err404-glass {
+  width: 100%;
+  max-width: 400px;
+}
+.ps-glass > .ps-glass__rim {
+  transition: box-shadow 0.3s var(--ease-out);
+  box-shadow:
+    inset 0 0 0 1px var(--glass-border),
+    var(--edge),
+    var(--shadow);
+}
+.ps-glass > .ps-glass__rim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(130% 74% at 14% -10%, var(--glass-sheen), transparent 62%);
+}
+
+/* 悬停:色相描边 + 同色柔光。原来画在 .block:hover 上,现在画在玻璃面上,
+   与「一个区块一种颜色」的既有规则同源(--acc 由 .b-xxx 继承进来)。
+   只给区块卡与身份卡:导航 / 折叠坞 / 404 是常驻控件,悬停发光反而吵。 */
+.glass-card.ps-glass:hover > .ps-glass__rim,
+.profile-glass.ps-glass:hover > .ps-glass__rim {
+  box-shadow:
+    inset 0 0 0 1px var(--acc),
+    var(--edge),
+    0 2px 5px rgba(0, 0, 0, 0.18),
+    0 16px 40px -12px color-mix(in srgb, var(--acc) 32%, transparent);
+}
+
+/* ============================================================
+   4. 入场编排:动画整体挂在玻璃外壳上
+   内层 <details> 若还自己播一次,和外壳叠起来就是两层动画(位移翻倍、先亮后动)。
+   所以外壳负责淡入 + 位移,内层只保留标题 / 正文 / 筹码的错峰入场(_polish / _motion)。
+   --d 按「内容列的直系子元素序」发放:Vue 岛被 <astro-island>(display:contents)
+   包了一层,只有发在它身上才能继承进玻璃壳。
+   ============================================================ */
+@for $i from 1 through 8 {
+  html.motion-js .content > :nth-child(#{$i}) {
+    --d: #{0.06s + ($i - 1) * 0.08s};
+  }
+}
+html.motion-js .glass-card {
+  opacity: 0;
+}
+html.motion-js .glass-card.in {
+  animation: polishBlockIn 0.72s var(--ease-out) both;
+  animation-delay: var(--d, 0s);
+}
+html.motion-js .glass-card > .block,
+html.motion-js .glass-card > .block.in {
+  opacity: 1;
+  animation: none;
+}
+/* 内层 details 是外壳的唯一孩子,直接子元素选择器会把它算成「第 1 个」,
+   必须显式继承外壳的 --d,否则所有卡片的错峰延迟都塌回第一档。 */
+html.motion-js .content .glass-card > .block {
+  --d: inherit;
+}
+
+/* ============================================================
+   5. 减弱动效:玻璃只有阴影过渡,不参与位移
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .ps-glass > .ps-glass__rim {
+    transition: none;
+  }
+}

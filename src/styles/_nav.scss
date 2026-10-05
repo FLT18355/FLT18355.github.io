@@ -1,5 +1,11 @@
 /* _nav.scss - 顶部导航条(主页 / 重点项目 / 色板 / 关注 / 搜索)
-   五条链接 + 滑动指示条;主题拨钮收纳在右侧。 */
+   五条链接 + 滑动指示条;主题拨钮收纳在右侧。
+
+   两种形态:
+     · 默认(reader 页)沿用改造前的整条玻璃栏,一字未动;
+     · .site-nav--float(其余页面)是浮动玻璃胶囊:header 只负责 sticky 定位与四周留白,
+       玻璃面画在 .nav-inner 上,外面再由 <liquid-glass class="nav-glass"> 接管
+       (见 _glass.scss / scripts/glass.ts)。 */
 
 .site-nav {
   position: sticky;
@@ -20,6 +26,33 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+
+/* ---------- 浮动玻璃胶囊 ---------- */
+.site-nav--float {
+  padding: 10px 28px;
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: none;
+  transition: none;
+}
+.site-nav--float .nav-glass {
+  max-width: 1184px;
+  margin: 0 auto;
+  border-radius: 28px;
+}
+.site-nav--float .nav-inner {
+  max-width: none;
+  padding: 0 18px;
+  border-radius: 28px;
+  /* CSS 兜底玻璃:JS 未就绪 / 低配 / 老浏览器下就是这层;
+     玻璃挂上后由 _glass.scss 的 .ps-glass > .nav-inner 整条撤掉 */
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px var(--glass-border), var(--edge), var(--shadow);
+  transition: background-color 240ms var(--ease-out), box-shadow 240ms var(--ease-out);
 }
 
 /* ---------- 品牌区:logo + 站点名,点击回首页 ---------- */
@@ -169,8 +202,11 @@ html.motion-js .nav-indicator {
 
 /* ---------- 窄屏 ---------- */
 @media (max-width: 560px) {
-  .nav-inner {
-    padding: 0 14px;
+  .site-nav--float {
+    padding: 8px 16px;
+  }
+  .site-nav--float .nav-inner {
+    padding: 0 12px;
     gap: 8px;
   }
   .nav-item {
@@ -185,8 +221,11 @@ html.motion-js .nav-indicator {
   }
 }
 @media (max-width: 430px) {
-  .nav-inner {
-    padding: 0 10px;
+  .site-nav--float {
+    padding: 8px 12px;
+  }
+  .site-nav--float .nav-inner {
+    padding: 0 9px;
   }
   .nav-item {
     padding: 0 6px;

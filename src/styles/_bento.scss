@@ -15,6 +15,10 @@
    该宽度下内容列会被压到 700px 以下,再切 12 栏会让卡片过于局促。
    行内卡片由 align-items:stretch 补足到整行高度,短卡片的筹码组垂直居中,
    读起来是刻意的留白,而不是「没排满」。
+
+   网格项现在是 <liquid-glass> 玻璃壳(卡片本体在其内部),色相类也挂在壳上。
+   Vue 岛外面还套着 Astro 的 <astro-island>(display:contents),所以这里的
+   选择器一律用后代而不是直接子元素,否则音乐 / 天气两张卡会掉出网格。
    ============================================================ */
 @media (min-width: 1120px) {
   .content--bento {
@@ -23,26 +27,31 @@
     gap: 20px;
     align-items: stretch;
   }
-  .content--bento > details.block {
+  .content--bento .glass-card {
     display: flex;
     flex-direction: column;
   }
-  .content--bento > details.block > .fold-body {
+  .content--bento .glass-card > .block {
     flex: 1;
     display: flex;
     flex-direction: column;
   }
-  .content--bento > .b-about     { grid-column: span 7; }
-  .content--bento > .b-stats     { grid-column: span 5; }
-  .content--bento > .b-tech      { grid-column: span 5; }
-  .content--bento > .b-interests { grid-column: span 7; }
-  .content--bento > .b-music     { grid-column: span 6; }
-  .content--bento > .b-weather   { grid-column: span 6; }
-  .content--bento > .footline    { grid-column: 1 / -1; }
+  .content--bento .glass-card > .block > .fold-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .content--bento .b-about     { grid-column: span 7; }
+  .content--bento .b-stats     { grid-column: span 5; }
+  .content--bento .b-tech      { grid-column: span 5; }
+  .content--bento .b-interests { grid-column: span 7; }
+  .content--bento .b-music     { grid-column: span 6; }
+  .content--bento .b-weather   { grid-column: span 6; }
+  .content--bento .footline    { grid-column: 1 / -1; }
 
   /* 筹码组在拉伸后的卡片里居中 */
-  .content--bento .b-tech > .fold-body,
-  .content--bento .b-interests > .fold-body {
+  .content--bento .b-tech > .block > .fold-body,
+  .content--bento .b-interests > .block > .fold-body {
     justify-content: center;
   }
   /* 统计块在 5 栏卡里从 4 列改 2 列,数字才有呼吸空间 */

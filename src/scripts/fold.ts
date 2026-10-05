@@ -60,8 +60,14 @@
   }
 
   /* ---------- 2. 折叠坞:收起全部 / 展开全部 + 展开计数 ---------- */
-  const dock = document.createElement('div');
+  /* 坞身直接建成 <liquid-glass>:scripts/glass.ts 注册自定义元素时会连它一起升级成
+     玻璃胶囊;低配 / 无 JS 时它只是个普通盒子,观感由 .fold-dock 的 CSS 兜底。 */
+  const dock = document.createElement('liquid-glass');
   dock.className = 'fold-dock';
+  dock.setAttribute('radius', '20');
+  dock.setAttribute('strength', '5');
+  dock.setAttribute('blur', '6');
+  dock.setAttribute('chroma', '0.3');
   dock.setAttribute('role', 'group');
   dock.setAttribute('aria-label', 'Card folding controls');
   dock.innerHTML = [

@@ -1,0 +1,41 @@
+---
+// Glass.astro - liquid-glass 卡片外壳(@liquidglassjs/element 的 <liquid-glass>)
+//
+// 内容直接放进 <liquid-glass> 里,不经过 Shadow DOM:库只在元素上追加
+// surface / tint / rim 三个装饰层,正文仍是普通 DOM,可选中、可点击、可被
+// 屏幕阅读器读到;JS 不可用 / 低配 / 减弱透明度时元素不升级,内层卡片自己的
+// CSS 玻璃照常生效(见 src/scripts/glass.ts 与 src/styles/_glass.scss)。
+//
+// 参数取舍:radius 必须与内层卡片的 border-radius 一致;strength 是边缘位移像素,
+// 卡片用 6 已经能读出「玻璃厚边」而不扭背景;blur 在非 Chromium 上约等于 blur * 2 px,
+// 7 对应当前卡片的 16px 观感;chroma 是色散强度,0.4 只在边缘留一层很淡的彩边。
+interface Props {
+  /** 圆角(px),与内层卡片的 border-radius 对齐 */
+  radius?: number;
+  /** 折射强度(边缘位移像素) */
+  strength?: number;
+  /** 模糊档位 */
+  blur?: number;
+  /** 色散强度(0-1) */
+  chroma?: number;
+  /** 附加类:色相 b-xxx、布局类等 */
+  class?: string;
+}
+const {
+  radius = 14,
+  strength = 6,
+  blur = 7,
+  chroma = 0.4,
+  class: cls = '',
+} = Astro.props;
+---
+
+<liquid-glass
+  class:list={['glass-card', cls]}
+  radius={radius}
+  strength={strength}
+  blur={blur}
+  chroma={chroma}
+>
+  <slot />
+</liquid-glass>

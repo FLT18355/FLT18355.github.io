@@ -1,32 +1,28 @@
 ---
 // Nav.astro - 顶部导航条:五条链接 + 滑动指示条 + 主题拨钮
-import ThemeToggle from './ThemeToggle.vue';
-import { NAV } from '../data/site';
+//
+// float = true(默认):导航是悬浮在页面上的玻璃胶囊,外层 <liquid-glass> 负责玻璃面,
+//   .nav-inner 自带一份 CSS 兜底玻璃,JS 未就绪 / 低配 / 老浏览器下就显示这一层。
+// float = false(reader 页):沿用改造前的整条玻璃栏,结构一字未动。
+import NavInner from './NavInner.astro';
 import type { PageKey } from '../data/site';
 
 interface Props {
   current: PageKey;
+  /** 是否用浮动玻璃胶囊(reader 页传 false) */
+  float?: boolean;
 }
-const { current } = Astro.props;
+const { current, float = true } = Astro.props;
 ---
 
-<header class="site-nav">
-  <div class="nav-inner">
-    <a class="nav-brand" href="/index.html" aria-label="FLT18355 - Home">
-      <img class="nav-brand-logo logo-mocha" src="/images/1544x1544_circle.png" alt="" width="26" height="26" loading="lazy" />
-      <img class="nav-brand-logo logo-latte" src="/images/latte_circle.png" alt="" width="26" height="26" loading="lazy" />
-      <span class="nav-brand-name">FLT18355</span>
-    </a>
-    <nav class="nav-list" aria-label="页面导航">
-      {NAV.map((item) => (
-        <a class="nav-item" href={item.href} aria-current={item.key === current ? 'page' : undefined}>
-          {item.label}
-        </a>
-      ))}
-      <span class="nav-indicator" aria-hidden="true"></span>
-    </nav>
-    <span class="toggle-scale">
-      <ThemeToggle client:load />
-    </span>
-  </div>
+<header class:list={['site-nav', float && 'site-nav--float']}>
+  {
+    float ? (
+      <liquid-glass class="nav-glass" radius={28} strength={5} blur={6} chroma={0.3}>
+        <NavInner current={current} />
+      </liquid-glass>
+    ) : (
+      <NavInner current={current} />
+    )
+  }
 </header>
