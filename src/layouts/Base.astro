@@ -42,7 +42,12 @@ const ldJson = JSON.stringify(
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#1c1b26" />
+    <meta
+      name="theme-color"
+      content={SITE.themeColorMocha}
+      data-color-mocha={SITE.themeColorMocha}
+      data-color-latte={SITE.themeColorLatte}
+    />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={title} />
@@ -54,14 +59,34 @@ const ldJson = JSON.stringify(
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <title>{title}</title>
 
-    <!-- 主题恢复:head 内执行,防主题闪烁 -->
+    <!-- 主题恢复:head 内执行,防主题闪烁。
+         没手动选过时按本机时间给默认值:白天(07:00-18:59)Latte,其余时间 Mocha。
+         拨钮切换会写 localStorage 的 theme,之后一律以用户自己的选择为准,不再看时间。
+         ?theme=latte / ?theme=mocha 可临时覆盖本次加载(不写 localStorage),用来对比两支。
+         顺带把浏览器界面色(地址栏 / 状态栏)对齐到同一个主题,
+         否则白天默认 Latte 而 meta 还是深色,手机上手最显眼的就是这一条。 -->
     <script is:inline>
       (function () {
+        var t = null;
         try {
-          var t = localStorage.getItem('theme');
-          if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'latte' : 'mocha';
-          document.documentElement.setAttribute('data-theme', t);
+          t = localStorage.getItem('theme');
+        } catch (e) {
+          /* 隐私模式读不到:按未选择处理 */
+        }
+        if (t !== 'latte' && t !== 'mocha') {
+          var h = new Date().getHours();
+          t = h >= 7 && h < 19 ? 'latte' : 'mocha';
+        }
+        try {
+          var forced = new URLSearchParams(location.search).get('theme');
+          if (forced === 'latte' || forced === 'mocha') t = forced;
         } catch (e) {}
+        document.documentElement.setAttribute('data-theme', t);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) {
+          var c = meta.getAttribute(t === 'latte' ? 'data-color-latte' : 'data-color-mocha');
+          if (c) meta.setAttribute('content', c);
+        }
       })();
     </script>
     <!-- 字体选择:恢复已存选择,避免字体闪烁(选择界面显隐由 FontPicker.vue 处理) -->

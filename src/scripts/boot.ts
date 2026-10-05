@@ -62,31 +62,34 @@
     } catch (e) {
       /* 隐私模式下写不进:本次会话每次进入都会走过渡层,不影响可用性 */
     }
-    /* 通知动效层开始滚动入场:入场动画不能在启动层后面先白播一遍 */
-    document.dispatchEvent(new CustomEvent('boot:done'));
   }
 
   function finish(instant?: boolean): void {
     if (finished) return;
     finished = true;
     window.clearTimeout(safety);
+    /* 在「开始离场」这一刻就通知动效层:正文的滚动入场要和封面淡出叠着播,
+       等揭幕完再播就只剩一个已经静止的页面,那一口气接不上 */
+    document.dispatchEvent(new CustomEvent('boot:done'));
     if (instant || reduce) {
       teardown();
       return;
     }
     root.classList.add('boot-leaving');
-    /* 与 _boot.scss 的离场时长对齐(纸幕 460ms / 淡出 420ms),留一点余量 */
-    window.setTimeout(teardown, 480);
+    /* 与 _boot.scss 的离场时长对齐(封面位移 560ms / 淡出 420ms),留一点余量 */
+    window.setTimeout(teardown, 560);
   }
 
   /* 安全兜底:组件没挂载 / 事件丢失 / 长尾资源卡住,都不会把页面永久锁住 */
   safety = window.setTimeout(() => finish(true), 6000);
 
   /* ============================================================
-     变体 B 回访过渡:走满或跳过,二选一
+     变体 B 回访:走满或跳过,二选一
      ============================================================ */
   if (mode === 'transition') {
-    const fill = boot.querySelector<HTMLElement>('.boot__rail-fill');
+    /* 必须按 id 取:两个变体各有一条 .boot__rail-fill,
+       querySelector 只会拿到 DOM 里靠前的那个(首启卡里隐藏的那条) */
+    const fill = document.getElementById('bootCoverFill');
     const dwell = reduce ? 600 : lite ? 1000 : 1600;
     const t0 = Date.now();
 
@@ -142,7 +145,7 @@
   /* ============================================================
      变体 A 首启:真实门控驱动的进度,加载完淡出交给字体向导
      ============================================================ */
-  const fill = boot.querySelector<HTMLElement>('.boot__rail-fill');
+  const fill = document.getElementById('bootRailFill');
   const pctEl = document.getElementById('bootPct');
   const statusEl = document.getElementById('bootStatus');
 
@@ -154,6 +157,15 @@
     [0.96, 'Ready'],
   ];
   const NEEDED = ['dom', 'fonts', 'content', 'picker'];
+  /* 门控里程碑:进度条允许爬到的上限。前三个还会被写成首启轨上的刻度
+     (--boot-tick-*),所以「进度停住的地方」和「刻度」永远在同一组数字上 */
+  const MILES: Record<string, number> = { dom: 0.34, fonts: 0.6, content: 0.84, picker: 0.95 };
+  const railEl = document.getElementById('bootRail');
+  if (railEl) {
+    ['dom', 'fonts', 'content'].forEach((name, i) => {
+      railEl.style.setProperty('--boot-tick-' + (i + 1), (MILES[name] * 100).toFixed(0) + '%');
+    });
+  }
   const passed: string[] = [];
   const t0 = Date.now();
   const MIN_MS = reduce ? 400 : 900;
@@ -206,9 +218,10 @@
     if (!raf && !finished) raf = window.requestAnimationFrame(frame);
   }
 
-  function pass(name: string, value: number): void {
+  function pass(name: string): void {
     if (finished || passed.indexOf(name) !== -1) return;
     passed.push(name);
+    const value = MILES[name] || 0.95;
     if (value > goal) goal = value;
     let all = true;
     for (let i = 0; i < NEEDED.length; i++) {
@@ -220,32 +233,32 @@
 
   /* 门控 1:页面内容已经在 DOM 里(模块脚本 defer,通常这里已 interactive,直接通过) */
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => pass('dom', 0.34), { once: true });
+    document.addEventListener('DOMContentLoaded', () => pass('dom'), { once: true });
   } else {
-    pass('dom', 0.34);
+    pass('dom');
   }
 
   /* 门控 2:字体栈就绪。系统字体立即 ready;选过 Maple 的机器会在这里等 woff2 */
   const fontSet = (document as Document & { fonts?: { ready?: Promise<unknown> } }).fonts;
   if (fontSet && fontSet.ready && typeof fontSet.ready.then === 'function') {
     fontSet.ready.then(
-      () => pass('fonts', 0.6),
-      () => pass('fonts', 0.6)
+      () => pass('fonts'),
+      () => pass('fonts')
     );
   } else {
-    pass('fonts', 0.6);
+    pass('fonts');
   }
 
   /* 门控 3:整页资源(样式 / 图片)加载完,最长等 1800ms */
   if (document.readyState === 'complete') {
-    pass('content', 0.84);
+    pass('content');
   } else {
-    const cap = window.setTimeout(() => pass('content', 0.84), 1800);
+    const cap = window.setTimeout(() => pass('content'), 1800);
     window.addEventListener(
       'load',
       () => {
         window.clearTimeout(cap);
-        pass('content', 0.84);
+        pass('content');
       },
       { once: true }
     );
@@ -254,14 +267,14 @@
   /* 门控 4:字体向导已经决定显隐(见 FontPicker.vue 派发的 fontpicker:state)。
      组件可能先于本脚本完成挂载,所以先查标记再挂监听,并留 2200ms 上限 */
   if (root.dataset.fontPickerState) {
-    pass('picker', 0.95);
+    pass('picker');
   } else {
-    const cap = window.setTimeout(() => pass('picker', 0.95), 2200);
+    const cap = window.setTimeout(() => pass('picker'), 2200);
     document.addEventListener(
       'fontpicker:state',
       () => {
         window.clearTimeout(cap);
-        pass('picker', 0.95);
+        pass('picker');
       },
       { once: true }
     );
