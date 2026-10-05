@@ -57,10 +57,11 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   ├── _weather.scss 首页天气卡样式
     │   ├── _motion.scss  动效层(html.motion-js 门控)
     │   ├── _reader.scss  reader 页样式(工具条 / 目录树 / 文档排版 / 窄屏抽屉)
-    │   ├── _nav.scss / _font-picker.scss / _responsive.scss
+    │   ├── _nav.scss / _font-picker.scss / _boot.scss / _responsive.scss
     ├── layouts/Base.astro   页面骨架(head 元信息 + 主题/字体恢复内联脚本;`rail={false}` 无左栏,再加 `wide` 即占满宽度)
     ├── components/
     │   ├── CardFold.astro    可折叠卡片壳(原生 `<details>` + `<summary>`,默认展开;区块卡统一用它)
+    │   ├── BootScreen.astro  启动界面标记(首启加载 / 回访过渡;显隐由 `<html>` 上的类决定,逻辑在 scripts/boot.ts)
     │   ├── Nav.astro / Rail.astro / Contacts.astro / Footline.astro / ProjectCard.astro / SiteCard.astro
     │   ├── GithubCard.astro  GitHub 资料卡(消费 data/github.ts,在 projects 页被 CardFold 包住)
     │   ├── MarkdownReader.vue 阅读器主组件 + ReaderTree / ReaderFontPanel / ReaderIcon(递归树 / 字体面板 / 描边图标)
@@ -81,7 +82,8 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     ├── scripts/
     │   ├── motion.ts     动效编排(滚动入场、光斑、倾斜、进度线)
     │   ├── nav.ts        导航指示条定位
-    │   └── fold.ts       卡片折叠增强(状态记忆 / 折叠坞 / 快捷键 / 深链)
+    │   ├── fold.ts       卡片折叠增强(状态记忆 / 折叠坞 / 快捷键 / 深链)
+    │   └── boot.ts       启动界面编排(真实门控进度 / 跳过 / 会话记忆 / 6s 安全兜底;收尾派发 boot:done)
     └── pages/            index / projects / catppuccin / following / search / reader / 404
 ```
 
@@ -103,6 +105,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 - **Markdown 阅读器**(reader 页)：上传 ZIP 后 `JSZip` 递归遍历,目录树**只收 `.md`**(纯图片目录会被剪掉,`__MACOSX/._*` 垃圾剔除),文本先按 UTF-8 严格解码、失败回退 GB18030(照顾 GBK 文档);渲染走 `marked`(GFM) + `DOMPurify` 消毒,再在 detach 的 template 里做四趟 DOM 后处理:标题加 id、图片相对路径解析成 Blob URL(命不到就换成 `Image not in archive` 说明条)、内链(`.md` 转站内跳转并带锚点 / 非 md 转下载 / 外部链接新标签)、表格套横向滚动容器;字体支持上传 `.woff2/.woff/.ttf/.otf`,二进制存 **IndexedDB**(库 `flt18355-reader`,键 `reading-font`),刷新后读回并注入 `@font-face`,可一键恢复默认(私有模式下降级为仅本次会话生效);**阅读页字体基准固定为系统字体栈 `--sys-font`**,不跟随站点字体选择(选 Maple Mono 只影响其它页),上传的字体只补在这一层栈首;正文配色另有一套固定分工(标题逐级走 `mauve→peach` 谱系,链接用页面色相 `sky`,代码 `pink`,强调 `yellow`,增删红/绿),改样式时按这套分工走,别就地发明颜色;窄屏(≤920px)目录树变全高抽屉,带遮罩 / Esc / 焦点回送。**页面文案全英文**(不引入新的中文可见文案,因此无需重跑 `subset-font.py`)
 - **音乐播放器**：首页 Test 区,3 首曲目(GitHub Release 直链,经 gh-proxy 加速),`preload="auto"` 打开页面即自动下载;播放/暂停/进度跳转,左右键切歌,`localStorage` 保存上次播放的曲目与进度;音频文件不落地仓库
 - **字体选择**：首启弹出(默认字体免下载秒开),选 Maple Mono 才触发 `font.woff2` 下载;`localStorage`(`site-font`)持久化,页脚「字体」按钮重开
+- **启动界面**(全站,`BootScreen.astro` + `_boot.scss` + `scripts/boot.ts`)：`Base.astro` 的 head 内联脚本按「`localStorage` 里有没有 `site-font`」同步给 `<html>` 写 `.boot-first` / `.boot-transition`(与主题 / 字体 / 低配同一个防闪烁原则),所以首帧就是启动层,不会先闪一帧正文。**首启**走中心纸卡 + 真实进度轨:门控是 DOM 内容、`document.fonts.ready`、整页资源(`load`,最长 1800ms,硬等会把音乐播放器的 `preload="auto"` 也算进去)、以及 `FontPicker.vue` 派发的 `fontpicker:state`(最长 2200ms),到齐后整层淡出露出已经就位的字体向导,正常情况下约 1.6s。**回访**走非对称纸幕(左上页名 / 右上 Skip / 左下大词标,顶部一条与停留时长等长的进度条),每个会话只走一次(`sessionStorage` 的 `boot-seen`),点 / 触 / 滚 / 按键都能立刻跳过,不操作约 2.1s 自己走完;选完字体会顺手写下 `boot-seen`,避免「加载层 → 向导 → 过渡层」连着闪两次。启动层**一律用 `--sys-font` 渲染**(与字体向导同一取舍):这一层永远不引用 `Maple Mono NF CN`,既不触发 7.1MB 的 woff2,**也不需要为它重跑 `subset-font.py`**,可见文案按「UI 以英文为主」全走英文。启动层在时给正文挂 `inert`(导航 / 内容 / 折叠坞),收尾再摘,并留 **6s 安全出口**,任何环节卡住都不会把页面永久锁住。滚动入场(`motion.ts`)也等启动层派发的 `boot:done` 才开始,揭幕时才播一遍。手动覆盖:`?boot=0` 关掉 / `?boot=1` 强制过渡 / `?boot=first` 强制首启
 - **天气卡**(首页最底部)：`navigator.geolocation` 拿浏览器定位,失败(拒绝授权 / 老浏览器)则退到无 Key 的 IP 定位端点(`ipwho.is` → `get.geojs.io`,只取经纬度),两条都不通就用默认坐标(北京 39.9, 116.4),**保证卡片永远有内容**;天气来自 Open-Meteo `current_weather`(免费、无需 API Key),请求带 `timezone=auto` 所以观测时间是该地当地时间;结果缓存 30 分钟(`localStorage`),避免每次进首页都弹定位授权;卡片上标出定位方式(GPS / IP location / Default)与坐标,不用「猜」
 - **动效**(渐进增强)：区块滚动入场 + 筹码二级错峰、卡片指针光斑、3D 微倾斜、背景视差、阅读进度线;全部挂 `html.motion-js` 门控,尊重 `prefers-reduced-motion`
 - **无障碍**：语义化 landmark、`aria-current`、键盘可操作(Enter/空格切换主题)、可见焦点环
@@ -120,7 +123,8 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 - **色相落位**只改 `_tokens.scss` 里的令牌:区块 `--acc`(`_layout.scss` 的 `$block-hues`)、导航 `--nc`(`_nav.scss` 的 `$nav-hues`,顺序即 `data/site.ts` 的 NAV 数组)、卡片数据 `hue`。**动作控件与焦点环固定用 `--primary`**,不要换成区块色相。彩色文字用 `color-mix(in srgb, var(--hue), var(--text) var(--hue-fg-mix))`。
 - **文案**:UI 以英文为主,面向用户的提示用中文;**禁用 em dash `—`**(用逗号 / 句号 / 冒号)。中文注释与文案用半角 `:` 与 `,`,与现有文件保持一致。
 - **不引 CDN / 运行时框架依赖**;交互逻辑优先放 Vue 岛,纯 DOM 增强放 `src/scripts/*.ts`(由 `Base.astro` 打包)。
-- 主题 / 字体的**无闪烁恢复**必须在 `Base.astro` 的 head 内联脚本里同步执行(`localStorage` 的 `theme` / `site-font`),不能换成模块脚本。
+- 主题 / 字体的**无闪烁恢复**必须在 `Base.astro` 的 head 内联脚本里同步执行(`localStorage` 的 `theme` / `site-font`),不能换成模块脚本。启动界面同理:`.boot-first` / `.boot-transition` 也必须在这个 head 里同步写,换成模块脚本会先闪一帧正文。
+- **启动界面**新增可见文案时按「UI 以英文为主」写英文;它固定走 `--sys-font`,所以确实不需要重跑 `subset-font.py`(中文只出现在源码注释里)。
 
 **改完自检**
 
@@ -133,7 +137,8 @@ grep -o 'aria-current="page"' dist/reader.html # 每页恰一处,指向当前页
 bash scripts/deploy.sh                         # 同步到根目录,Pages 才生效
 ```
 
-- 逻辑层(`src/lib/reader/*.ts`)可脱离浏览器验证:用 esbuild 把测试脚本打成 ESM、在 Node + jsdom 里跑(`npm i jsdom fake-indexeddb` 作临时依赖),能覆盖 ZIP 解析 / 路径解析 / 编码回退 / 消毒 / 字体持久化。
+- 启动界面三条分支各过一眼:`?boot=first`(首启加载,进度走满后淡出接字体向导)、`?boot=1`(过渡纸幕,点任意处能立刻跳过)、`?boot=0`(完全不出现);再不带参数开一个新标签页,确认默认走过渡层且同一标签页内翻页不再出现。
+- 逻辑层(`src/lib/reader/*.ts`)可脱离浏览器验证:用 esbuild 把测试脚本打成 ESM、在 Node + jsdom 里跑(`npm i jsdom fake-indexeddb` 作临时依赖),能覆盖 ZIP 解析 / 路径解析 / 编码回退 / 消毒 / 字体持久化。`src/scripts/boot.ts` 同样是纯 DOM、无依赖,也可以用它配一个极简 DOM 桩验证收尾路径。
 - 视觉与窄屏布局目前没有浏览器自动化,改样式后要人工过一眼深色 / 浅色与手机宽度。
 - 改 GitHub 资料卡后确认构建日志没有 `[github] ... 失败`(出现即说明走了快照);改天气卡后确认「允许定位 / 拒绝定位 / 断网」三种情况卡片都有内容。
 

@@ -29,6 +29,7 @@ html.lite .reader-bar,
 html.lite .reader-font-panel,
 html.lite .reader-drawer-panel,
 html.lite .font-picker,
+html.lite .boot__card,
 html.lite .fold-dock {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
@@ -163,6 +164,7 @@ html.lite .stat-card::after {
   .reader-font-panel,
   .reader-drawer-panel,
   .font-picker,
+  .boot__card,
   .fold-dock {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -172,4 +174,14 @@ html.lite .stat-card::after {
   .cursor-glow {
     display: none;
   }
+}
+
+/* ---------- 10. 启动界面(_boot.scss):只熄掉常驻动效与 will-change。
+    纸幕分开 / 卡片淡出都是一次性的 transform,本身就是「正在进入」的反馈,保留;
+    首启底纹是静态渐变,只画一次,不参与滚动合成。 ---------- */
+html.lite .boot__rail-fill {
+  will-change: auto;
+}
+html.lite .boot__card .boot__rail-fill::after {
+  display: none;
 }

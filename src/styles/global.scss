@@ -12,6 +12,7 @@
 @use 'motion';
 @use 'nav';
 @use 'font-picker';
+@use 'boot';
 @use 'reader';
 /* 精修层:材质 / 分层入场 / 微交互。排在组件之后,可覆盖前面的组件样式;
    又必须排在 responsive / compat / lite 之前,让环境兜底与低配熄火始终压在最上层。 */

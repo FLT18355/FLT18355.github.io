@@ -1,0 +1,76 @@
+---
+// BootScreen.astro - 启动界面(首启加载 / 回访过渡)
+// 显隐由 <html> 上的 .boot-first / .boot-transition 决定:这两个类在 Base.astro 的
+// head 内联脚本里同步写入(先于 body 解析,所以不会闪出一帧正文),逻辑在 src/scripts/boot.ts。
+// 无 JS 时两个类都不存在,.boot 保持 display:none,页面照常可用。
+// 启动层一律用系统字体渲染:此时字体选择还没发生(首启)或刚恢复,用 --ui-font 会在
+// 选过 Maple 的机器上把 7.1MB 的 woff2 拖进首屏(与 _font-picker.scss 同一取舍)。
+import { NAV } from '../data/site';
+import type { PageKey } from '../data/site';
+
+interface Props {
+  /** 当前页键:过渡层用它显示「即将进入哪一页」 */
+  current: PageKey;
+}
+
+const { current } = Astro.props;
+const here = NAV.find((item) => item.key === current);
+---
+
+<!-- 内联兜底层:即使主样式表还没到(或加载失败),启动层也能正确覆盖并锁住滚动 -->
+<style is:inline>
+  .boot { display: none; }
+  html.boot-first { overflow: hidden; }
+  html.boot-first .boot,
+  html.boot-transition .boot {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+  }
+</style>
+
+<div class="boot" id="boot">
+  <!-- 变体 A 首启:先把网页内容加载完,再淡出交给字体向导 -->
+  <div class="boot__first">
+    <div class="boot__card">
+      <span class="boot__mark" aria-hidden="true">
+        <img
+          class="boot__mark-img boot__mark-img--mocha"
+          src="/images/1544x1544_circle.png"
+          alt=""
+          width="62"
+          height="62"
+        />
+        <img
+          class="boot__mark-img boot__mark-img--latte"
+          src="/images/latte_circle.png"
+          alt=""
+          width="62"
+          height="62"
+        />
+      </span>
+      <p class="boot__brand">FLT18355</p>
+      <p class="boot__title">Preparing your page</p>
+      <p class="boot__sub">Page content loads first, then the font wizard.</p>
+      <span class="boot__rail" aria-hidden="true"><i class="boot__rail-fill"></i></span>
+      <p class="boot__meta">
+        <span class="boot__status" id="bootStatus" role="status">Loading page</span>
+        <span class="boot__pct" id="bootPct" aria-hidden="true">0%</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- 变体 B 回访:纸幕上下分开露出页面,点 / 触 / 按键都能立刻跳过,不按也会自己走完 -->
+  <div class="boot__transition">
+    <span class="boot__half boot__half--top" aria-hidden="true"></span>
+    <span class="boot__half boot__half--bottom" aria-hidden="true"></span>
+    <span class="boot__rail boot__rail--top" aria-hidden="true"><i class="boot__rail-fill"></i></span>
+    <div class="boot__stage">
+      <p class="boot__hello">Welcome back</p>
+      <p class="boot__wordmark">FLT18355</p>
+    </div>
+    <p class="boot__here" aria-hidden="true">{here ? here.label : ''}</p>
+    <button class="boot__skip" id="bootSkip" type="button">Skip</button>
+  </div>
+</div>

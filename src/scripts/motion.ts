@@ -21,36 +21,54 @@
   const blocks = Array.prototype.slice.call(document.querySelectorAll('.block'));
   const footline = document.querySelector('.footline');
 
-  /* 触发条件必须与元素高度无关:threshold 归零,只要求「有交集」,
-     再用 rootMargin 把观察根下边缘上收 6%,让区块露出视口一点就入场。
-     不能用 threshold 比例 —— 色板页区块在竖屏窄窗口可高达视口数倍,
-     threshold 要求的绝对高度永远大于整个视口,isIntersecting 恒为 false,
-     区块会永久停在 opacity:0,整张配色表看不见。
-     底部收缩幅度保持小值:过大时页面最后的区块可能滚不到位而永不入场。 */
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((en) => {
-        if (!en.isIntersecting) return;
-        en.target.classList.add('in');
-        io.unobserve(en.target);
-      });
-    },
-    { threshold: 0, rootMargin: '0px 0px -6% 0px' }
-  );
-  blocks.forEach((b) => io.observe(b));
+  /* 启动层在场时(首启加载 / 回访过渡)先把入场挂起:入场动画若在遮罩后面播完,
+     揭幕时页面已经是静止的,这一遍编排等于白播。boot.ts 收尾时派发 boot:done。
+     挂起期间不会空白:入场 keyframes 挂在 .block.in 上,没被观察到的区块本来就完全可见。 */
+  let entryStarted = false;
+  function startEntry(): void {
+    if (entryStarted) return;
+    entryStarted = true;
 
-  if (footline) {
-    const ioFoot = new IntersectionObserver(
+    /* 触发条件必须与元素高度无关:threshold 归零,只要求「有交集」,
+       再用 rootMargin 把观察根下边缘上收 6%,让区块露出视口一点就入场。
+       不能用 threshold 比例 —— 色板页区块在竖屏窄窗口可高达视口数倍,
+       threshold 要求的绝对高度永远大于整个视口,isIntersecting 恒为 false,
+       区块会永久停在 opacity:0,整张配色表看不见。
+       底部收缩幅度保持小值:过大时页面最后的区块可能滚不到位而永不入场。 */
+    const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((en) => {
           if (!en.isIntersecting) return;
           en.target.classList.add('in');
-          ioFoot.unobserve(en.target);
+          io.unobserve(en.target);
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0, rootMargin: '0px 0px -6% 0px' }
     );
-    ioFoot.observe(footline);
+    blocks.forEach((b) => io.observe(b));
+
+    if (footline) {
+      const ioFoot = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((en) => {
+            if (!en.isIntersecting) return;
+            en.target.classList.add('in');
+            ioFoot.unobserve(en.target);
+          });
+        },
+        { threshold: 0.1 }
+      );
+      ioFoot.observe(footline);
+    }
+  }
+
+  if (root.classList.contains('boot-first') || root.classList.contains('boot-transition')) {
+    document.addEventListener('boot:done', startEntry, { once: true });
+    /* 兜底:motion.ts 与 boot.ts 同一个 bundle,正常情况下必然派发;
+       这里只防「启动层节点缺失」这类意外,免得入场永远不开始 */
+    window.setTimeout(startEntry, 7000);
+  } else {
+    startEntry();
   }
 
   /* ---------- 2. 指针光斑 + 卡片 3D 微倾斜(仅精确指针,低配精简模式跳过) ---------- */

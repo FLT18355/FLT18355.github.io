@@ -6,10 +6,20 @@ import { onMounted, ref } from 'vue';
 
 const hidden = ref(true);
 
+/* 通知启动层(src/scripts/boot.ts):向导已经决定显隐,门控 4 可以放行了。
+   dataset 标记是给「组件先于 boot.ts 挂载」的那种时序兜底,事件是给正常时序用的。 */
+function announce(state: 'shown' | 'hidden'): void {
+  document.documentElement.dataset.fontPickerState = state;
+  document.dispatchEvent(new CustomEvent('fontpicker:state', { detail: { state } }));
+}
+
 /* 必须在 setup 顶层定义:模板 @click 只能引用顶层绑定,onMounted 闭包内的函数不可见 */
 function choose(font: string): void {
   try {
     localStorage.setItem('site-font', font);
+    /* 本次会话的过渡层标记提前写下:重载后直接进页面,
+       不再叠一次「加载层 → 向导 → 过渡层」的二次闪屏 */
+    sessionStorage.setItem('boot-seen', '1');
   } catch (err) {
     /* 写入失败忽略,页面仍即时切换 */
   }
@@ -34,6 +44,7 @@ onMounted(() => {
     hidden.value = true;
     overlay.setAttribute('hidden', '');
     document.body.style.overflow = '';
+    announce('hidden');
   };
   const show = () => {
     hidden.value = false;
@@ -41,6 +52,7 @@ onMounted(() => {
     document.body.style.overflow = 'hidden';
     const first = overlay.querySelector('.font-option') as HTMLElement | null;
     if (first) first.focus();
+    announce('shown');
   };
 
   const reopen = document.getElementById('fontPickerReopen');

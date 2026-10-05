@@ -4,6 +4,7 @@ import '../styles/global.scss';
 import Nav from '../components/Nav.astro';
 import Rail from '../components/Rail.astro';
 import Footline from '../components/Footline.astro';
+import BootScreen from '../components/BootScreen.astro';
 import FontPicker from '../components/FontPicker.vue';
 import { SITE } from '../data/site';
 import type { PageKey } from '../data/site';
@@ -106,8 +107,44 @@ const ldJson = JSON.stringify(
         if (lite) root.className += ' lite';
       })();
     </script>
+    <!-- 启动界面显隐:与主题 / 字体 / 低配同一原则,类必须在 head 内同步写入,
+         否则会先闪出一帧正文再盖上启动层。
+         首启(localStorage 里还没有 site-font)= 加载层,加载完进字体向导;
+         其余时候 = 过渡层,每个会话只走一次(sessionStorage 的 boot-seen),可以直接跳过。
+         手动覆盖:?boot=0 关掉,?boot=1 强制过渡,?boot=first 强制首启。 -->
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        var forced = null;
+        try {
+          forced = new URLSearchParams(location.search).get('boot');
+        } catch (e) {}
+        if (forced === '0' || forced === 'off') return;
+        var first = false;
+        var seen = false;
+        try {
+          var f = localStorage.getItem('site-font');
+          first = !(f === 'default' || f === 'maple');
+          seen = sessionStorage.getItem('boot-seen') === '1';
+        } catch (e) {
+          /* 隐私模式读不到:按未选择处理,至少不影响首启引导 */
+          first = true;
+        }
+        var mode = '';
+        if (forced === 'first') mode = 'first';
+        else if (forced === '1' || forced === 'transition') mode = 'transition';
+        else if (first) mode = 'first';
+        else if (!seen) mode = 'transition';
+        if (!mode) return;
+        root.className += mode === 'first' ? ' boot-first' : ' boot-transition';
+      })();
+    </script>
   </head>
   <body>
+    <!-- 启动界面(首启加载 / 回访过渡):固定层压在最上面,显隐由 html 上的
+         .boot-first / .boot-transition 决定,两个类已在 head 内联脚本里写好 -->
+    <BootScreen current={current} />
+
     <!-- 背景纸层(纯装饰,aria-hidden):分层纸面 + 点阵 + 等高线 + 虚线瓦片 + 节点连线。
          参照 demo/readme-banner.webp 右侧的纸质浮雕语言;低配层在 _lite.scss 里整块关掉。 -->
     <div class="bg-art" aria-hidden="true">
@@ -147,6 +184,9 @@ const ldJson = JSON.stringify(
       import '../scripts/motion.ts';
       import '../scripts/nav.ts';
       import '../scripts/fold.ts';
+      /* 必须排在 fold.ts 之后:boot.ts 要把右下角折叠坞一并 inert,
+         而且 motion.ts 会监听它派发的 boot:done 才开始滚动入场 */
+      import '../scripts/boot.ts';
     </script>
   </body>
 </html>
