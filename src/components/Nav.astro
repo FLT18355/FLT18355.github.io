@@ -19,7 +19,9 @@ const { current, float = true } = Astro.props;
   {
     float ? (
       <liquid-glass class="nav-glass" radius={28} strength={5} blur={6} chroma={0.3}>
-        <NavInner current={current} />
+        <div class="ps-glass__content">
+          <NavInner current={current} />
+        </div>
       </liquid-glass>
     ) : (
       <NavInner current={current} />

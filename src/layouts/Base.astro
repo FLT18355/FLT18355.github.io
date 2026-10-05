@@ -104,40 +104,52 @@ const ldJson = JSON.stringify(
         } catch (e) {}
       })();
     </script>
-    <!-- 低配适配:必须在 head 内同步执行,否则玻璃模糊/光斑会先渲染一帧再关掉。
-         判定:省流量模式、内存 ≤4GB、触屏且核心数 ≤4 之一成立即精简;
-         ?lite=1 / ?lite=0 手动覆盖并记住(localStorage),方便在同一台手机上对比。 -->
+    <!-- 渲染档位:low(低配)/ high(高配)/ max(全特效)。
+         必须在 head 内同步执行,否则玻璃 / 高频背景 / 光斑会先渲染一帧再切掉。
+         优先级:?mode= > ?lite= > localStorage.site-mode > localStorage.site-lite(旧键)> 自动判定。
+         自动判定只在 low / high 之间选:max 是纯手动的,免得弱机被光效拖死。
+         ?lite=1/0 仍然可用(等价于 low / high),方便老书签与快速对比。 -->
     <script is:inline>
       (function () {
         var root = document.documentElement;
-        var nav = navigator;
         var mode = null;
         try {
-          var q = new URLSearchParams(location.search).get('lite');
-          if (q === '1' || q === '0') {
-            mode = q === '1' ? 'on' : 'off';
-            localStorage.setItem('site-lite', mode);
+          var q = new URLSearchParams(location.search);
+          var qm = q.get('mode');
+          var ql = q.get('lite');
+          if (qm === 'low' || qm === 'high' || qm === 'max') {
+            mode = qm;
+            localStorage.setItem('site-mode', mode);
+          } else if (ql === '1' || ql === '0') {
+            mode = ql === '1' ? 'low' : 'high';
+            localStorage.setItem('site-mode', mode);
           } else {
-            mode = localStorage.getItem('site-lite');
+            mode = localStorage.getItem('site-mode');
+            if (mode !== 'low' && mode !== 'high' && mode !== 'max') {
+              var legacy = localStorage.getItem('site-lite');
+              mode = legacy === 'on' ? 'low' : legacy === 'off' ? 'high' : null;
+            }
           }
         } catch (e) {}
-        var conn = nav.connection || nav.mozConnection || nav.webkitConnection;
-        var mem = nav.deviceMemory;
-        var cores = nav.hardwareConcurrency || 0;
-        var coarse = false;
-        try {
-          coarse = window.matchMedia('(pointer: coarse)').matches;
-        } catch (e) {}
-        var lite =
-          mode === 'on' ||
-          (mode !== 'off' &&
-            (!!(conn && conn.saveData) ||
-              (typeof mem === 'number' && mem <= 4) ||
-              (coarse && cores > 0 && cores <= 4)));
-        if (lite) root.className += ' lite';
-        /* data-lite 供页脚的档位开关读取与显示(CSS 只认这个属性,所以关掉 JS 时
-           开关整块不渲染,不会出现按不动的控件);取值 'on' / 'off' 与 lite 类严格同步 */
-        root.setAttribute('data-lite', lite ? 'on' : 'off');
+        if (!mode) {
+          var nav = navigator;
+          var conn = nav.connection || nav.mozConnection || nav.webkitConnection;
+          var mem = nav.deviceMemory;
+          var cores = nav.hardwareConcurrency || 0;
+          var coarse = false;
+          try {
+            coarse = window.matchMedia('(pointer: coarse)').matches;
+          } catch (e) {}
+          var weak =
+            !!(conn && conn.saveData) ||
+            (typeof mem === 'number' && mem <= 4) ||
+            (coarse && cores > 0 && cores <= 4);
+          mode = weak ? 'low' : 'high';
+        }
+        /* data-mode 供页脚档位开关读取与显示(CSS 只认它,所以关掉 JS 时开关整块不渲染);
+           html.lite 只有 low 档才挂,后面的精简层与玻璃挂载闸门都读它 */
+        root.setAttribute('data-mode', mode);
+        if (mode === 'low') root.className += ' lite';
       })();
     </script>
     <!-- 启动界面显隐:与主题 / 字体 / 低配同一原则,类必须在 head 内同步写入,
@@ -184,6 +196,9 @@ const ldJson = JSON.stringify(
       <span class="bg-art__sheets"><i></i><i></i><i></i></span>
       <span class="bg-art__dots"></span>
       <span class="bg-art__contour"></span>
+      <!-- 高频层:只在 max 档显示,给位移贴图提供「有边可弯」的结构(见 _paper.scss 第 4 节) -->
+      <span class="bg-art__grid"></span>
+      <span class="bg-art__neon"></span>
       <span class="bg-art__tile"></span>
       <svg class="bg-art__nodes" viewBox="0 0 420 220" fill="none">
         <path d="M10 186C104 186 118 30 214 30c96 0 108 138 196 138" />

@@ -443,10 +443,10 @@ p {
   border-color: var(--lavender);
 }
 
-/* ---------- 渲染档位开关(页脚最底部):Low = 低配版,High = 高配版 ----------
-   默认整块 display:none,只有 head 内联脚本写下 html[data-lite] 后才显示 ——
+/* ---------- 渲染档位开关(页脚最底部):Low / High / Max ----------
+   默认整块 display:none,只有 head 内联脚本写下 html[data-mode] 后才显示 ——
    脚本没跑通(关掉 JS)时不会留下一个按不动的控件。
-   当前档位由 html[data-lite] 直接决定,首帧就是对的,不等 JS 写类。 */
+   当前档位由 html[data-mode] 直接决定,首帧就是对的,不等 JS 写类。 */
 .mode-switch {
   display: none;
   align-items: center;
@@ -460,7 +460,7 @@ p {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-html[data-lite] .mode-switch {
+html[data-mode] .mode-switch {
   display: inline-flex;
 }
 .mode-switch-label {
@@ -488,8 +488,9 @@ html[data-lite] .mode-switch {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
-html[data-lite="on"] .mode-switch-btn[data-mode="lite"],
-html[data-lite="off"] .mode-switch-btn[data-mode="full"] {
+html[data-mode="low"] .mode-switch-btn[data-mode="low"],
+html[data-mode="high"] .mode-switch-btn[data-mode="high"],
+html[data-mode="max"] .mode-switch-btn[data-mode="max"] {
   color: var(--primary);
   background: var(--primary-dim);
 }

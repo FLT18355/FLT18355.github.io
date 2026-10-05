@@ -251,90 +251,92 @@ onMounted(() => {
   <!-- 外层 <liquid-glass> 是玻璃面,内层 <details> 仍是折叠本体;色相类挂在外壳上,
        --acc 继承进卡片(见 src/styles/_glass.scss 与 scripts/glass.ts) -->
   <liquid-glass class="glass-card b-weather" radius="14" strength="6" blur="7" chroma="0.4">
-    <details class="block fold card-fold" data-fold="b-weather" open>
-      <summary class="block-header fold-head">
-        <h2>Local Weather</h2>
-        <span class="fold-tail"><span class="fold-caret" aria-hidden="true" /></span>
-      </summary>
+    <div class="ps-glass__content">
+      <details class="block fold card-fold" data-fold="b-weather" open>
+        <summary class="block-header fold-head">
+          <h2>Local Weather</h2>
+          <span class="fold-tail"><span class="fold-caret" aria-hidden="true" /></span>
+        </summary>
 
-      <div class="fold-body">
-        <div class="weather-now" :aria-busy="busy">
-          <div class="weather-icon" role="img" :aria-label="iconLabel">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.7"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path v-for="(d, i) in iconPaths" :key="i" :d="d" />
-            </svg>
+        <div class="fold-body">
+          <div class="weather-now" :aria-busy="busy">
+            <div class="weather-icon" role="img" :aria-label="iconLabel">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path v-for="(d, i) in iconPaths" :key="i" :d="d" />
+              </svg>
+            </div>
+
+            <div class="weather-main">
+              <p class="weather-temp">
+                <span>{{ tempText }}</span>
+                <span class="weather-unit">°C</span>
+              </p>
+              <p class="weather-cond" role="status">{{ condText }}</p>
+            </div>
+
+            <button class="weather-refresh" type="button" :disabled="busy" @click="refresh">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.9"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M20.5 12a8.5 8.5 0 1 1-2.5-6" />
+                <path d="M20.6 3.4v4.4h-4.4" />
+              </svg>
+              Refresh
+            </button>
           </div>
 
-          <div class="weather-main">
-            <p class="weather-temp">
-              <span>{{ tempText }}</span>
-              <span class="weather-unit">°C</span>
-            </p>
-            <p class="weather-cond" role="status">{{ condText }}</p>
-          </div>
+          <dl class="weather-facts">
+            <div class="weather-tile">
+              <dt>Wind</dt>
+              <dd>
+                <span class="weather-value">{{ windText }}</span>
+                <span v-if="windFrom" class="weather-sub">{{ windFrom }}</span>
+              </dd>
+            </div>
+            <div class="weather-tile">
+              <dt>Observed</dt>
+              <dd>
+                <span class="weather-value">{{ observedTime }}</span>
+                <span v-if="observedDate" class="weather-sub">{{ observedDate }} local</span>
+              </dd>
+            </div>
+            <div class="weather-tile">
+              <dt>Timezone</dt>
+              <dd>
+                <span class="weather-value">{{ timezone || '--' }}</span>
+                <span v-if="timezoneAbbr" class="weather-sub">{{ timezoneAbbr }}</span>
+              </dd>
+            </div>
+            <div class="weather-tile">
+              <dt>Position</dt>
+              <dd>
+                <span class="weather-value">{{ coordsText }}</span>
+                <span v-if="sourceLabel" class="weather-sub">{{ sourceLabel }}</span>
+              </dd>
+            </div>
+          </dl>
 
-          <button class="weather-refresh" type="button" :disabled="busy" @click="refresh">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.9"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M20.5 12a8.5 8.5 0 1 1-2.5-6" />
-              <path d="M20.6 3.4v4.4h-4.4" />
-            </svg>
-            Refresh
-          </button>
+          <p v-if="hint" class="weather-hint">{{ hint }}</p>
+          <p class="weather-note">
+            Position from your browser or an IP lookup, weather from Open-Meteo (no API key). The result
+            stays in your browser and is cached locally for 30 minutes.
+          </p>
         </div>
-
-        <dl class="weather-facts">
-          <div class="weather-tile">
-            <dt>Wind</dt>
-            <dd>
-              <span class="weather-value">{{ windText }}</span>
-              <span v-if="windFrom" class="weather-sub">{{ windFrom }}</span>
-            </dd>
-          </div>
-          <div class="weather-tile">
-            <dt>Observed</dt>
-            <dd>
-              <span class="weather-value">{{ observedTime }}</span>
-              <span v-if="observedDate" class="weather-sub">{{ observedDate }} local</span>
-            </dd>
-          </div>
-          <div class="weather-tile">
-            <dt>Timezone</dt>
-            <dd>
-              <span class="weather-value">{{ timezone || '--' }}</span>
-              <span v-if="timezoneAbbr" class="weather-sub">{{ timezoneAbbr }}</span>
-            </dd>
-          </div>
-          <div class="weather-tile">
-            <dt>Position</dt>
-            <dd>
-              <span class="weather-value">{{ coordsText }}</span>
-              <span v-if="sourceLabel" class="weather-sub">{{ sourceLabel }}</span>
-            </dd>
-          </div>
-        </dl>
-
-        <p v-if="hint" class="weather-hint">{{ hint }}</p>
-        <p class="weather-note">
-          Position from your browser or an IP lookup, weather from Open-Meteo (no API key). The result
-          stays in your browser and is cached locally for 30 minutes.
-        </p>
-      </div>
-    </details>
+      </details>
+    </div>
   </liquid-glass>
 </template>

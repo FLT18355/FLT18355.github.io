@@ -1,28 +1,27 @@
 /* _glass.scss - liquid-glass 集成层(@liquidglassjs/element 的 <liquid-glass>)
-   玻璃本身由 scripts/glass.ts 在浏览器侧挂载;本文件只负责「玻璃长什么样」
-   以及「玻璃接管之后,组件自己的 CSS 玻璃怎么让位」。
+   玻璃本身由 scripts/glass.ts 在浏览器侧挂载;本文件只做三件事:
 
-   级联位置:global.scss 里排在 paper 之后、responsive / compat / lite 之前:
-   既能盖掉组件自己的 CSS 玻璃与阴影,又会被环境兜底层(响应式 / 老浏览器 / 低配)收口。
+     1. 把库自己留出来的可覆盖变量接到站内令牌(--glass-paper / --glass-frost-bg),
+        玻璃的色温不跑出 Catppuccin;
+     2. 玻璃接管之后,把内层组件自己的 CSS 玻璃撤掉(否则两层半透明底叠成实心板);
+     3. 按档位与渲染能力给根元素加环境类(html[data-mode] / html[data-glass])。
 
-   三条纪律(同 _polish.scss / _bento.scss):
-     1. 新增动效由 html.motion-js 门控;
-     2. 新增 color-mix 的声明若丢失会失色相 / 丢阴影,须去 _compat.scss 补等价兜底;
-     3. 低配(html.lite)与「减弱透明度」下的熄火写在 _lite.scss / 本文件末节。
+   **刻意不做的事:不覆盖 .ps-glass__rim。**
+   库那条 rim 是「内圈细线 + 顶部白高光 + 底部暗边 + 大扩散外投影」——
+   液态玻璃唯一的灵魂高光就在这一层,覆盖它等于把玻璃降级成一块半透明板。
+   库把 overflow / border-radius / isolation 写在 :where(.ps-glass) 里(零特异性),
+   注释里明确说那是 DEFAULTS 而不是决策,只在这一处按需放宽(见第 1 节)。
 
-   低配与老浏览器怎么退回:glass.ts 在三条闸门任一命中时都不注册自定义元素,
-   <liquid-glass> 就只是一个 display:block 的普通盒子,本文件里所有 .ps-glass
-   规则整段失效,内层卡片照旧使用自己的 --glass + backdrop-filter。 */
+   级联位置:global.scss 里排在 paper 之后、responsive / compat / lite 之前。 */
 
 /* ============================================================
-   0. 令牌:玻璃面上沿的一层柔光(单一光源,左上受光)
+   0. 令牌:max 档的「薄玻璃」底色(高配仍用 --glass)
    ============================================================ */
 :root {
-  --glass-sheen: rgba(255, 255, 255, 0.08);
+  --glass-thin: rgba(38, 37, 50, 0.26);
 }
 :root[data-theme="latte"] {
-  /* 浅色纸面反光更明显,压到 0.45 才读得出「一层光」而不是「一块白」 */
-  --glass-sheen: rgba(255, 255, 255, 0.45);
+  --glass-thin: rgba(255, 253, 249, 0.26);
 }
 
 /* ============================================================
@@ -32,37 +31,35 @@ liquid-glass {
   display: block;
   position: relative;
   border-radius: var(--radius);
-  /* 库把「纸色 / 墨色 / 兜底磨砂底」做成了三个可覆盖变量,这里全部接站内令牌,
-     玻璃的色温才不会跑出 Catppuccin 之外。 */
+  /* 库的「纸色」= 色调层的取色,接站内令牌,双主题各自跟得上。
+     --glass-ink 故意不覆盖:用它自己的 #000 默认值,
+     暗色描边 + 白顶高光正是 iOS 玻璃的读法,mocha / latte 两支都成立。 */
   --glass-paper: var(--bg-card);
-  --glass-ink: var(--text);
+  /* 磨砂路径的卡面底色 = 组件原本的半透明玻璃底,保证背后仍透得出纸层与网格 */
   --glass-frost-bg: var(--glass);
-  /* 悬停描边用的色相:区块卡由 .b-xxx 覆盖,身份卡 / 导航 / 折叠坞用主色 */
+  /* 悬停柔光用的色相:区块卡由 .b-xxx 覆盖,身份卡用主色;
+     --acc-dim 是给老浏览器(_compat.scss)的纯色兜底,与 --acc 成对 */
   --acc: var(--primary);
+  --acc-dim: var(--primary-dim);
 }
 
-/* 内容抬到 chrome 层之上:库把 surface / tint / rim 三层绝对定位节点追加在内容之后,
-   不抬的话它们会压在正文上。三层之外的一切直接子元素都是「内容」。 */
-liquid-glass > :not(.ps-glass__surface):not(.ps-glass__tint):not(.ps-glass__rim) {
-  position: relative;
-  z-index: 1;
-}
-
-/* 库的 overflow:hidden 写在 :where() 里(零特异性),这里放开:
-   卡片的投影画在 rim 上,裁掉就整站扁平了;圆角由各层自己的 border-radius 保证。 */
+/* 库把 overflow:hidden 写在 :where(.ps-glass) 里(零特异性、且自述为默认值)。
+   这里放开:rim 自带的第四道外投影(0 14px 38px -14px)会被 hidden 整条裁掉,
+   整站立刻变平;圆角仍由各装饰层自己的 border-radius 保证。 */
 liquid-glass.ps-glass {
   overflow: visible;
 }
 
 /* ============================================================
-   2. 玻璃接管:内层卡片自己的 CSS 玻璃让位
-   背景 / 模糊 / 描边 / 投影全部撤掉,底子交给 glass__surface(--glass)+ tint,
-   否则两层半透明底会叠成一块实心板,玻璃就白做了。
+   2. 玻璃接管:内层组件自己的 CSS 玻璃让位
+   内容走库自己的 .ps-glass__content 包装层(与官方 Astro adapter 完全一致的结构),
+   它自带 position:relative + z-index:1,所以内容天然盖在 surface / tint / rim 三层之上,
+   不需要我们再手写 z-index 抬层。
    ============================================================ */
-.ps-glass > .block,
-.ps-glass > .profile,
-.ps-glass > .nav-inner,
-.ps-glass > .err404-card {
+.ps-glass > .ps-glass__content > .block,
+.ps-glass > .ps-glass__content > .profile,
+.ps-glass > .ps-glass__content > .nav-inner,
+.ps-glass > .ps-glass__content > .err404-card {
   background: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
@@ -70,48 +67,72 @@ liquid-glass.ps-glass {
   box-shadow: none;
 }
 
-/* ============================================================
-   3. 玻璃的边:换成站内「纸质浮雕」语言
-   去掉库里的通用黑色投影,改用主题感知的 --edge / --shadow,
-   再补一层左上柔光,静止时也读得出玻璃有厚度。
-   ============================================================ */
 /* 404 页:错误卡原本是 flex 居中项,宽度交给外壳,内层只管内部排版 */
 .err404-glass {
   width: 100%;
   max-width: 400px;
 }
-.ps-glass > .ps-glass__rim {
-  transition: box-shadow 0.3s var(--ease-out);
-  box-shadow:
-    inset 0 0 0 1px var(--glass-border),
-    var(--edge),
-    var(--shadow);
+
+/* ============================================================
+   3. 档位:max 把「看得见折射」需要的两头一起拉满
+   玻璃参数(strength / chroma / blur / tint / behind)由 scripts/glass.ts
+   在元素注册之前写进属性,这里只补 CSS 侧的改动:卡面换成更薄的 --glass-thin,
+   让背后的高频网格真能透过来(高频背景层见 _paper.scss 第 4 节)。
+   ============================================================ */
+html[data-mode="max"] liquid-glass {
+  --glass-frost-bg: var(--glass-thin);
 }
-.ps-glass > .ps-glass__rim::after {
+
+/* 库把 isolation:isolate 也写在 :where(.ps-glass) 里。按 Filter Effects 关于
+   「backdrop root」的定义,isolation 会让 backdrop-filter 只采样到这张卡内部(空的),
+   也就是折射可能压根不发生 —— 这一条读代码判断不了,只能在 max 档实测。
+   这里放开 isolation,让 backdrop 采样回到真实页面;high 档保持库的原始结构,
+   于是「high 有折射 / max 没变化」就等于告诉我们 isolation 并不是瓶颈,删掉这一段即可。 */
+html[data-mode="max"] liquid-glass.ps-glass {
+  isolation: auto;
+}
+
+/* 悬停:只在玻璃外壳上补一层同色柔光,rim 一个像素都不碰 */
+.glass-card.ps-glass,
+.profile-glass.ps-glass {
+  transition: box-shadow 0.3s var(--ease-out);
+}
+.glass-card.ps-glass:hover,
+.profile-glass.ps-glass:hover {
+  box-shadow: 0 16px 40px -14px color-mix(in srgb, var(--acc) 30%, transparent);
+}
+
+/* ============================================================
+   4. 降级:Safari / Firefox 不认 backdrop-filter: url()
+   它们拿到的是纯模糊,折射一点都不在,只靠库的 rim 会显得「薄」。
+   所以在 rim 之上再叠一圈高对比度的斜向镜面描边(::before,库没有占用),
+   把边缘的厚度演出来 —— 库的 rim 本身一个字都没改。
+   ============================================================ */
+html[data-glass="blur"] .ps-glass > .ps-glass__rim::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: radial-gradient(130% 74% at 14% -10%, var(--glass-sheen), transparent 62%);
+  padding: 1.5px;
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 46%),
+    linear-gradient(330deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 44%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
-
-/* 悬停:色相描边 + 同色柔光。原来画在 .block:hover 上,现在画在玻璃面上,
-   与「一个区块一种颜色」的既有规则同源(--acc 由 .b-xxx 继承进来)。
-   只给区块卡与身份卡:导航 / 折叠坞 / 404 是常驻控件,悬停发光反而吵。 */
-.glass-card.ps-glass:hover > .ps-glass__rim,
-.profile-glass.ps-glass:hover > .ps-glass__rim {
-  box-shadow:
-    inset 0 0 0 1px var(--acc),
-    var(--edge),
-    0 2px 5px rgba(0, 0, 0, 0.18),
-    0 16px 40px -12px color-mix(in srgb, var(--acc) 32%, transparent);
+/* 浅色主题下白描边会过曝,单独压一档并给右下角换成暖灰 */
+:root[data-theme="latte"] html[data-glass="blur"] .ps-glass > .ps-glass__rim::before {
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 44%),
+    linear-gradient(330deg, rgba(120, 106, 88, 0.16), rgba(120, 106, 88, 0) 44%);
 }
 
 /* ============================================================
-   4. 入场编排:动画整体挂在玻璃外壳上
-   内层 <details> 若还自己播一次,和外壳叠起来就是两层动画(位移翻倍、先亮后动)。
-   所以外壳负责淡入 + 位移,内层只保留标题 / 正文 / 筹码的错峰入场(_polish / _motion)。
+   5. 入场编排:动画整体挂在玻璃外壳上
+   内层 <details> 若还自己播一次,与外壳叠起来就是两层动画(位移翻倍、先亮后动)。
    --d 按「内容列的直系子元素序」发放:Vue 岛被 <astro-island>(display:contents)
    包了一层,只有发在它身上才能继承进玻璃壳。
    ============================================================ */
@@ -127,22 +148,28 @@ html.motion-js .glass-card.in {
   animation: polishBlockIn 0.72s var(--ease-out) both;
   animation-delay: var(--d, 0s);
 }
-html.motion-js .glass-card > .block,
-html.motion-js .glass-card > .block.in {
+html.motion-js .glass-card > .ps-glass__content > .block,
+html.motion-js .glass-card > .ps-glass__content > .block.in {
   opacity: 1;
   animation: none;
 }
-/* 内层 details 是外壳的唯一孩子,直接子元素选择器会把它算成「第 1 个」,
+/* 内层 details 是内容层的唯一孩子,直接子元素选择器会把它算成「第 1 个」,
    必须显式继承外壳的 --d,否则所有卡片的错峰延迟都塌回第一档。 */
-html.motion-js .content .glass-card > .block {
+html.motion-js .content .glass-card > .ps-glass__content > .block {
   --d: inherit;
 }
 
 /* ============================================================
-   5. 减弱动效:玻璃只有阴影过渡,不参与位移
+   6. 减弱动效
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  .ps-glass > .ps-glass__rim {
+  .glass-card.ps-glass,
+  .profile-glass.ps-glass {
     transition: none;
   }
 }
+
+/* ============================================================
+   7. 低配(low):glass.ts 在这一档根本不注册自定义元素,
+      所以上面所有 .ps-glass 规则整段失效,内层组件用自己的 CSS 玻璃。
+   ============================================================ */

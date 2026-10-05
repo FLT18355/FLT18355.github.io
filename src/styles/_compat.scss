@@ -57,15 +57,12 @@
 
   /* ---------- 4. 区块 ---------- */
   .block:hover { box-shadow: var(--shadow-lift); }
-  /* liquid-glass:悬停描边用 --acc 纯色 + 站内投影;库自带的 tint / rim 里那些
-     color-mix 会整条失效,这里把 rim 换成不依赖 color-mix 的一版(glass.ts 本来
-     就不会给没有 color-mix 的老浏览器挂玻璃,这条只是双保险)。 */
-  .ps-glass > .ps-glass__rim {
-    box-shadow: inset 0 0 0 1px var(--glass-border), var(--edge), var(--shadow);
-  }
-  .glass-card.ps-glass:hover > .ps-glass__rim,
-  .profile-glass.ps-glass:hover > .ps-glass__rim {
-    box-shadow: inset 0 0 0 1px var(--acc), var(--edge), var(--shadow-lift);
+  /* liquid-glass:悬停柔光用的是 color-mix,这里给一版纯色。
+     注意:绝不要在这里碰 .ps-glass__rim —— 库那条 rim(内圈细线 + 顶部高光 + 底部暗边)
+     是玻璃的灵魂高光,任何覆盖都等于把它降级成一块半透明板。 */
+  .glass-card.ps-glass:hover,
+  .profile-glass.ps-glass:hover {
+    box-shadow: 0 16px 40px -14px var(--acc-dim);
   }
   .block-header { border-bottom: 1px solid var(--border); }
   .about-lead strong { color: var(--acc); }

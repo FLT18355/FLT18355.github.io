@@ -37,5 +37,7 @@ const {
   blur={blur}
   chroma={chroma}
 >
-  <slot />
+  <!-- .ps-glass__content 是库自己的内容层(官方 Astro adapter 同款结构):
+       自带 position:relative + z-index:1,内容天然盖在 surface / tint / rim 三层之上 -->
+  <div class="ps-glass__content"><slot /></div>
 </liquid-glass>

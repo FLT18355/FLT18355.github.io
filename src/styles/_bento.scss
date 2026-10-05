@@ -31,12 +31,17 @@
     display: flex;
     flex-direction: column;
   }
-  .content--bento .glass-card > .block {
+  .content--bento .glass-card > .ps-glass__content {
     flex: 1;
     display: flex;
     flex-direction: column;
   }
-  .content--bento .glass-card > .block > .fold-body {
+  .content--bento .glass-card > .ps-glass__content > .block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .content--bento .glass-card > .ps-glass__content > .block > .fold-body {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -50,8 +55,8 @@
   .content--bento .footline    { grid-column: 1 / -1; }
 
   /* 筹码组在拉伸后的卡片里居中 */
-  .content--bento .b-tech > .block > .fold-body,
-  .content--bento .b-interests > .block > .fold-body {
+  .content--bento .b-tech .ps-glass__content > .block > .fold-body,
+  .content--bento .b-interests .ps-glass__content > .block > .fold-body {
     justify-content: center;
   }
   /* 统计块在 5 栏卡里从 4 列改 2 列,数字才有呼吸空间 */

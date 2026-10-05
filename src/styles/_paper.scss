@@ -164,6 +164,45 @@ html.motion-js .bg-art__sheets {
 }
 
 /* ============================================================
+   4. 高频背景层(只在 max 档打开)
+   位移贴图能弯的是「边」,不是「色」。整站背景原本是大弧纸面 + 两枚光斑这类平滑渐变,
+   被位移之后还是平滑的,等于白折。所以 max 档补两样真正带高频结构的东西:
+     · 一张 1px 直角网格 —— 线条被位移几个像素,肉眼立刻读得出来;
+     · 几枚小半径高亮度光斑 —— 半径小、衰减快,本身就是一圈硬边。
+   低配(low)整块随 .bg-art 一起 display:none;高配(high)不开,保留原来安静的纸面。
+   ============================================================ */
+.bg-art__grid,
+.bg-art__neon {
+  display: none;
+}
+html[data-mode="max"] .bg-art__grid,
+html[data-mode="max"] .bg-art__neon {
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+html[data-mode="max"] .bg-art__grid {
+  background-image:
+    repeating-linear-gradient(0deg, var(--art-grid) 0 1px, transparent 1px 44px),
+    repeating-linear-gradient(90deg, var(--art-grid) 0 1px, transparent 1px 44px);
+  /* 四周渐隐,免得网格顶到视口边框像没画完 */
+  -webkit-mask-image: radial-gradient(140% 120% at 50% 42%, #000 52%, transparent 100%);
+  mask-image: radial-gradient(140% 120% at 50% 42%, #000 52%, transparent 100%);
+}
+html[data-mode="max"] .bg-art__neon {
+  background:
+    radial-gradient(150px 150px at 17% 20%, var(--art-hot-1), transparent 70%),
+    radial-gradient(120px 120px at 79% 31%, var(--art-hot-2), transparent 70%),
+    radial-gradient(170px 170px at 63% 80%, var(--art-hot-3), transparent 72%),
+    radial-gradient(110px 110px at 33% 66%, var(--art-hot-4), transparent 70%);
+}
+/* 颗粒是另一种便宜的高频:max 档把全页噪点加重一档 */
+html[data-mode="max"] body::after {
+  opacity: 0.11;
+}
+
+/* ============================================================
    3. 减弱动效:本文件只引入一处视差,就地熄火
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
