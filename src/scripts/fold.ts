@@ -1,6 +1,7 @@
 // fold.ts - 卡片折叠增强层(渐进增强,由 Base.astro 作为模块脚本打包)
 // 折叠能力本身来自原生 <details>(见 components/CardFold.astro):无 JS 也能点标题收起,默认展开。
-// 本脚本只补四件事:① 按卡片记忆折叠状态 ② 右下角全站折叠坞 ③ 快捷键 ④ 深链展开。
+// 本脚本只补三件事:① 按卡片记忆折叠状态 ② 快捷键 [ / ] 一键收起 / 展开全部 ③ 深链展开。
+// (右下角那枚浮动折叠坞已整体移除:它会浮在内容上、且低配设备上白增一层合成。)
 // 与 motion.ts / nav.ts 同一入口,defer 执行,此时 DOM 已就绪。
 
 (function () {
@@ -51,7 +52,6 @@
     el.addEventListener('toggle', () => {
       state[page + '::' + keyOf(el, i)] = el.open;
       persist();
-      syncCount();
     });
   });
 
@@ -59,43 +59,7 @@
     requestAnimationFrame(() => hashTarget.scrollIntoView({ block: 'start' }));
   }
 
-  /* ---------- 2. 折叠坞:收起全部 / 展开全部 + 展开计数 ---------- */
-  /* 坞身直接建成 <liquid-glass>:scripts/glass.ts 注册自定义元素时会连它一起升级成
-     玻璃胶囊;低配 / 无 JS 时它只是个普通盒子,观感由 .fold-dock 的 CSS 兜底。 */
-  const dock = document.createElement('liquid-glass');
-  dock.className = 'fold-dock';
-  dock.setAttribute('radius', '20');
-  dock.setAttribute('strength', '5');
-  dock.setAttribute('blur', '6');
-  dock.setAttribute('chroma', '0.3');
-  dock.setAttribute('role', 'group');
-  dock.setAttribute('aria-label', 'Card folding controls');
-  dock.innerHTML = [
-    '<span class="fold-dock-count" aria-live="polite" aria-atomic="true"></span>',
-    '<span class="fold-dock-divider" aria-hidden="true"></span>',
-    '<button class="fold-dock-btn" type="button" data-fold-all="collapse" aria-label="Collapse all cards" title="Collapse all cards ( [ )">',
-    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 5.5 12 10.5 17 5.5"/><path d="M7 18.5 12 13.5 17 18.5"/></svg>',
-    '<span class="fold-dock-label">Fold</span>',
-    '</button>',
-    '<button class="fold-dock-btn" type="button" data-fold-all="expand" aria-label="Expand all cards" title="Expand all cards ( ] )">',
-    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10.5 12 5.5 17 10.5"/><path d="M7 13.5 12 18.5 17 13.5"/></svg>',
-    '<span class="fold-dock-label">Unfold</span>',
-    '</button>',
-  ].join('');
-  document.body.appendChild(dock);
-  root.classList.add('fold-dock-on');
-
-  const countEl = dock.querySelector<HTMLElement>('.fold-dock-count');
-
-  function syncCount(): void {
-    if (!countEl) return;
-    const open = folds.filter((el) => el.open).length;
-    countEl.textContent = '';
-    const strong = document.createElement('b');
-    strong.textContent = String(open);
-    countEl.append(strong, document.createTextNode(' / ' + folds.length));
-  }
-
+  /* ---------- 2. 一键收起 / 展开全部(无界面,只由快捷键驱动) ---------- */
   function setAll(open: boolean): void {
     folds.forEach((el, i) => {
       if (el.open === open) return;
@@ -103,18 +67,7 @@
       state[page + '::' + keyOf(el, i)] = open;
     });
     persist();
-    syncCount();
   }
-
-  dock.addEventListener('click', (e) => {
-    const target = e.target;
-    if (!(target instanceof Element)) return;
-    const btn = target.closest<HTMLElement>('[data-fold-all]');
-    if (!btn) return;
-    setAll(btn.dataset.foldAll === 'expand');
-  });
-
-  syncCount();
 
   /* ---------- 3. 快捷键:[ 收起全部,] 展开全部(输入框内不抢键) ---------- */
   document.addEventListener('keydown', (e) => {

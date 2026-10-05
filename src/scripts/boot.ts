@@ -37,7 +37,7 @@
   /* ---------- 启动层在时,把正文对键盘与读屏一并收起来 ---------- */
   const inertTargets = (): HTMLElement[] =>
     Array.prototype.slice.call(
-      document.querySelectorAll('.site-nav, .shell, .fold-dock')
+      document.querySelectorAll('.site-nav, .shell')
     ) as HTMLElement[];
 
   function setInert(on: boolean): void {

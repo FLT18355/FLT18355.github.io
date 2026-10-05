@@ -135,6 +135,9 @@ const ldJson = JSON.stringify(
               (typeof mem === 'number' && mem <= 4) ||
               (coarse && cores > 0 && cores <= 4)));
         if (lite) root.className += ' lite';
+        /* data-lite 供页脚的档位开关读取与显示(CSS 只认这个属性,所以关掉 JS 时
+           开关整块不渲染,不会出现按不动的控件);取值 'on' / 'off' 与 lite 类严格同步 */
+        root.setAttribute('data-lite', lite ? 'on' : 'off');
       })();
     </script>
     <!-- 启动界面显隐:与主题 / 字体 / 低配同一原则,类必须在 head 内同步写入,
@@ -181,8 +184,7 @@ const ldJson = JSON.stringify(
       <span class="bg-art__sheets"><i></i><i></i><i></i></span>
       <span class="bg-art__dots"></span>
       <span class="bg-art__contour"></span>
-      <span class="bg-art__tile bg-art__tile--a"></span>
-      <span class="bg-art__tile bg-art__tile--b"></span>
+      <span class="bg-art__tile"></span>
       <svg class="bg-art__nodes" viewBox="0 0 420 220" fill="none">
         <path d="M10 186C104 186 118 30 214 30c96 0 108 138 196 138" />
         <circle cx="10" cy="186" r="3.5" />
@@ -217,9 +219,10 @@ const ldJson = JSON.stringify(
       /* 必须排在 fold.ts 之后:boot.ts 要把右下角折叠坞一并 inert,
          而且 motion.ts 会监听它派发的 boot:done 才开始滚动入场 */
       import '../scripts/boot.ts';
-      /* liquid-glass 挂载闸门:低配 / 减弱透明度 / 老浏览器直接跳过(见 glass.ts)。
-         排在 fold.ts 之后,折叠坞那枚 <liquid-glass> 才存在,升级时能一并挂上玻璃 */
+      /* liquid-glass 挂载闸门:低配 / 减弱透明度 / 老浏览器直接跳过(见 glass.ts) */
       import '../scripts/glass.ts';
+      /* 页脚的渲染档位开关(低配 / 高配) */
+      import '../scripts/mode.ts';
     </script>
   </body>
 </html>

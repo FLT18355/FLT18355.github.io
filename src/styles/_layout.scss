@@ -443,6 +443,57 @@ p {
   border-color: var(--lavender);
 }
 
+/* ---------- 渲染档位开关(页脚最底部):Low = 低配版,High = 高配版 ----------
+   默认整块 display:none,只有 head 内联脚本写下 html[data-lite] 后才显示 ——
+   脚本没跑通(关掉 JS)时不会留下一个按不动的控件。
+   当前档位由 html[data-lite] 直接决定,首帧就是对的,不等 JS 写类。 */
+.mode-switch {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+html[data-lite] .mode-switch {
+  display: inline-flex;
+}
+.mode-switch-label {
+  padding: 0 8px 0 10px;
+  color: var(--text-muted);
+}
+.mode-switch-btn {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 3px 11px;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s;
+}
+.mode-switch-btn:hover {
+  color: var(--text);
+}
+.mode-switch-btn:active {
+  transform: scale(0.97);
+}
+.mode-switch-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+html[data-lite="on"] .mode-switch-btn[data-mode="lite"],
+html[data-lite="off"] .mode-switch-btn[data-mode="full"] {
+  color: var(--primary);
+  background: var(--primary-dim);
+}
+
 /* ---------- 关键帧 ---------- */
 @keyframes blockIn {
   from { opacity: 0; transform: translateY(22px); }

@@ -1,7 +1,8 @@
-/* _fold.scss - 卡片折叠层:区块级 <details> 壳 + 右下角全站折叠坞
+/* _fold.scss - 卡片折叠层:区块级 <details> 壳
    折叠能力由原生 <details>/<summary> 提供(无 JS 也能点标题收起,默认展开);
-   状态记忆 / 折叠坞 / 快捷键 / 深链展开见 src/scripts/fold.ts。
-   玻璃面登记在 _lite.scss(低配与减弱透明度);本文件未引入新的 color-mix,无需补 _compat.scss。 */
+   状态记忆 / 快捷键 [ ] / 深链展开见 src/scripts/fold.ts。
+   右下角那枚浮动折叠坞已整体移除(浮在内容之上、低配设备上还多一层合成),
+   因此本文件不再有 .fold-dock 一段,也不再有 html.fold-dock-on 的页脚留白。 */
 
 /* ---------- 1. 区块级折叠:卡片本身即 <details>,标题行即 <summary> ---------- */
 /* 显式声明 block:部分浏览器 summary 的 list-item 布局会让 details 高度抖动 */
@@ -59,117 +60,17 @@ html.fold-anim .fold[open] > .fold-body {
   padding-bottom: 20px;
 }
 
-/* ---------- 2. 全站折叠坞:浮动胶囊,一键收起 / 展开全部卡片 ----------
-   由 fold.ts 在存在可折叠卡片时创建;层级 45(低于字体弹窗 90 与阅读器抽屉 60)。 */
-.fold-dock {
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  z-index: 45;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 5px 6px;
-  border-radius: 999px;
-  background: var(--glass);
-  -webkit-backdrop-filter: blur(14px) saturate(1.3);
-  backdrop-filter: blur(14px) saturate(1.3);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--edge), var(--shadow);
-  animation: dockIn 0.45s var(--ease-out) both;
-}
-@keyframes dockIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.fold-dock-count {
-  padding: 0 9px 0 10px;
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-.fold-dock-count b {
-  color: var(--text);
-  font-weight: 700;
-}
-.fold-dock-divider {
-  flex: none;
-  width: 1px;
-  height: 16px;
-  background: var(--border);
-}
-.fold-dock-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 11px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text-muted);
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color 0.18s, background-color 0.18s, border-color 0.18s, transform 0.18s var(--ease-out);
-}
-.fold-dock-btn svg {
-  display: block;
-  flex: none;
-}
-.fold-dock-btn:hover {
-  color: var(--primary);
-  background: var(--primary-dim);
-  border-color: var(--primary);
-}
-.fold-dock-btn:active {
-  transform: scale(0.95);
-}
-.fold-dock-btn:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-/* 折叠坞出现时给页脚留出安全距离,避免浮在最后一行文字上 */
-html.fold-dock-on .footline {
-  padding-bottom: 54px;
-}
-
 @media (max-width: 560px) {
   .fold:not([open]) {
     padding-bottom: 16px;
   }
-  .fold-dock {
-    right: 14px;
-    bottom: 14px;
-  }
-  .fold-dock-label {
-    display: none;
-  }
-  .fold-dock-btn {
-    padding: 0 9px;
-  }
-  html.fold-dock-on .footline {
-    padding-bottom: 46px;
-  }
 }
 
-/* ---------- 3. 减弱动效:折叠相关的过渡与动画整体熄火 ---------- */
+/* ---------- 2. 减弱动效:折叠相关的过渡与动画整体熄火 ---------- */
 @media (prefers-reduced-motion: reduce) {
   .fold-head,
   .fold-caret {
     transition: none !important;
-  }
-  .fold-dock {
-    animation: none;
-  }
-  .fold-dock-btn {
-    transition: none;
   }
   .fold-head:hover .fold-caret {
     transform: rotate(45deg);

@@ -2,4 +2,11 @@
   <span>© 2026 FLT18355</span>
   <a href="https://github.com/FLT18355/FLT18355.github.io" target="_blank" rel="noopener">Source on GitHub</a>
   <button type="button" class="footline-btn" id="fontPickerReopen">字体</button>
+  <!-- 渲染档位开关:Low = 低配版(关玻璃 / 背景固定层 / 常驻动效),High = 高配版(全开)。
+       只在 head 内联脚本写下 html[data-lite] 后才显示,所以关掉 JS 的访客看不到这个控件。 -->
+  <span class="mode-switch" data-mode-switch role="group" aria-label="Rendering mode">
+    <span class="mode-switch-label" aria-hidden="true">Mode</span>
+    <button class="mode-switch-btn" type="button" data-mode="lite">Low</button>
+    <button class="mode-switch-btn" type="button" data-mode="full">High</button>
+  </span>
 </footer>

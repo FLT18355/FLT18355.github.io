@@ -30,8 +30,7 @@ html.lite .reader-bar,
 html.lite .reader-font-panel,
 html.lite .reader-drawer-panel,
 html.lite .font-picker,
-html.lite .boot__card,
-html.lite .fold-dock {
+html.lite .boot__card {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
@@ -166,8 +165,7 @@ html.lite .stat-card::after {
   .reader-font-panel,
   .reader-drawer-panel,
   .font-picker,
-  .boot__card,
-  .fold-dock {
+  .boot__card {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
