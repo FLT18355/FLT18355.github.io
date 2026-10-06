@@ -49,6 +49,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   ├── _layout.scss  两栏壳 / 左栏身份卡 / 联系方式 / 页脚
     │   ├── _cards.scss   标签筹码 / 色板 / 项目卡
     │   ├── _bento.scss   首页 12 栏 bento 网格 / 版面尺度 / 项目首卡整行
+    │   ├── _editorial.scss  版面与材质深化层:标题行 mono 序号 / 卡片色相材质与纸叠层 / 身份卡 aurora 与规格行 / 页脚 colophon / 14 色光谱轨
     │   ├── _paper.scss   纸质浮雕材质层(背景纸层 / 实底圆点瓦片 / 虚线细节;max 档的高频网格与光斑也在这里)
     │   ├── _glass.scss   liquid-glass 集成层(只做变量对接 / 接管清单 / 档位环境类;**绝不覆盖库的 rim**;低配与无 JS 时整段惰性)
     │   ├── _fold.scss    卡片折叠(标题行即摘要行;右下角折叠坞已移除)
@@ -59,8 +60,9 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
     │   ├── _motion.scss  动效层(html.motion-js 门控)
     │   ├── _reader.scss  reader 页样式(工具条 / 目录树 / 文档排版 / 窄屏抽屉)
     │   ├── _nav.scss / _font-picker.scss / _boot.scss / _responsive.scss
-    ├── layouts/Base.astro   页面骨架(head 元信息 + 主题/字体恢复内联脚本;`rail={false}` 无左栏,再加 `wide` 即占满宽度)
+    ├── layouts/Base.astro   页面骨架(head 元信息 + 引用 HeadPrefs;`rail={false}` 无左栏,再加 `wide` 即占满宽度)
     ├── components/
+    │   ├── HeadPrefs.astro   head 内联偏好脚本(`theme-color` + 主题 / 字体 / 渲染档位)。Base.astro 与 404.astro 共用同一份,避免两处判定各写一套而漂移(404 就曾经用 `prefers-color-scheme` 判主题,与全站的本机时间默认值对不上)
     │   ├── CardFold.astro    可折叠卡片壳(原生 `<details>` + `<summary>`,默认展开;外面套 `<liquid-glass>` 玻璃壳,区块卡统一用它)
     │   ├── Glass.astro       `<liquid-glass>` 玻璃外壳(radius / strength / blur / chroma 四个旋钮,内容直接放标签内,不用 Shadow DOM)
     │   ├── Nav.astro / NavInner.astro  导航条(浮动玻璃胶囊;reader 页传 `float={false}` 走改造前的整条玻璃栏)
@@ -111,17 +113,20 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
   - **reader 页完全在改造范围外**:`Base.astro` 的 `glassNav={false}` 让它沿用改造前的整条玻璃栏,页面上没有任何 `<liquid-glass>`,挂载闸门直接短路
 - **背景纸层**：`Base.astro` 新增固定装饰层 `.bg-art`(纯 CSS 渐变 + 内联 SVG,不引图片与依赖):右下角三层由深到浅的巨弧纸面(色差刻意给足,卡片半透明时才有层次可透)、左上角同心等高线、左下角点阵、一枚实底圆点瓦片、一条节点连线;氛围色晕压淡并叠一层顶部受光(`--art-light`)。统计卡加虚线内框。**max 档额外打开一层高频背景**(`.bg-art__grid` / `.bg-art__neon`,见 `_paper.scss` 第 4 节):一张 44px 的 1px 直角网格 + 四枚小半径高亮度光斑(radius 100-170px,半径小、衰减快,本身就是硬边),外加把全页噪点从 0.055 提到 0.11。理由是位移贴图弯的是「边」不是「色」:大弧纸面与光斑这类大面积平滑渐变被位移之后还是平滑的,等于白折;1px 网格被掰弯几个像素肉眼立刻读得出来。high 档不开这层,保留原来安静的纸面线稿靠 `mask-image` 渐隐,不支持 mask 的浏览器整块不画;纸层视差复用 `motion.ts` 写在根元素上的 `--mx` / `--my`,不新增 JS;低配层在 `_lite.scss` 里整块 `display: none`
 - **卡片折叠**(全站)：每张区块卡都是原生 `<details>`(默认展开),标题行即 `<summary>`,右侧折角随状态旋转,无 JS 也能点标题收起。Astro 页统一走 `CardFold.astro`,Vue 岛内是同一套 `<details class="block … fold card-fold">` 标记。`src/scripts/fold.ts` 在此之上做渐进增强:按「页面 + 卡片键」把折叠状态存进 `localStorage`(`site-fold`),快捷键 `[` 收起全部 / `]` 展开全部(光标在输入框内不抢键),URL hash 命中卡片时强制展开并滚动到它;展开动画由 `html.fold-anim` 门控,只在用户操作后播,首屏不与区块入场(`blockIn`)叠成两层。**右下角原有的浮动折叠坞已整体移除**(它浮在内容之上,低配设备上还白增一层合成;全站收起 / 展开改由快捷键承担),因此不再有 `html.fold-dock-on` 的页脚留白。`.block-note` / `.fold-stat` 放在摘要行右侧,收起时仍保留数量信息
-- **渲染档位开关**(页脚,`Footline.astro` + `scripts/mode.ts`)：页脚最底部一枚 `Mode / Low / High / Max` 分段开关。三个档位:
-  - `low` 低配 —— 不挂玻璃、不要固定背景层、不要常驻动效(`html.lite`);
-  - `high` 高配 —— 当前默认观感(玻璃 + 纸面背景);
+- **渲染档位开关**(页脚,`Footline.astro` + `scripts/mode.ts`)：页脚一枚 `Mode / Low / High / Max` 分段开关。**默认档是 `low`**,不做硬件嗅探、不看设备能力;`high` / `max` 全部由访客自己升级,首访最省电省流量,想要效果的人自己用电池去换。三个档位:
+  - `low` 低配(默认)—— 不挂玻璃、不要固定背景层、不要常驻动效(`html.lite`),但保留卡片色相材质、标题行序号、纸叠层与光谱轨这些**静态**材质,并且有一张自己的分层纸弧背景(见 `_lite.scss` 第 3 节);
+  - `high` 高配 —— 玻璃 + 纸面背景的完整观感;
   - `max` 全特效 —— high 之上再打开库原生 rim 全开的强折射参数与高频网格 / 光斑背景。
   档位决定的是**样式与脚本怎么装载**(`html[data-mode]`、`html.lite`、`glass.ts` 的闸门与参数改写、`_paper.scss` 的高频层、`motion.ts` 的指针光斑),都必须在第一帧之前定下来,所以点击后是「写偏好 + 重新加载」而不是运行中切类(玻璃挂上后也没法干净地拆掉)。偏好写进 `localStorage` 的 `site-mode`,同时**清掉 URL 上手动传的 `?mode=` / `?lite=`**(它们优先级更高,不清掉会「点了没反应」);存储不可用(隐私模式)时退回 URL 参数。控件默认 `display:none`,只有 head 内联脚本写下 `html[data-mode]` 后才显示,关掉 JS 的访客不会看到一个按不动的按钮;当前档位的高亮由 `html[data-mode]` 在 CSS 里直接决定,首帧即正确
-- **低配适配**：head 内联脚本按省流量 / 内存 / 核心数判定 `html.lite`,精简层去掉玻璃模糊、固定渐变层与常驻动画(滚动与首屏优先);liquid-glass 的挂载闸门与它同源,低配下一律不注册自定义元素、不下载玻璃 chunk,卡片回落到 CSS 玻璃。手动切换:页脚最底部的 `Mode / Low / High / Max`(写 `localStorage` 的 `site-mode` 并重新加载),或用 `?mode=low|high|max` / `?lite=1|0` 单次覆盖(带参数时优先于偏好)。**自动判定只会在 low / high 之间选**:max 是纯手动的,免得弱机被光效拖死
+- **低配适配**：`low` 现在是全站默认档,`html.lite` 由 `HeadPrefs.astro` 的 head 内联脚本直接写下(不再按省流量 / 内存 / 核心数做自动判定)。精简层去掉玻璃模糊、固定渐变层与常驻动画(滚动与首屏优先),但**保留全部静态材质**:卡片色相晕与左沿色脊、标题行 mono 序号、纸叠层、14 色光谱轨,以及 body 上一张分层纸弧背景;liquid-glass 的挂载闸门与它同源,低配下一律不注册自定义元素、不下载玻璃 chunk,卡片回落到 CSS 玻璃。手动切换:页脚的 `Mode / Low / High / Max`(写 `localStorage` 的 `site-mode` 并重新加载),或用 `?mode=low|high|max` / `?lite=1|0` 单次覆盖(带参数时优先于偏好)
 - **老浏览器兜底**：颜色依赖的 `color-mix()` 缺失时由 `_compat.scss`(整块 `@supports not (...)`)给出等价纯色,颜色身份不丢、只是层次降一档
 - **Vue 岛**(client:load,共九个)：主题拨钮、首启字体选择、色板复制、搜索页(时钟/历史)、首页 Test 音乐播放器、首页统计数字、following 排行榜、首页天气卡、阅读器。除天气卡(内容取决于访客位置,只能在浏览器侧取)与阅读器(内容来自用户上传的压缩包)外,其余全部 SSR 直出静态内容,JS 不运行页面仍完整可用
 - **Markdown 阅读器**(reader 页)：上传 ZIP 后 `JSZip` 递归遍历,目录树**只收 `.md`**(纯图片目录会被剪掉,`__MACOSX/._*` 垃圾剔除),文本先按 UTF-8 严格解码、失败回退 GB18030(照顾 GBK 文档);渲染走 `marked`(GFM) + `DOMPurify` 消毒,再在 detach 的 template 里做四趟 DOM 后处理:标题加 id、图片相对路径解析成 Blob URL(命不到就换成 `Image not in archive` 说明条)、内链(`.md` 转站内跳转并带锚点 / 非 md 转下载 / 外部链接新标签)、表格套横向滚动容器;字体支持上传 `.woff2/.woff/.ttf/.otf`,二进制存 **IndexedDB**(库 `flt18355-reader`,键 `reading-font`),刷新后读回并注入 `@font-face`,可一键恢复默认(私有模式下降级为仅本次会话生效);**阅读页字体基准固定为系统字体栈 `--sys-font`**,不跟随站点字体选择(选 Maple Mono 只影响其它页),上传的字体只补在这一层栈首;正文配色另有一套固定分工(标题逐级走 `mauve→peach` 谱系,链接用页面色相 `sky`,代码 `pink`,强调 `yellow`,增删红/绿),改样式时按这套分工走,别就地发明颜色;窄屏(≤920px)目录树变全高抽屉,带遮罩 / Esc / 焦点回送。**页面文案全英文**(不引入新的中文可见文案,因此无需重跑 `subset-font.py`)
 - **音乐播放器**：首页 Test 区,3 首曲目(GitHub Release 直链,经 gh-proxy 加速),`preload="auto"` 打开页面即自动下载;播放/暂停/进度跳转,左右键切歌,`localStorage` 保存上次播放的曲目与进度;音频文件不落地仓库
-- **字体选择**：首启弹出(默认字体免下载秒开),选 Maple Mono 才触发 `font.woff2` 下载;`localStorage`(`site-font`)持久化,页脚「字体」按钮重开
+- **字体选择**：首启弹出(默认字体免下载秒开),选 Maple Mono 才触发 `font.woff2` 下载;`localStorage`(`site-font`)持久化,页脚的 `Font` 按钮重开
+- **页脚 colophon**(`Footline.astro` + `_editorial.scss`)：页脚重排成「光谱轨 + 一行元信息 + 快捷键提示」。顶沿那条 14 色光谱轨(`--grad-hues`)与身份卡底沿、顶部阅读进度线是同一条线,构成全站的收口母题。折叠坞移除后 `[` / `]` 只存在于 `scripts/fold.ts` 里、没人看得见,这里用 `<kbd>` 把它写回可见的地方,并说明「点标题只折这一张」
+- **色板页 Flavor Compare**(`catppuccin.astro` + `_cards.scss` 的 `.compare-*`)：四支风味各占一条固定轨道(grid 四列),表头是风味名(各带自己的色相),每个色块下面标自己的 Hex。改版前每条只显示「最后一支风味」的 Hex,四支色带配一个数值是误导
+- **纸叠层与规格行**(`_editorial.scss`)：每张区块卡下面垫两张错开 5px / 10px 的纸,是 `.bg-art` 三层纸弧在卡片尺度上的重复。**垫纸用空心边框而不是实心色块**:卡面是半透明的,实心垫纸会透过卡面染成暗斑;并且只画右下两条边(上边与左边落在卡面之内,会变成卡里的杂线),抬到 `z-index:2` 是为了不被卡片自己的柔光压暗。标题行的 mono 序号用 CSS 计数器(`counter-reset: sec` 加在 `.content`,`counter-increment` 加在直系卡片子元素即玻璃壳与 `astro-island`),序号画在 `.block-header::before`(`::after` 已被入场强调线占用),悬停时抬亮、≤560px 隐藏
 - **启动界面**(全站,`BootScreen.astro` + `_boot.scss` + `scripts/boot.ts`)：`Base.astro` 的 head 内联脚本按「`localStorage` 里有没有 `site-font`」同步给 `<html>` 写 `.boot-first` / `.boot-transition`(与主题 / 字体 / 低配同一个防闪烁原则),所以首帧就是启动层,不会先闪一帧正文。两个变体共用同一套语言:同一张封面纸(氛围底 + 一圈压深的晕影,晕影让封面比正文页「更深一层」,揭幕那一下才看得出来)+ 同一叠纸(卡片下面垫两张错开并轻微旋转的纸)+ 同一张封面卡(品牌渐变头像环 / 渐变裁字的 `FLT18355` / 标题 / 一条进度轨 / 状态行),所以它们长得像一对,只是内容与进度来源不同。**首启**是「加载中」:进度不是装饰,门控是 DOM 内容、`document.fonts.ready`、整页资源(`load`,最长 1800ms,硬等会把音乐播放器的 `preload="auto"` 也算进去)、以及 `FontPicker.vue` 派发的 `fontpicker:state`(最长 2200ms);门控里程碑(`MILES`)与轨上那三根刻度是**同一组数字**(由 `boot.ts` 写进 `--boot-tick-*`),所以「进度停住的地方」永远和刻度对得上。到齐后整层淡出露出已经就位的字体向导,正常情况下约 1.7s。**回访**是「欢迎回来 + `Skip`」:轨由 rAF 按停留时长线性走满,每个会话只走一次(`sessionStorage` 的 `boot-seen`),点 / 触 / 滚 / 按键都能立刻跳过,不操作约 2.2s 自己走完;选完字体会顺手写下 `boot-seen`,避免「加载层 → 向导 → 回访层」连着闪两次。两条轨各有一个 `<i>`,且**必须按 id 取**(`#bootRailFill` / `#bootCoverFill`):用 `querySelector('.boot__rail-fill')` 只会拿到 DOM 里靠前那个,回访的进度条会静默不动(这个坑踩过一次,桩测试里留了回归断言)。启动层**一律用 `--sys-font` 渲染**(与字体向导同一取舍):这一层永远不引用 `Maple Mono NF CN`,既不触发 7.1MB 的 woff2,**也不需要为它重跑 `subset-font.py`**,可见文案按「UI 以英文为主」全走英文。启动层在时给正文挂 `inert`(导航 / 内容),收尾再摘,并留 **6s 安全出口**,任何环节卡住都不会把页面永久锁住。离场**一开始**就派发 `boot:done`(而不是揭幕完才派发),`motion.ts` 收到才开始滚动入场,正文的入场正好从封面后面接上来。手动覆盖:`?boot=0` 关掉 / `?boot=1` 强制回访 / `?boot=first` 强制首启
 - **天气卡**(首页最底部)：`navigator.geolocation` 拿浏览器定位,失败(拒绝授权 / 老浏览器)则退到无 Key 的 IP 定位端点(`ipwho.is` → `get.geojs.io`,只取经纬度),两条都不通就用默认坐标(北京 39.9, 116.4),**保证卡片永远有内容**;天气来自 Open-Meteo `current_weather`(免费、无需 API Key),请求带 `timezone=auto` 所以观测时间是该地当地时间;结果缓存 30 分钟(`localStorage`),避免每次进首页都弹定位授权;卡片上标出定位方式(GPS / IP location / Default)与坐标,不用「猜」
 - **动效**(渐进增强)：区块滚动入场 + 筹码二级错峰、卡片指针光斑、3D 微倾斜、背景视差、阅读进度线;全部挂 `html.motion-js` 门控,尊重 `prefers-reduced-motion`
@@ -135,7 +140,10 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 - **字体门控**:`Maple Mono NF CN` 只允许出现在 `html[data-font="maple"]` 的覆盖里(默认用户不能触发 `font.woff2` 下载)。新增可见文案后必须重跑 `python3 subset-font.py`,否则新字符缺字(豆腐块);全量字体在 `public/font-full.woff2`,不会丢字形。
 - **新增玻璃面**必须用 `box-shadow: var(--edge), var(--shadow)`(写在同一条里,否则老浏览器整条阴影失效),并同步登记到 `_lite.scss` 的模糊关闭清单与 `prefers-reduced-transparency` 段。
 - **新增区块卡**一律用 `CardFold.astro`(Vue 岛用同款「`<liquid-glass class="glass-card b-xxx">` + `<details class="block fold card-fold">`」结构):标题放进 `<summary class="block-header fold-head">`,正文包进 `.fold-body`,并给 `id` / `data-fold` 一个页内唯一键(折叠状态按它持久化);默认带 `open`,保证「默认未折叠」。**色相类(b-xxx)只挂在玻璃壳上**,别在内层重复,否则 `.b-search` 这类带 padding 的规则会两层叠加
-- **低配 / 高配的差异只允许写在 `html.lite` 门控下**(`_lite.scss`)或 `scripts/glass.ts` 的闸门里,不要在组件里就地判断;新增「只在高配跑」的东西要同步补进精简层的熄火清单。页脚档位开关(`scripts/mode.ts`)只负责写偏好 + 重新加载,不参与运行中的样式切换
+- **低配 / 高配的差异只允许写在 `html.lite` 门控下**(`_lite.scss`)或 `scripts/glass.ts` 的闸门里,不要在组件里就地判断;新增「只在高配跑」的东西要同步补进精简层的熄火清单,**新增静态材质不用**:`low` 是默认档,材质必须在低配下也成立,能熄火的只有常驻动效、模糊、固定层与视差。页脚档位开关(`scripts/mode.ts`)只负责写偏好 + 重新加载,不参与运行中的样式切换
+- **`100vh` / `100dvh` 兜底必须写在 `@supports not (height: 100dvh)` 里**,不能就地写两行声明:实测 lightningcss 会把前一条当冗余删掉,只留 `100dvh`,「兜底」会静默失效(`_reset.scss` 的 `body`、`_reader.scss` 的 `.reader-tree`、`404.astro` 的内联样式都是这个写法)
+- **head 内联偏好脚本只有一份**(`components/HeadPrefs.astro`):主题 / 字体 / 渲染档位三段都必须 inline 且同步执行,`Base.astro` 与 `404.astro` 都引用它。想在别的独立页面里加一段 head 脚本,引这个组件,不要复制一份出来改
+- **`.glass-card::before` / `::after` 被纸叠层占用**(`_editorial.scss`):要给区块卡加伪元素装饰请另想办法;两张垫纸只画右下两条边并且抬在内容之上,改动这两条约束会立刻出现「卡内杂线」或「垫纸被阴影压暗」
 - **新增 liquid-glass 面**:用 `<liquid-glass>` 包一层(或 `components/Glass.astro`),`radius` 必须与元素的 `border-radius` 一致,并把内层元素自己的 `background` / `backdrop-filter` / `border-color` / `box-shadow` 登记进 `_glass.scss` 第 2 节的接管清单,否则会叠成两层不透明底。**绝对不要覆盖 `.ps-glass__rim`**(内圈细线 / 顶部高光 / 底部暗边是玻璃的灵魂高光),要加悬停或降级效果就叠在外壳上或 rim 的 `::before` 上。玻璃依赖 `backdrop-filter` 与 `color-mix`,新样式里出现的 `color-mix` 兜底写进 `_compat.scss`;低配 / 减弱透明度的熄火由 `scripts/glass.ts` 的闸门负责,不要在 CSS 里再写一套;`max` 档的参数改写也只允许用库的公开属性(`strength` / `chroma` / `blur` / `tint` / `behind` 等)。**reader 页不要接入玻璃**(`Base.astro` 传 `glassNav={false}`)
 - **新增 `color-mix()`** 时,若丢掉该声明会让元素变透明 / 失色相,要去 `_compat.scss` 的 `@supports not (...)` 块里补一条等价纯色(不能就地写两行,压缩器会删掉后一条)。
 - **新增动效**必须补 `prefers-reduced-motion` 分支;除拨钮场景动画外全部尊重该偏好。
@@ -151,7 +159,7 @@ python3 subset-font.py   # 按源码文本子集化字体(文案改动后重跑,
 npm run build                                  # 应输出 7 page(s) built,无报错
 ls dist/*.html                                 # 恰好 7 个
 grep -rn '{{' dist/*.html                      # 应无输出(残留占位符)
-grep -c 'card-fold' dist/*.html                # 每页区块卡数(index 6 / projects 4 / following 2 / catppuccin 1 / search 1;404 与 reader 为 0)
+grep -o 'card-fold' dist/*.html | wc -l         # 全站共 14 张区块卡(逐页数用 grep -o:产物是压缩后的单行 HTML,grep -c 只会数到 1;逐页应为 index 6 / projects 4 / following 2 / catppuccin 1 / search 1,404 与 reader 为 0)
 grep -o 'aria-current="page"' dist/reader.html # 每页恰一处,指向当前页(脚本里的选择器字符串会再出现一次)
 bash scripts/deploy.sh                         # 同步到根目录,Pages 才生效
 ```

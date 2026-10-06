@@ -1,0 +1,92 @@
+---
+// HeadPrefs.astro - head 内的同步偏好脚本(theme-color + 主题 / 字体 / 渲染档位)
+//
+// 三段都必须 inline 且同步执行:它们决定第一帧长什么样,换成模块脚本就会闪一帧默认外观。
+//
+// 合到一个组件里,是因为 Base.astro 与 404.astro 都要用,而两份拷贝已经漂移过:
+// 404 页当初用 prefers-color-scheme 判主题,其余页面用本机时间判,
+// 于是同一个访客在这两处会拿到不同的主题。
+import { SITE } from '../data/site';
+---
+
+<meta
+  name="theme-color"
+  content={SITE.themeColorMocha}
+  data-color-mocha={SITE.themeColorMocha}
+  data-color-latte={SITE.themeColorLatte}
+/>
+<!-- 主题:没手动选过时按本机时间给默认值(07:00-18:59 Latte,其余 Mocha);
+     手动选过就以 localStorage.theme 为准,不再看时间。
+     ?theme=latte / ?theme=mocha 临时覆盖本次加载(不写存储),用来对比两支。 -->
+<script is:inline>
+  (function () {
+    var t = null;
+    try {
+      t = localStorage.getItem('theme');
+    } catch (e) {
+      /* 隐私模式读不到:按未选择处理 */
+    }
+    if (t !== 'latte' && t !== 'mocha') {
+      var h = new Date().getHours();
+      t = h >= 7 && h < 19 ? 'latte' : 'mocha';
+    }
+    try {
+      var forced = new URLSearchParams(location.search).get('theme');
+      if (forced === 'latte' || forced === 'mocha') t = forced;
+    } catch (e) {}
+    document.documentElement.setAttribute('data-theme', t);
+    /* 浏览器界面色(地址栏 / 状态栏)跟着主题走:白天默认 Latte 而界面还是深色,
+       是手机访客最先注意到的不一致。 */
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      var c = meta.getAttribute(t === 'latte' ? 'data-color-latte' : 'data-color-mocha');
+      if (c) meta.setAttribute('content', c);
+    }
+  })();
+</script>
+<!-- 字体:恢复已存选择,避免字体闪烁(向导显隐由 FontPicker.vue 处理)。
+     声明 @font-face 不触发下载,只有真被引用才下载。 -->
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    try {
+      var f = localStorage.getItem('site-font');
+      if (f === 'default' || f === 'maple') root.setAttribute('data-font', f);
+    } catch (e) {}
+  })();
+</script>
+<!-- 渲染档位:low(低配,默认)/ high(高配)/ max(全特效)。
+     档位决定样式与脚本怎么装载,必须在第一帧前定下来,所以切换档位是重新加载而不是运行中换类。
+     优先级:?mode= > ?lite= > localStorage.site-mode > 旧键 site-lite > 默认 low。
+     ?lite=1/0 仍可用(等价 low / high),方便老书签与快速对比。 -->
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    var mode = null;
+    try {
+      var q = new URLSearchParams(location.search);
+      var qm = q.get('mode');
+      var ql = q.get('lite');
+      if (qm === 'low' || qm === 'high' || qm === 'max') {
+        mode = qm;
+        localStorage.setItem('site-mode', mode);
+      } else if (ql === '1' || ql === '0') {
+        mode = ql === '1' ? 'low' : 'high';
+        localStorage.setItem('site-mode', mode);
+      } else {
+        mode = localStorage.getItem('site-mode');
+        if (mode !== 'low' && mode !== 'high' && mode !== 'max') {
+          var legacy = localStorage.getItem('site-lite');
+          mode = legacy === 'on' ? 'low' : legacy === 'off' ? 'high' : null;
+        }
+      }
+    } catch (e) {}
+    /* 默认 low:不做硬件嗅探,high / max 由访客在页脚自行升级。
+       首次访问最省,想要效果的人自己拿电量和流量去换。 */
+    if (!mode) mode = 'low';
+    /* data-mode 供页脚档位开关读取与显示(CSS 只认它);html.lite 是精简层与玻璃挂载的闸门。
+       两者都必须首帧正确。 */
+    root.setAttribute('data-mode', mode);
+    if (mode === 'low') root.className += ' lite';
+  })();
+</script>

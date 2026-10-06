@@ -250,7 +250,10 @@ $tech-colors: (
 .preview-tag--mauve { color: var(--mauve); border-color: color-mix(in srgb, var(--mauve) 35%, transparent); }
 .preview-tag--teal { color: var(--teal); border-color: color-mix(in srgb, var(--teal) 35%, transparent); }
 
-/* ---------- Flavor Compare 风味对比条 ---------- */
+/* ---------- Flavor Compare 风味对比条 ----------
+   四支风味各占一条固定轨道:表头 / 色带 / Hex 共用同一套列宽,
+   于是竖着看是一列一风味、横着看是一行一颜色。
+   原来每条只显示「最后一支风味」的 Hex,四支色带配一个数值是误导,这里改成逐格标注。 */
 .palette-compare {
   margin-bottom: 24px;
 }
@@ -269,9 +272,10 @@ $tech-colors: (
 .compare-rows {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
-.compare-row {
+.compare-row,
+.compare-head {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -284,31 +288,69 @@ $tech-colors: (
   color: var(--text-secondary);
   text-align: right;
 }
+/* 表头行的左侧留白与数据行的名字列同宽,四条色带才对得齐 */
+.compare-head .compare-name {
+  height: 1px;
+}
+.compare-flavor {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 四支风味各一色,与色板页的 flavor 数据同一组色相 */
+$compare-flavor-hues: (
+  1: 'mauve',
+  2: 'sky',
+  3: 'peach',
+  4: 'teal',
+);
+@each $i, $tok in $compare-flavor-hues {
+  .compare-flavor:nth-child(#{$i}) {
+    color: color-mix(in srgb, var(--#{$tok}), var(--text) var(--hue-fg-mix));
+  }
+}
 .compare-bars {
   flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+.compare-cell {
   display: flex;
+  flex-direction: column;
   gap: 4px;
-  height: 22px;
+  min-width: 0;
 }
 .compare-bar {
-  flex: 1;
+  height: 22px;
   border-radius: 5px;
   border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
-  transition: transform 0.15s var(--ease-out);
+  transition: transform 0.15s var(--ease-out), box-shadow 0.15s var(--ease-out);
 }
-.compare-bar:hover {
-  transform: scaleY(1.12);
+.compare-cell:hover .compare-bar {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow);
 }
 .compare-hex {
-  flex: none;
-  width: 74px;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-family: var(--mono);
   color: var(--text-muted);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+/* 窄屏:名字列收窄、Hex 缩一号,四列仍然对得齐 */
 @media (max-width: 560px) {
-  .compare-name { width: 56px; font-size: 0.66rem; }
-  .compare-hex { width: 56px; font-size: 0.58rem; }
+  .compare-name { width: 54px; font-size: 0.66rem; }
+  .compare-bars { gap: 4px; }
+  .compare-hex { font-size: 0.52rem; }
 }
 .palette-head {
   display: flex;

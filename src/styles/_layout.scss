@@ -275,6 +275,9 @@
   transform: translateX(0);
   color: var(--ci);
 }
+/* 联系人色相:GitHub 是 t-blue(主色蓝),其余四条各占一色。
+   t-blue 原先只在组件里写着、样式里没有对应规则,是条死类,这里补齐。 */
+.contact-item.t-blue { --ci: var(--primary); --ci-dim: var(--primary-dim); }
 .contact-item.t-teal { --ci: var(--teal); --ci-dim: var(--teal-dim); }
 .contact-item.t-green { --ci: var(--green); --ci-dim: var(--green-dim); }
 .contact-item.t-pink { --ci: var(--pink); --ci-dim: var(--pink-dim); }

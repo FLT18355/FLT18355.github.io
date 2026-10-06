@@ -102,7 +102,7 @@ $latte-tokens: (
 /* 字体栈分两层:
    --sys-font 系统字体栈,与站点字体选择无关;阅读器(reader)强制拿它当默认字体;
    --ui-font  站点 UI 字体栈 = --sys-font,启用 Maple Mono 后由 _reset.scss 换成 Maple 打头。
-   注意:字体门控见 AGENTS.md「字体门控」,Maple Mono 的名字只允许出现在
+   注意:字体门控见 README「维护要点」,Maple Mono 的名字只允许出现在
    html[data-font="maple"] 的覆盖里,默认用户的 computed font-family 永远不会引用它,
    因此不触发下载。 */
 

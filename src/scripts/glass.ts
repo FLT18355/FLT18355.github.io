@@ -18,7 +18,8 @@
   if (!document.querySelector('liquid-glass')) return;
 
   const root = document.documentElement;
-  const mode = root.getAttribute('data-mode') || 'high';
+  /* 档位缺失时按 low 兜底:默认档就是 low,玻璃是渐进增强,失败要往「不挂」这边倒 */
+  const mode = root.getAttribute('data-mode') || 'low';
 
   /* 1. 闸门:低配不挂玻璃(与 Base.astro 的 head 内联脚本同源,类已同步写好) */
   if (mode === 'low') return;

@@ -1,0 +1,429 @@
+/* _editorial.scss - 版面与材质深化层
+   在既有世界(Catppuccin 双主题 + 纸质浮雕 + 液态玻璃 + bento 网格)之上补三件事:
+
+     1. 规格行:给每张卡的标题行加一个 mono 序号,标题从「一个标题」变成「一条规格行」;
+     2. 卡片材质:每张卡叠一层自身色相的顶部晕 + 一道左沿色脊,卡与卡之间不再只靠标题区分;
+     3. 门面收口:身份卡的 aurora 与光谱轨、页脚的 colophon 与快捷键提示。
+
+   级联位置:global.scss 里排在 bento 之后、paper / glass 之前,
+   所以能覆盖组件与版面层,又会被 glass(玻璃接管时让出背景)与环境层(responsive / compat / lite)收口。
+
+   三条纪律(与 _polish.scss 一致):
+     1. 新增动效一律由 html.motion-js 门控,并在文件末尾补 prefers-reduced-motion 分支;
+     2. 新增 color-mix:本文件只有 .stat-value 的渐变裁字属于「丢掉后会变透明」,
+        已在 _compat.scss 补等价兜底;其余丢失后只是少一道阴影 / 描边,不影响可见性;
+     3. 低配(html.lite)需要熄火的常驻动效,统一登记在 _lite.scss。 */
+
+/* ============================================================
+   0. 令牌:14 色全色相光谱轨
+   Catppuccin 的身份就是「一整套色相」,把 14 色连成一条细线,
+   用作进度线 / 身份卡 / 页脚的收口,是全站唯一一处「把色相排开」的地方。
+   ============================================================ */
+:root {
+  --grad-hues: linear-gradient(
+    90deg,
+    var(--rosewater),
+    var(--flamingo),
+    var(--pink),
+    var(--mauve),
+    var(--red),
+    var(--maroon),
+    var(--peach),
+    var(--yellow),
+    var(--green),
+    var(--teal),
+    var(--sky),
+    var(--sapphire),
+    var(--lavender),
+    var(--primary)
+  );
+  /* 规格行序号 / 光谱轨这类「注释性」元素的统一尺寸与不透明度 */
+  --tick-size: 2.5px;
+}
+
+/* ============================================================
+   1. 规格行:标题行左侧的 mono 序号
+   计数器加在 .content 的直系卡片子元素上(玻璃壳;Vue 岛被 <astro-island> 包了一层,
+   而 astro-island 是 display:contents,所以它才是直系子元素)。页脚不参与计数。
+   序号画在 .block-header::before:这块位置空着(::after 已被 _motion.scss 的入场强调线占用),
+   而且它是 flex 子项,天然排在菱形与标题之前。
+   ============================================================ */
+.content {
+  counter-reset: sec;
+}
+.content > .glass-card,
+.content > astro-island {
+  counter-increment: sec;
+}
+.block-header::before {
+  content: counter(sec, decimal-leading-zero);
+  flex: none;
+  align-self: center;
+  padding: 3px 7px;
+  border-radius: 7px;
+  background: var(--acc-dim);
+  color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  /* 与卡片同向的一点点浮雕:让序号读起来是「压进纸里的一块小标签」 */
+  box-shadow: inset 0 1px 0 var(--emboss-light);
+  opacity: 0.9;
+}
+/* 悬停整张卡时序号抬亮到实色,与标题方块、上沿色相线同一拍 */
+.block:hover .block-header::before {
+  background: color-mix(in srgb, var(--acc) 26%, transparent);
+  opacity: 1;
+}
+/* 窄屏标题行会换行,序号会把标题挤散,直接不画 */
+@media (max-width: 560px) {
+  .block-header::before {
+    display: none;
+  }
+}
+
+/* ============================================================
+   2. 卡片材质:自身色相的顶部晕 + 左沿色脊
+   两层都写在 background-image 里,只覆盖图片层,颜色底仍来自组件自己的 --glass / --glass-item。
+   玻璃挂上后 _glass.scss 的 `background: none` 会让这两层整体让位(玻璃自带 tint 与 rim),
+   所以不会出现「玻璃底 + 卡片底」两层叠加的问题。
+   ============================================================ */
+.block {
+  background-image:
+    linear-gradient(180deg, var(--acc-dim), transparent 46%),
+    linear-gradient(
+      180deg,
+      transparent 6%,
+      var(--acc) 26%,
+      var(--acc) 74%,
+      transparent 94%
+    );
+  background-repeat: no-repeat, no-repeat;
+  background-position: 0 0, 0 14px;
+  background-size: 100% 100%, var(--tick-size) calc(100% - 28px);
+}
+/* 卡内小卡(项目卡 / 站点卡 / 下载卡 / 统计卡)只给顶部晕,不给色脊:
+   它们本身已经在区块卡内部,再加竖线会读成「卡片里套了卡片」 */
+.project-card,
+.site-card,
+.download-card {
+  background-image: linear-gradient(180deg, var(--acc-dim), transparent 54%);
+  background-repeat: no-repeat;
+}
+.stat-card {
+  background-image: linear-gradient(180deg, var(--sc-dim), transparent 58%);
+  background-repeat: no-repeat;
+}
+/* 统计卡的淡色底:与 _cards.scss 里 --sc 的四处色相同表,顺序必须一致 */
+$stat-dims: (
+  1: 'primary',
+  2: 'mauve',
+  3: 'pink',
+  4: 'teal',
+);
+@each $i, $tok in $stat-dims {
+  .stat-card:nth-child(#{$i}) {
+    --sc-dim: var(--#{$tok}-dim);
+  }
+}
+
+/* 卡纸叠层:每张内容卡下面再垫两张错开的纸,是 .bg-art 那三层纸弧
+   在卡片尺度上的重复 —— 纸面浮雕语言因此从背景一路贯穿到内容。
+   只给 .glass-card(区块卡):身份卡不参与,它有自己的 aurora 与光谱轨,是「一块牌子」而不是「一叠纸」。
+   实现用「空心边框」而不是实心色块:卡面是半透明的,实心垫纸会透过卡面染成一块暗斑;
+   空心边框只露出卡片盒外那一圈边,读起来就是下面压着的纸。
+   抬到 z-index:2 是为了不被卡片自己的柔光阴影压暗,敢抬上来是因为可见笔画全在卡片盒之外;
+   错开量 5px / 10px < bento 的 20px 间距,不会压到邻卡。 */
+.glass-card::before,
+.glass-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* 抬到内容之上:露出的边才不会被卡片自己的柔光阴影压暗。
+     敢抬上来是因为只画右下两条边,可见笔画全在卡片盒之外,不会盖住任何内容 */
+  z-index: 2;
+  border-radius: var(--radius);
+  border: 1px solid var(--art-line);
+  /* 上边与左边落在卡面之内,会变成卡里的两道杂线,直接不画 */
+  border-top-color: transparent;
+  border-left-color: transparent;
+  pointer-events: none;
+}
+.glass-card::before {
+  transform: translate(5px, 5px);
+}
+.glass-card::after {
+  transform: translate(10px, 10px);
+  opacity: 0.55;
+}
+
+/* ============================================================
+   3. 节奏:数字 / 筹码 / 导航 / 进度线
+   ============================================================ */
+
+/* 3.1 所有会跳动或需要竖向对齐的数字统一等宽字形,计数时不会左右抖 */
+.stat-value,
+.gh-stat-value,
+.leaderboard-score-num,
+.weather-temp,
+.search-time,
+.leaderboard-rank {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 3.2 统计数字改成色相渐变裁字。
+   注意:背景图里带 color-mix,老浏览器会整条丢弃 —— 那种情况下背景没了、文字还是透明,
+   数字会直接消失。兜底写在 _compat.scss 的 @supports not 块里(纯令牌渐变,不需要 color-mix)。
+   数字是这一区唯一的主角,单独给它一层光晕也是这个原因。 */
+.stat-value {
+  background-image: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--sc) 52%, var(--text)),
+    var(--sc)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.86rem;
+  letter-spacing: -0.02em;
+}
+
+/* 3.3 筹码:补一道顶部内高光,和卡片的浮雕同向;按下时给一次真实的短回弹 */
+.interest,
+.tech-tag,
+.flavor,
+.preview-tag,
+.tag {
+  box-shadow: inset 0 1px 0 var(--emboss-light);
+}
+.interest:active,
+.tech-tag:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.08s;
+}
+
+/* 3.4 导航:当前页的胶囊补一圈同色内描边与柔光,不用加粗文字也能读出「你在这一页」 */
+.nav-item[aria-current="page"] {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--nc) 38%, transparent),
+    0 6px 16px -8px color-mix(in srgb, var(--nc) 55%, transparent);
+}
+.nav-item:focus-visible {
+  outline-offset: 2px;
+}
+
+/* 3.5 阅读进度线升级成光谱轨:顶部那道细线就是缩到 2.5px 的 Catppuccin 全色相。
+   _motion.scss 只定义了四色渐变,这里换成 14 色并补一层同色柔光。 */
+.progress-line {
+  height: var(--tick-size);
+  background: var(--grad-hues);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 40%, transparent);
+  opacity: 0.9;
+}
+
+/* ============================================================
+   4. 身份卡:aurora + 分隔 + 光谱收口
+   所有装饰都作为 .profile 的真实子元素插入,和正文同处玻璃内容层,
+   不依赖伪元素,因此不会被库生成的 surface / tint / rim 盖住。
+   ============================================================ */
+.profile-aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* 三枚极淡的色晕,只负责让卡片左上暖、右下冷,不形成可辨识的图案 */
+  background:
+    radial-gradient(120% 90% at 12% -10%, var(--primary-dim), transparent 62%),
+    radial-gradient(90% 70% at 100% 8%, var(--mauve-dim), transparent 58%),
+    radial-gradient(120% 80% at 80% 110%, var(--teal-dim), transparent 62%);
+}
+/* 装饰层是定位元素、会盖住静态文字:正文各自抬一层 */
+.profile > h1,
+.profile > .handle,
+.profile > .tagline,
+.profile > .avatar-ring,
+.profile > .profile-spec {
+  position: relative;
+  z-index: 1;
+}
+/* 名字放大一档。身份卡只有这一个视觉焦点,值得给足;
+   装饰性的外发光交给 .profile-aurora(而不是 h1 的 filter):
+   背景裁字 + filter 组合在部分引擎上会整块不画,发光的收益不值这个风险。 */
+.profile > h1 {
+  font-size: clamp(1.86rem, 1.6rem + 1vw, 2.32rem);
+  letter-spacing: -0.035em;
+}
+/* 窄屏身份卡变横向两栏,字号回到 _responsive.scss 的紧凑档
+   (那边是 .rail h1,特异性低于 .profile > h1,这里必须自己收回来) */
+@media (max-width: 920px) {
+  .profile > h1 {
+    font-size: 1.5rem;
+  }
+}
+/* handle 收成一枚等宽小筹码,和卡片里的其他 mono 标记同一手 */
+.profile .handle {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--glass-border), inset 0 1px 0 var(--emboss-light);
+}
+/* 姓名区与说明之间加一道收口细线:两端渐隐,不做成表格横线 */
+.profile .tagline {
+  position: relative;
+  padding-top: 13px;
+}
+.profile .tagline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(180px, 72%);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--mauve) 55%, var(--border)),
+    transparent
+  );
+}
+/* 规格行:身份卡底部的 mono 事实行(这个页面由什么搭起来),与页脚的 tech 口径一致,不新增关于人的说法 */
+.profile-spec {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 10px;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.profile-spec span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.profile-spec span::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 2px;
+  background: var(--pc, var(--primary));
+  transform: rotate(45deg);
+}
+/* 规格行三个词各占一色,和卡片菱形、导航色相一致 */
+.profile-spec span:nth-child(1) { --pc: var(--peach); }
+.profile-spec span:nth-child(2) { --pc: var(--green); }
+.profile-spec span:nth-child(3) { --pc: var(--pink); }
+/* 卡片底沿的光谱轨:身份卡的收口,和页脚用同一条线 */
+.profile-rail {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--tick-size);
+  z-index: 1;
+  background: var(--grad-hues);
+  opacity: 0.75;
+  pointer-events: none;
+}
+/* 窄屏身份卡变成横向两栏,规格行改左对齐;≤560px 又回到居中单列,所以限定在中间这一段 */
+@media (min-width: 561px) and (max-width: 920px) {
+  .profile-spec {
+    justify-content: flex-start;
+  }
+}
+
+/* ============================================================
+   5. 页脚:colophon
+   ============================================================ */
+.footline {
+  position: relative;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 34px;
+  /* 顶部收口换成下面的 .footline-rail 光谱轨,原来的单色 border-top 让位 */
+  border-top: none;
+}
+.footline-rail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--tick-size);
+  background: var(--grad-hues);
+  opacity: 0.7;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+  pointer-events: none;
+}
+.footline-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+/* 快捷键提示:折叠坞被移除后,「[ / ]」只存在于脚本里,这里把它写回可见的地方。
+   这一行必须走普通行内排版,不能用 flex:flex 会把句子切成一堆匿名 flex 项,
+   词与词之间会变成容器的 gap 而不是正常的空格。 */
+.footline-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 62ch;
+}
+.footline-hint kbd {
+  display: inline-block;
+  vertical-align: 1px;
+  margin: 0 2px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 5px;
+  color: var(--text-secondary);
+  background: var(--surface-strong);
+  box-shadow:
+    inset 0 -1px 0 var(--emboss-dark),
+    inset 0 1px 0 var(--emboss-light),
+    0 1px 0 var(--border);
+}
+
+/* ============================================================
+   6. 动效:只有一处新增(身份卡的 aurora 缓慢呼吸),由 motion-js 门控
+   ============================================================ */
+html.motion-js .profile-aurora {
+  animation: auroraDrift 18s ease-in-out infinite alternate;
+}
+@keyframes auroraDrift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: translate3d(-2%, 1.5%, 0) scale(1.06);
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   7. 减弱动效:本文件新增动效整体熄火
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html.motion-js .profile-aurora {
+    animation: none;
+  }
+  .interest:active,
+  .tech-tag:active {
+    transform: none;
+  }
+}

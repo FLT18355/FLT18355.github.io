@@ -7,11 +7,19 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
-  min-height: 100vh;
+  /* 移动端地址栏收起时 100vh 会跳一下,dvh 才是稳定的视口高度。
+     兜底只能写在 @supports 里:就地写 100vh / 100dvh 两行,压缩器会把前一条当冗余删掉,
+     「兜底」会静默失效(实测 lightningcss 只留后一条)。 */
+  min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+@supports not (height: 100dvh) {
+  body {
+    min-height: 100vh;
+  }
 }
 
 /* 全页氛围层:固定定位,z-index:0,内容(.shell z-index:1)与导航(z-index:40)始终在其上。

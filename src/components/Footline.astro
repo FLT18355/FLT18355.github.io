@@ -1,14 +1,23 @@
 <footer class="footline">
-  <span>© 2026 FLT18355</span>
-  <a href="https://github.com/FLT18355/FLT18355.github.io" target="_blank" rel="noopener">Source on GitHub</a>
-  <button type="button" class="footline-btn" id="fontPickerReopen">字体</button>
-  <!-- 渲染档位开关:Low = 低配(不挂玻璃 / 无固定背景层 / 无常驻动效),
-       High = 高配(默认观感),Max = 全特效(库原生 rim + 高频网格背景 + 更强折射)。
-       只在 head 内联脚本写下 html[data-mode] 后才显示,所以关掉 JS 的访客看不到这个控件。 -->
-  <span class="mode-switch" data-mode-switch role="group" aria-label="Rendering mode">
-    <span class="mode-switch-label" aria-hidden="true">Mode</span>
-    <button class="mode-switch-btn" type="button" data-mode="low">Low</button>
-    <button class="mode-switch-btn" type="button" data-mode="high">High</button>
-    <button class="mode-switch-btn" type="button" data-mode="max">Max</button>
-  </span>
+  <!-- 顶沿的 14 色光谱轨:与身份卡底沿、顶部进度线是同一条线,构成全站的收口母题 -->
+  <span class="footline-rail" aria-hidden="true"></span>
+  <div class="footline-row">
+    <span>© 2026 FLT18355</span>
+    <a href="https://github.com/FLT18355/FLT18355.github.io" target="_blank" rel="noopener">Source on GitHub</a>
+    <button type="button" class="footline-btn" id="fontPickerReopen">Font</button>
+    <!-- 渲染档位开关:Low = 默认档(不挂玻璃 / 无固定背景层 / 无常驻动效),
+         High = 高配(玻璃 + 纸面背景),Max = 全特效(库原生 rim + 高频网格背景 + 更强折射)。
+         只在 head 内联脚本写下 html[data-mode] 后才显示,所以关掉 JS 的访客看不到这个控件。 -->
+    <span class="mode-switch" data-mode-switch role="group" aria-label="Rendering mode">
+      <span class="mode-switch-label" aria-hidden="true">Mode</span>
+      <button class="mode-switch-btn" type="button" data-mode="low">Low</button>
+      <button class="mode-switch-btn" type="button" data-mode="high">High</button>
+      <button class="mode-switch-btn" type="button" data-mode="max">Max</button>
+    </span>
+  </div>
+  <!-- 折叠快捷键原先只写在 scripts/fold.ts 里,折叠坞移除后就没人看得见了。
+       这里把它写回可见的地方,顺带说明「点标题只折这一张」 -->
+  <p class="footline-hint">
+    Press <kbd>[</kbd> to fold every card, <kbd>]</kbd> to expand, or click a card title to fold just that one.
+  </p>
 </footer>

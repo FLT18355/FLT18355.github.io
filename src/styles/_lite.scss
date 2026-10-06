@@ -1,7 +1,8 @@
-/* _lite.scss - 低配设备精简层
-   html.lite 由 Base.astro / 404.astro 的 head 内联脚本按硬件能力判定(见 AGENTS.md「低配与老浏览器」)。
+/* _lite.scss - 低配设备精简层(现在也是全站默认档)
+   html.lite 由 HeadPrefs.astro 的 head 内联脚本写下:默认就是 low,高配 / 全特效由访客
+   在页脚自行升级(见 README「渲染档位开关」)。
    原则:先保证滚动与首屏不卡,再谈玻璃与光效;区块色相(--acc / --nc)、双主题、内容语义完全不变。
-   判定与开关:自动(省流量 / 内存 ≤4GB / 触屏且核心数 ≤4),也可用 ?lite=1 / ?lite=0 手动覆盖。 */
+   手动开关:页脚的 Mode 控件(写 localStorage 后重载),或 ?mode=low|high|max / ?lite=1|0 单次覆盖。 */
 
 /* ---------- 1. 玻璃模糊:整站最贵的一笔(每个玻璃层每帧都要重采样背后的像素),
    低配下换成不透明度更高的纯色玻璃,观感几乎一致,逐帧开销归零 ---------- */
@@ -41,17 +42,30 @@ html.lite {
 }
 
 /* ---------- 3. 固定层的大半径多色渐变 + 两枚视差光斑:
-   低配下换成 body 上一张静态渐变(只画一次),滚动不再合成额外层 ---------- */
+   低配下 .bg-art 与 .glow 整块不画,改由 body 上一张**静态**背景承担同样的材质语言。
+   这一层只在文档画布上画一次,滚动不产生额外合成层。
+   构成(自上而下):
+     · 顶部受光,纸被从上方照亮;
+     · 右下角三层硬边纸弧,色差给足,才读得出「纸叠纸」;
+     · 四角氛围色晕,直接取 -dim / -glow 令牌,不引入 color-mix;
+   点阵与等高线不做:body 背景没法像 .bg-art 那样用 mask 渐隐收边,
+   整页铺点会吵,宁可留白。 ---------- */
 html.lite body::before,
 html.lite .glow {
   display: none;
 }
 html.lite body {
   background:
-    linear-gradient(180deg, var(--primary-glow) 0%, transparent 26%),
-    linear-gradient(205deg, var(--mauve-dim) 0%, transparent 34%),
-    linear-gradient(0deg, var(--teal-dim) 0%, transparent 24%),
+    radial-gradient(126vw 62vh at 50% -16%, var(--art-light), transparent 68%),
+    radial-gradient(118vw 88vw at 122% 128%, var(--paper-3) 0 32%, transparent 32.2%),
+    radial-gradient(100vw 74vw at 112% 116%, var(--paper-2) 0 32%, transparent 32.2%),
+    radial-gradient(84vw 62vw at 102% 104%, var(--paper-1) 0 32%, transparent 32.2%),
+    radial-gradient(58vw 42vw at 8% -6%, var(--primary-glow), transparent 64%),
+    radial-gradient(52vw 40vw at 98% 6%, var(--mauve-dim), transparent 66%),
+    radial-gradient(54vw 42vw at 88% 100%, var(--pink-dim), transparent 68%),
+    radial-gradient(50vw 40vw at 6% 96%, var(--teal-dim), transparent 68%),
     var(--bg);
+  background-repeat: no-repeat;
 }
 
 /* ---------- 4. 常驻动画(拨钮云朵 / 太阳脉冲 / 搜索页漂浮光斑 / 阅读器进度线):
@@ -98,6 +112,8 @@ html.lite .avatar-halo,
 html.lite .rail h1,
 html.lite .search-time,
 html.lite .weather-temp,
+/* _editorial.scss 的 aurora 呼吸:整卡大小的常驻 transform,低配下停住 */
+html.lite .profile-aurora,
 html.lite .music-player.is-playing .music-cover--placeholder svg {
   animation: none;
 }

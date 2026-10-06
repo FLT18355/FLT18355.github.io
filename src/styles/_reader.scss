@@ -253,17 +253,21 @@
   border-left: 1px solid var(--border);
 }
 
-/* ---------- 目录树 ---------- */
+/* 树超长时内部滚动:dvh 才对(移动端地址栏收起时高度会变)。
+   100vh 兜底放在 @supports 里,就地两行会被压缩器删掉前一条。 */
 .reader-tree {
   position: sticky;
   top: 72px;
-  /* 树超长时内部滚动:先 100vh 兜底再上 100dvh(移动端地址栏收起时) */
-  max-height: calc(100vh - 96px);
   max-height: calc(100dvh - 96px);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
   padding: 14px 10px 18px;
+}
+@supports not (height: 100dvh) {
+  .reader-tree {
+    max-height: calc(100vh - 96px);
+  }
 }
 /* 目录标题:mono 小字 + 右侧淡出细线,和 rail 的 .rail-label 同一手 */
 .reader-tree-label {

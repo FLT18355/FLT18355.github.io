@@ -125,7 +125,14 @@
     background: var(--glass-item);
     box-shadow: var(--shadow-lift);
   }
-  .stat-value { color: var(--sc); }
+  /* _editorial.scss 把统计数字改成色相渐变裁字,那条 background-image 里带 color-mix,
+     老浏览器会整条丢弃;而 -webkit-text-fill-color: transparent 不含 color-mix、会被保留,
+     于是数字会彻底看不见。这里补一条只用令牌的等价渐变,色相身份不丢。 */
+  .stat-value {
+    color: var(--sc);
+    background-image: linear-gradient(160deg, var(--text), var(--sc));
+    -webkit-text-fill-color: transparent;
+  }
   .leaderboard-row--1,
   .leaderboard-row--2,
   .leaderboard-row--3 {

@@ -3,6 +3,7 @@
 import '../styles/global.scss';
 /* liquid-glass 的 chrome 装饰层样式(固定部分);挂载闸门见 scripts/glass.ts */
 import '@liquidglassjs/core/css';
+import HeadPrefs from '../components/HeadPrefs.astro';
 import { SITE } from '../data/site';
 ---
 
@@ -12,74 +13,15 @@ import { SITE } from '../data/site';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="404 - Page not found" />
-    <meta name="theme-color" content="#1e1e2e" />
+    <!-- 主题 / 字体 / 渲染档位:与全站共用同一份 head 内联脚本(theme-color 也在里面)。
+         这里原先自己写了一套,主题判定用的是 prefers-color-scheme,和全站的本机时间默认值
+         对不上,同一个访客在两处会看到不同主题;合并后这个漂移不会再发生。 -->
+    <HeadPrefs />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content="404 - FLT18355" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <title>404 - FLT18355</title>
-
-    <script is:inline>
-      (function () {
-        try {
-          var t = localStorage.getItem('theme');
-          if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'latte' : 'mocha';
-          document.documentElement.setAttribute('data-theme', t);
-        } catch (e) {}
-      })();
-    </script>
-    <script is:inline>
-      (function () {
-        var root = document.documentElement;
-        try {
-          var f = localStorage.getItem('site-font');
-          if (f === 'default' || f === 'maple') root.setAttribute('data-font', f);
-        } catch (e) {}
-      })();
-    </script>
-    <!-- 低配适配:与 Base.astro 同一套判定(见 AGENTS.md「低配与老浏览器」) -->
-    <script is:inline>
-      (function () {
-        var root = document.documentElement;
-        var mode = null;
-        try {
-          var q = new URLSearchParams(location.search);
-          var qm = q.get('mode');
-          var ql = q.get('lite');
-          if (qm === 'low' || qm === 'high' || qm === 'max') {
-            mode = qm;
-            localStorage.setItem('site-mode', mode);
-          } else if (ql === '1' || ql === '0') {
-            mode = ql === '1' ? 'low' : 'high';
-            localStorage.setItem('site-mode', mode);
-          } else {
-            mode = localStorage.getItem('site-mode');
-            if (mode !== 'low' && mode !== 'high' && mode !== 'max') {
-              var legacy = localStorage.getItem('site-lite');
-              mode = legacy === 'on' ? 'low' : legacy === 'off' ? 'high' : null;
-            }
-          }
-        } catch (e) {}
-        if (!mode) {
-          var nav = navigator;
-          var conn = nav.connection || nav.mozConnection || nav.webkitConnection;
-          var mem = nav.deviceMemory;
-          var cores = nav.hardwareConcurrency || 0;
-          var coarse = false;
-          try {
-            coarse = window.matchMedia('(pointer: coarse)').matches;
-          } catch (e) {}
-          mode =
-            !!(conn && conn.saveData) ||
-            (typeof mem === 'number' && mem <= 4) ||
-            (coarse && cores > 0 && cores <= 4)
-              ? 'low'
-              : 'high';
-        }
-        root.setAttribute('data-mode', mode);
-        if (mode === 'low') root.className += ' lite';
-      })();
-    </script>
 
     <style>
       .err404 {
@@ -90,6 +32,13 @@ import { SITE } from '../data/site';
         padding: 24px;
         position: relative;
         z-index: 1;
+      }
+      /* 地址栏收起时 100vh 会跳;dvh 才是稳定视口高度。兜底走 @supports,
+         就地写两行会被 CSS 压缩器当冗余删掉前一条。 */
+      @supports (height: 100dvh) {
+        .err404 {
+          min-height: 100dvh;
+        }
       }
       .err404-card {
         max-width: 400px;

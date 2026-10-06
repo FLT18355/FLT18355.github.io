@@ -8,8 +8,10 @@ export const SITE = {
   handle: '@FLT18355',
   tagline: 'Python. Arch. Catppuccin.',
   ogImage: 'https://flt18355.github.io/logo.svg',
-  themeColorMocha: '#1e1e2e',
-  themeColorLatte: '#eff1f5',
+  /* 浏览器界面色(地址栏 / 状态栏)。必须与 _tokens.scss 里 --bg 的两支实际取值一致,
+     否则移动端会看到「页面是暖白纸、状态栏却是官方 base 色」的一条色差。 */
+  themeColorMocha: '#1c1b26',
+  themeColorLatte: '#f1ece6',
 };
 
 export interface PageMeta {

@@ -45,19 +45,23 @@ import { FLAVORS } from '../data/palette';
       <h3 class="palette-compare-title">Flavor Compare</h3>
       <p class="palette-compare-note">The same colors across the 4 flavors side by side, so the lightness differences are obvious at a glance.</p>
       <div class="compare-rows">
+        <div class="compare-head" aria-hidden="true">
+          <span class="compare-name"></span>
+          <div class="compare-bars">
+            {FLAVORS.map((f) => <span class="compare-flavor">{f.name}</span>)}
+          </div>
+        </div>
         {['Red', 'Green', 'Blue', 'Mauve', 'Base', 'Surface 1'].map((c) => (
           <div class="compare-row">
             <span class="compare-name">{c}</span>
             <div class="compare-bars">
               {FLAVORS.map((f) => (
-                <span
-                  class="compare-bar"
-                  style={`background: ${f.hex[c]};`}
-                  title={`${f.name} ${c} ${f.hex[c]}`}
-                ></span>
+                <span class="compare-cell" title={`${f.name} ${c} ${f.hex[c]}`}>
+                  <span class="compare-bar" style={`background: ${f.hex[c]};`}></span>
+                  <span class="compare-hex">{f.hex[c]}</span>
+                </span>
               ))}
             </div>
-            <span class="compare-hex">{FLAVORS[FLAVORS.length - 1].hex[c]}</span>
           </div>
         ))}
       </div>
