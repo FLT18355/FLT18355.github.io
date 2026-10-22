@@ -11,16 +11,6 @@
     opacity: 1;
     transform: none;
   }
-  .glow {
-    transition: none;
-    animation: none;
-  }
-  .project-card::after {
-    display: none;
-  }
-  .site-card::after {
-    display: none;
-  }
   /* 可折叠区块:展开动画与折角旋转直接跳变 */
   .fold-head,
   .fold-caret {

@@ -24,26 +24,10 @@
 }
 
 /* ============================================================
-   1. 材质:全页噪点
-   固定层铺一层去饱和的分形噪声,给「大块纯色玻璃」一点颗粒感。
-   刻意压在 z-index:0(与 body::before 氛围层同层,内容 .shell 是 1),
-   这样它只做背景材质,不参与内容的合成,滚动时不产生额外的混合开销;
-   也不用 mix-blend-mode —— 固定层 + 混合模式会在每次滚动重新混合整屏。
+   1. 材质:不再叠全页噪点层
+   一层固定噪点会在每次滚动时与内容一起合成,却几乎看不见;
+   需要质感时用真实表面(卡片底、色块)表达。
    ============================================================ */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.055;
-  background-repeat: repeat;
-  background-size: 160px 160px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
-}
-:root[data-theme="latte"] body::after {
-  opacity: 0.04;
-}
 
 /* ============================================================
    2. 滚动条:换成主题色,与 scrollbar-color 双轨(WebKit / 标准属性各管一半)
@@ -118,57 +102,8 @@ html.motion-js .block.in .fold-body > *:nth-child(n+9) {
 }
 
 /* ============================================================
-   3.5 指针柔光
-   一枚跟随光标的固定柔光(元素由 motion.ts 在「精确指针且非低配」时插入)。
-   负 margin 让 transform 里的坐标直接等于 clientX / clientY,JS 侧不用再算半径。
-   压在 z-index:0,只当背景光,不参与内容的命中与合成。
-   ============================================================ */
-.cursor-glow {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  width: 420px;
-  height: 420px;
-  margin: -210px 0 0 -210px;
-  border-radius: 50%;
-  pointer-events: none;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--primary) 15%, transparent) 0%,
-    transparent 62%
-  );
-}
-
-/* ============================================================
    4. 身份卡:色环缓转 + 卡面扫光
    ============================================================ */
-/* 头像外的色环改成「旋转的 conic 层」:方形色层绕中心转,被 overflow:hidden
-   圆裁后正好是一圈流动的色轮。内接圆对中心旋转不变,所以任何角度都不会露缝。 */
-.avatar-halo {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: conic-gradient(
-    from 210deg,
-    var(--primary),
-    var(--mauve),
-    var(--pink),
-    var(--peach),
-    var(--yellow),
-    var(--green),
-    var(--teal),
-    var(--sky),
-    var(--lavender),
-    var(--primary)
-  );
-}
-html.motion-js .avatar-halo {
-  animation: ringSpin 16s linear infinite;
-}
-@keyframes ringSpin {
-  to { transform: rotate(360deg); }
-}
 /* 色环与头像之间的 1px 底色描边。原来写在 .avatar-ring 的 inset box-shadow 上,
    会被上面这层旋转色层盖住,这里用 ::after 重新画在色层之上。 */
 .avatar-ring::after {
@@ -196,24 +131,6 @@ html.motion-js .avatar-halo {
   scale: 1.03;
 }
 
-/* 卡面斜向扫光:悬停时从左上掠过一道柔光,像玻璃反光。 */
-.profile::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    115deg,
-    transparent 38%,
-    color-mix(in srgb, var(--text) 12%, transparent) 50%,
-    transparent 62%
-  );
-  transform: translateX(-120%);
-  transition: transform 0.9s var(--ease-out);
-}
-.profile:hover::after {
-  transform: translateX(120%);
-}
 /* 身份卡整体抬起一档:默认不动,悬停时才浮起来,不动基础观感 */
 .profile {
   transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out),
@@ -222,160 +139,32 @@ html.motion-js .avatar-halo {
 .profile:hover {
   transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--primary) 35%, var(--glass-border));
-  box-shadow: var(--edge), var(--shadow-lift);
+  box-shadow: var(--shadow-lift);
 }
 
 /* ============================================================
-   5. 品牌渐变文字的扫光
-   .rail h1 / .search-time / .weather-temp 都是 background-clip:text 的渐变字。
-   在品牌渐变之上再叠一层「无色的扫光」图层并平移它,底色渐变保持 0 0 不动,
-   因此不会有循环接缝(渐变首尾色并不相同,直接平移底色会看到一道硬边)。 */
-.rail h1,
-.search-time,
-.weather-temp {
-  background-image: linear-gradient(
-      115deg,
-      transparent 36%,
-      var(--sheen) 50%,
-      transparent 64%
-    ),
-    var(--grad-brand);
-  background-size: 240% 100%, auto;
-  background-repeat: no-repeat, no-repeat;
-  background-position: 0% 50%, 0 0;
-}
-html.motion-js .rail h1,
-html.motion-js .search-time,
-html.motion-js .weather-temp {
-  animation: textSheen 7.5s var(--ease-out) infinite;
-}
-@keyframes textSheen {
-  /* 前 62% 停在「扫光在画面外」的位置当作停顿,只在最后一小段掠过 */
-  0%, 62% { background-position: 0% 50%, 0 0; }
-  100%    { background-position: 100% 50%, 0 0; }
-}
-
-/* ============================================================
-   6. 导航:滚动后抬起 + 指示条发光
+   5. 导航:贴顶栏滚动后只加一道下沿色,不加投影
    ============================================================ */
-html.motion-js .nav-indicator {
-  box-shadow: 0 0 12px color-mix(in srgb, var(--ni, var(--primary)) 60%, transparent);
+html.motion-js .site-nav {
+  transition: border-color 0.24s var(--ease-out);
+}
+html.motion-js .site-nav.nav-scrolled,
+html.motion-js .site-nav--float.nav-scrolled {
+  border-bottom-color: color-mix(in srgb, var(--primary) 35%, var(--border));
 }
 html.motion-js .nav-item:hover:not(:active) {
   transform: translateY(-1px);
 }
 
-/* 滚出顶部后导航抬起:底色压实、下沿点亮、补一层同色投影。
-   由 motion.ts 在已有的滚动 rAF 里切换 .nav-scrolled(与阅读进度线共用一次回调)。
-   刻意不用 CSS 滚动时间线:animation-duration 在进度型时间线上的取值在各引擎间
-   仍有歧义,一旦被当成 0s,fill:both 会把导航永久钉在「已滚过」的样子。 */
-html.motion-js .site-nav {
-  transition: background-color 0.24s var(--ease-out), border-color 0.24s var(--ease-out),
-    box-shadow 0.24s var(--ease-out);
-}
-html.motion-js .site-nav.nav-scrolled {
-  background-color: color-mix(in srgb, var(--bg) 94%, transparent);
-  border-bottom-color: color-mix(in srgb, var(--primary) 30%, var(--border));
-  box-shadow: 0 8px 28px color-mix(in srgb, var(--primary) 10%, transparent);
-}
-/* 浮动胶囊版:整条 header 保持透明,「抬起」的是胶囊本身。
-   玻璃挂上时给胶囊补一层同色柔光,未挂上(低配 / 无 JS)时加强 .nav-inner 的投影。 */
-html.motion-js .site-nav--float.nav-scrolled {
-  background-color: transparent;
-  border-bottom-color: transparent;
-  box-shadow: none;
-}
-html.motion-js .nav-glass {
-  transition: box-shadow 0.24s var(--ease-out);
-}
-html.motion-js .site-nav--float.nav-scrolled .nav-glass.ps-glass {
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--primary) 12%, transparent);
-}
-html.motion-js .site-nav--float.nav-scrolled .nav-glass:not(.ps-glass) .nav-inner {
-  box-shadow: inset 0 0 0 1px var(--glass-border), var(--edge), var(--shadow-lift);
-}
-
 /* ============================================================
-   7. 列表卡(其他站点 / 下载)的指针光斑
-   .project-card 已有 3D 倾斜 + 光斑;这两类是「横向行卡」,不做倾斜,
-   只补同款柔光,和 motion.ts 里扩展的 spotlight 目标一一对应。
+   8. 音乐卡:播放中的均衡器与封面占位图
+   静态外观(尺寸 / 颜色 / 排布)在 _music.scss;这里只加「播放中」才有的动。
    ============================================================ */
-.download-card {
-  position: relative;
-}
-html.motion-js .site-card::before,
-html.motion-js .download-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(
-    240px circle at var(--sx, 50%) var(--sy, 50%),
-    color-mix(in srgb, var(--acc) 18%, transparent),
-    transparent 62%
-  );
-  transition: opacity 0.3s var(--ease-out);
-}
-html.motion-js .site-card.hot::before,
-html.motion-js .download-card.hot::before {
-  opacity: 1;
-}
-/* 光斑层要压在内容之下,行卡的内容块显式抬一层 */
-html.motion-js .site-body,
-html.motion-js .site-icon,
-html.motion-js .site-go,
-html.motion-js .download-icon,
-html.motion-js .download-info,
-html.motion-js .download-go {
-  position: relative;
-  z-index: 2;
-}
-
-/* ============================================================
-   8. 音乐卡:播放中显示均衡器 + 封面高亮
-   ============================================================ */
-.music-cover-wrap {
-  position: relative;
-}
 html.motion-js .music-player.is-playing .music-cover--placeholder svg {
   animation: coverSpin 8s linear infinite;
 }
 @keyframes coverSpin {
   to { transform: rotate(360deg); }
-}
-/* 播放中,封面描边与投影切到区块色相(--acc = pink) */
-.music-cover {
-  transition: border-color 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
-}
-.music-player.is-playing .music-cover {
-  border-color: color-mix(in srgb, var(--acc) 55%, var(--border));
-  box-shadow: 0 4px 20px color-mix(in srgb, var(--acc) 30%, transparent);
-}
-
-.music-eq {
-  position: absolute;
-  left: 8px;
-  bottom: 8px;
-  height: 16px;
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  padding: 3px 4px;
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--bg) 62%, transparent);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
-  pointer-events: none;
-}
-.music-player.is-playing .music-eq {
-  opacity: 1;
-  transform: none;
 }
 .music-eq i {
   display: block;
@@ -507,9 +296,6 @@ html.motion-js .block.in .search-quicklinks > *:nth-child(n+6) {
   html.motion-js .block.in .fold-body > *,
   html.motion-js .block.in .search-quicklinks > *,
   html.motion-js .avatar-halo,
-  html.motion-js .rail h1,
-  html.motion-js .search-time,
-  html.motion-js .weather-temp,
   html.motion-js .music-eq i,
   html.motion-js .music-player.is-playing .music-cover--placeholder svg,
   html.motion-js .skel-line,
@@ -527,18 +313,6 @@ html.motion-js .block.in .search-quicklinks > *:nth-child(n+6) {
   html.motion-js .music-eq i:nth-child(2) { transform: scaleY(0.85); }
   html.motion-js .music-eq i:nth-child(3) { transform: scaleY(0.6); }
   html.motion-js .music-eq i:nth-child(4) { transform: scaleY(0.35); }
-  .profile::after,
-  html.motion-js .site-card::before,
-  html.motion-js .download-card::before {
-    display: none;
-  }
-  /* 扫光图层留在原地会变成一块静止的浅色斜条,直接撤掉图层尺寸与动画 */
-  .rail h1,
-  .search-time,
-  .weather-temp {
-    background-image: var(--grad-brand);
-    background-size: auto;
-  }
   .music-cover,
   .weather-temp {
     transition: none;

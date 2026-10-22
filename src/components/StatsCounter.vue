@@ -2,7 +2,7 @@
 // StatsCounter.vue - 首页 By the Numbers:进入视口时数字滚动计数
 // 渐进增强:无 JS / reduced-motion 时直接显示终值;SSR 直出静态数字
 import { onMounted, ref } from 'vue';
-import { STATS } from '../data/site';
+import { STATS } from '../data/content';
 
 const counts = ref<number[]>(STATS.map((s) => s.value));
 const started = ref(false);

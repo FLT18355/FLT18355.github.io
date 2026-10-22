@@ -64,12 +64,14 @@ $latte-tokens: (
   'text-secondary': #5c5f77,
   'text-muted': #6c6f85,
   'bg': #f1ece6,
-  'bg-card': #d6d1c8,
+  'bg-card': #f7f2ea,
   'bg-input': #c9c4b9,
   'border': #c9c4b9,
-  'glass': rgba(255, 253, 249, 0.4),
-  'glass-item': rgba(255, 255, 255, 0.36),
-  'glass-border': rgba(88, 82, 70, 0.16),
+  /* 浅色主题的卡片是「暖白纸」而不是灰米色:
+     玻璃面叠在 #f1ece6 的底上必须更亮,否则整列卡片像蒙了一层灰 */
+  'glass': rgba(255, 253, 249, 0.62),
+  'glass-item': rgba(255, 255, 255, 0.55),
+  'glass-border': rgba(88, 82, 70, 0.14),
   'rosewater': #dc8a78,
   'flamingo': #dd7878,
   'pink': #ea76cb,
@@ -146,37 +148,34 @@ $transitions: ();
     --#{$name}: #{$val};
   }
   --radius: 14px;
-  /* 渐变令牌(渐变无法用 @property 插值,不入 transition 列表;由色相令牌组成,双主题自动跟随) */
-  --grad-brand: linear-gradient(100deg, var(--primary), var(--lavender) 28%, var(--mauve) 55%, var(--pink) 78%, var(--peach));
-  --grad-spectrum: linear-gradient(90deg, var(--primary), var(--mauve), var(--pink), var(--peach));
+  /* 版面尺度:标题、正文、注释各一档,避免「什么都差不多大」。
+     标题走 --fs-title(区块标题),正文 --fs-body,注释 --fs-note。 */
+  --fs-title: clamp(1.25rem, 1.1rem + 0.45vw, 1.5rem);
+  --fs-body: 0.95rem;
+  --fs-note: 0.82rem;
+  /* 强调用的实色:标题与主数字用一支固定色,不再用渐变裁字。
+     渐变裁字在浅色主题、放大字体与截图工具里都会掉成透明,读不出重量。 */
+  --ink-strong: var(--text);
+  /* 细窄的进度 / 轨线仍用一支谱系色(不是文字,是一根 2px 的线) */
   /* 色相文字的掺色比例:深色主题纯色相(浅色字在深底上对比足够),
      浅色主题掺入 --text 压深(latte 覆盖为 55%),否则黄/桃/粉在浅底上对比度不达标 */
   --hue-fg-mix: 0%;
-  /* ---------- 纸质浮雕材质 ----------
-     参照 demo/readme-banner.webp 右侧:近单色的分层纸面 + 柔和大扩散阴影,
-     高光从左上、暗边在右下(单一光源)。--edge 只用 rgba 令牌拼,不再引用 color-mix,
-     这样老浏览器不会把整条 box-shadow 带下去。 */
+  /* ---------- 材质 ----------
+     页面只有一层纸色(顶光 + 底色)与半透明卡片面;
+     浮雕只保留卡片内高光与暗边这两个像素,够读出「一块面」的厚度。 */
   --emboss-light: rgba(255, 255, 255, 0.075);
   --emboss-dark: rgba(0, 0, 0, 0.3);
-  /* 背景纸层:三层从深到浅,叠出「纸叠纸」的层差。
-     卡片是半透明的,这一层就是隔着卡面能看见的层次,差值给足 */
-  --paper-1: #201f2c;
-  --paper-2: #292838;
-  --paper-3: #343346;
-  /* 等高线 / 点阵 / 纸层投影,三处都用同一组变量,双主题各调一次 */
-  --art-line: rgba(205, 214, 244, 0.16);
-  --art-dot: rgba(205, 214, 244, 0.1);
-  --art-shade: rgba(0, 0, 0, 0.5);
+  /* 顶部受光:body::before 的一层极淡白光 */
   --art-light: rgba(255, 255, 255, 0.045);
-  /* max 档的高频背景(见 _paper.scss 第 4 节):折射能弯的是「边」不是「色」,
-     平滑渐变被位移之后还是平滑的。所以补一张 1px 直角网格 + 几枚小半径高亮光斑。 */
-  --art-grid: rgba(205, 214, 244, 0.2);
-  --art-hot-1: rgba(137, 220, 235, 0.5);
-  --art-hot-2: rgba(203, 166, 247, 0.44);
-  --art-hot-3: rgba(250, 179, 135, 0.4);
-  --art-hot-4: rgba(166, 227, 161, 0.3);
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.34), 0 10px 24px -8px rgba(0, 0, 0, 0.52);
-  --shadow-lift: 0 2px 5px rgba(0, 0, 0, 0.36), 0 20px 46px -14px rgba(0, 0, 0, 0.62);
+  /* max 档的折射目标:一层 1px 直角网格。位移贴图弯的是「边」不是「色」,
+     平滑底色被位移之后还是平滑的,所以高配档需要一层高频结构才看得见玻璃。 */
+  --art-grid: rgba(205, 214, 244, 0.18);
+  /* 页面底色与卡片面之间的一档色差(比 --bg 略亮,用于凹槽 / 输入框) */
+  --paper-1: #201f2c;
+  /* 静止的东西不投影:卡片靠「页面底色 / 卡片面 / 卡片内的凹槽」三档色差分层。
+     只有真正浮起来的交互(悬停抬起的卡片)才获得一层很薄的投影。 */
+  --shadow: 0 0 #0000;
+  --shadow-lift: 0 10px 24px -18px rgba(0, 0, 0, 0.55);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --edge: inset 0 1px 0 var(--emboss-light), inset 0 -1px 0 var(--emboss-dark);
   --surface: color-mix(in srgb, var(--text) 5%, var(--bg-card));
@@ -199,19 +198,10 @@ $transitions: ();
      暗边是极淡的暖灰(纸的背光面),两者都压在 0.1 以下,避免变成硬边描线 */
   --emboss-light: rgba(255, 255, 255, 0.95);
   --emboss-dark: rgba(124, 110, 90, 0.07);
-  --paper-1: #ebe5da;
-  --paper-2: #f6f2ea;
-  --paper-3: #ffffff;
-  --art-line: rgba(108, 103, 92, 0.24);
-  --art-dot: rgba(108, 103, 92, 0.18);
-  --art-shade: rgba(124, 110, 90, 0.16);
   --art-light: rgba(255, 255, 255, 0.6);
-  --art-grid: rgba(108, 103, 92, 0.24);
-  --art-hot-1: rgba(4, 165, 229, 0.3);
-  --art-hot-2: rgba(136, 57, 239, 0.24);
-  --art-hot-3: rgba(254, 100, 11, 0.24);
-  --art-hot-4: rgba(64, 160, 43, 0.2);
-  --shadow: 0 1px 2px rgba(124, 110, 90, 0.07), 0 10px 24px -8px rgba(124, 110, 90, 0.18);
-  --shadow-lift: 0 2px 6px rgba(124, 110, 90, 0.09), 0 20px 46px -14px rgba(124, 110, 90, 0.28);
+  --art-grid: rgba(108, 103, 92, 0.28);
+  --paper-1: #ebe5da;
+  --shadow: 0 0 #0000;
+  --shadow-lift: 0 10px 24px -18px rgba(124, 110, 90, 0.35);
   --edge: inset 0 1px 0 var(--emboss-light), inset 0 -1px 0 var(--emboss-dark);
 }

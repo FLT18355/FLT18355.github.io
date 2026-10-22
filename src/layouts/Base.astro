@@ -10,8 +10,8 @@ import Footline from '../components/Footline.astro';
 import BootScreen from '../components/BootScreen.astro';
 import FontPicker from '../components/FontPicker.vue';
 import HeadPrefs from '../components/HeadPrefs.astro';
-import { SITE } from '../data/site';
-import type { PageKey } from '../data/site';
+import { SITE } from '../data/content';
+import type { PageKey } from '../data/content';
 
 interface Props {
   title: string;
@@ -100,26 +100,8 @@ const ldJson = JSON.stringify(
          .boot-first / .boot-transition 决定,两个类已在 head 内联脚本里写好 -->
     <BootScreen current={current} />
 
-    <!-- 背景纸层(纯装饰,aria-hidden):分层纸面 + 点阵 + 等高线 + 虚线瓦片 + 节点连线。
-         参照 demo/readme-banner.webp 右侧的纸质浮雕语言;低配层在 _lite.scss 里整块关掉。 -->
-    <div class="bg-art" aria-hidden="true">
-      <span class="bg-art__sheets"><i></i><i></i><i></i></span>
-      <span class="bg-art__dots"></span>
-      <span class="bg-art__contour"></span>
-      <!-- 高频层:只在 max 档显示,给位移贴图提供「有边可弯」的结构(见 _paper.scss 第 4 节) -->
-      <span class="bg-art__grid"></span>
-      <span class="bg-art__neon"></span>
-      <span class="bg-art__tile"></span>
-      <svg class="bg-art__nodes" viewBox="0 0 420 220" fill="none">
-        <path d="M10 186C104 186 118 30 214 30c96 0 108 138 196 138" />
-        <circle cx="10" cy="186" r="3.5" />
-        <circle cx="214" cy="30" r="3.5" />
-        <circle cx="410" cy="168" r="3.5" />
-      </svg>
-    </div>
-
-    <div class="glow glow-a" aria-hidden="true"></div>
-    <div class="glow glow-b" aria-hidden="true"></div>
+    <!-- 背景只有一层纸色与一层极淡的顶部受光(见 _reset.scss),
+         不再叠加点阵、等高线、节点连线与色晕:装饰层越多,正文越难读。 -->
 
     <FontPicker client:load />
 

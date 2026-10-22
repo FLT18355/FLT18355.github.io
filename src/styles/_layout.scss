@@ -1,36 +1,7 @@
 /* _layout.scss - 两栏布局:环境光、外壳、左栏身份区、内容列 */
 
-/* Ambient background glows - parallax drift with pointer */
-.glow {
-  position: fixed;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform;
-}
-.glow-a {
-  top: -30%;
-  left: -15%;
-  width: 70vw;
-  height: 70vw;
-  background:
-    radial-gradient(circle at 36% 38%, color-mix(in srgb, var(--primary) 22%, transparent) 0%, transparent 60%),
-    radial-gradient(circle at 66% 62%, color-mix(in srgb, var(--lavender) 18%, transparent) 0%, transparent 58%);
-  transform: translate3d(calc(var(--mx, 0) * -22px), calc(var(--my, 0) * -16px), 0);
-  transition: transform 1.2s var(--ease-out);
-}
-.glow-b {
-  bottom: -35%;
-  right: -15%;
-  width: 65vw;
-  height: 65vw;
-  background:
-    radial-gradient(circle at 44% 46%, color-mix(in srgb, var(--mauve) 20%, transparent) 0%, transparent 60%),
-    radial-gradient(circle at 72% 66%, color-mix(in srgb, var(--teal) 16%, transparent) 0%, transparent 56%);
-  opacity: 0.65;
-  transform: translate3d(calc(var(--mx, 0) * 18px), calc(var(--my, 0) * 14px), 0);
-  transition: transform 1.4s var(--ease-out);
-}
+/* 背景只由 body::before 一层纸色承担(见 _reset.scss);
+   不再铺满屏渐变光斑:它们既不承载信息,又让卡片边缘变糊。 */
 
 /* ============ Layout: two-column shell ============ */
 .shell {
@@ -77,54 +48,25 @@
   backdrop-filter: blur(14px) saturate(1.3);
   border: 1px solid var(--glass-border);
   border-radius: 14px;
-  box-shadow: var(--edge), var(--shadow);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
 }
-/* 卡片顶部的多色光晕:椭圆以卡片上方为中心,最后一档是 transparent,
-   在卡片上边缘处已经完全透明,不会像斜向 linear-gradient 那样在半途被硬切一刀。 */
-.profile::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 84px;
-  background: radial-gradient(
-    140% 120% at 50% -10%,
-    color-mix(in srgb, var(--primary) 30%, transparent),
-    color-mix(in srgb, var(--mauve) 24%, transparent) 34%,
-    color-mix(in srgb, var(--pink) 18%, transparent) 60%,
-    transparent 90%
-  );
-  pointer-events: none;
-}
-/* 头像外的环形色轮:让身份卡顶部的焦点自带整套 Catppuccin 色相 */
+/* 身份卡不铺色晕:卡面本身就是一块安静的底 */
+
+/* 头像:一圈实色描边,不抢卡片里的文字 */
 .avatar-ring {
   display: block;
-  width: 102px;
-  height: 102px;
-  padding: 6px;
+  width: 96px;
+  height: 96px;
+  padding: 4px;
   margin: 8px auto 14px;
   border-radius: 50%;
-  /* 裁成圆形:色环只绕圆一周,不会从 logo 方形画布的透明角里透出方块色块 */
   overflow: hidden;
-  background: conic-gradient(
-    from 210deg,
-    var(--primary),
-    var(--mauve),
-    var(--pink),
-    var(--peach),
-    var(--yellow),
-    var(--green),
-    var(--teal),
-    var(--sky),
-    var(--lavender),
-    var(--primary)
-  );
-  /* 内收 1px 底色描边:把色环和头像切开,色轮才读得出是「环」而不是糊在头像上的底色 */
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bg) 58%, transparent), 0 6px 18px rgba(0, 0, 0, 0.28);
+  background: var(--primary);
   position: relative;
   animation: logoIn 0.6s cubic-bezier(0.34, 1.3, 0.64, 1) both;
-  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+  transition: transform 0.3s var(--ease-out);
 }
 .avatar-logo {
   width: 100%;
@@ -135,52 +77,32 @@
 }
 .profile:hover .avatar-ring {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bg) 58%, transparent), 0 8px 26px color-mix(in srgb, var(--mauve) 45%, transparent);
 }
 
 .rail h1 {
-  font-size: 1.78rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-bottom: 2px;
-  /* 彩色渐变标题:背景裁进文字,双主题各自取本主题的色相值 */
-  background: var(--grad-brand);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  font-size: clamp(1.72rem, 1.5rem + 0.9vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  margin-bottom: 4px;
+  color: var(--text);
 }
 .rail .handle {
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  color: color-mix(in srgb, var(--lavender), var(--text) var(--hue-fg-mix));
-  letter-spacing: 0.02em;
-}
-
-.tagline {
-  margin-top: 12px;
-  font-family: var(--mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.03em;
+  font-size: 0.86rem;
   color: var(--text-muted);
 }
 
-.rail-label {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: color-mix(in srgb, var(--teal), var(--text) var(--hue-fg-mix));
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.tagline {
+  margin-top: 14px;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
 }
-.rail-label::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--teal) 55%, transparent), transparent);
+
+.rail-label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
 }
 
 /* ---------- 联系方式 ---------- */
@@ -211,7 +133,7 @@
   border-color: var(--ci);
   background: color-mix(in srgb, var(--ci) 15%, var(--glass));
   transform: translateX(3px);
-  box-shadow: 0 6px 20px color-mix(in srgb, var(--ci) 22%, transparent);
+  box-shadow: none;
 }
 .contact-item:active {
   transform: translateX(0) scale(0.98);
@@ -245,10 +167,8 @@
 }
 .contact-label {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: color-mix(in srgb, var(--ci), var(--text) var(--hue-fg-mix));
   line-height: 1.3;
 }
@@ -277,11 +197,26 @@
 }
 /* 联系人色相:GitHub 是 t-blue(主色蓝),其余四条各占一色。
    t-blue 原先只在组件里写着、样式里没有对应规则,是条死类,这里补齐。 */
-.contact-item.t-blue { --ci: var(--primary); --ci-dim: var(--primary-dim); }
-.contact-item.t-teal { --ci: var(--teal); --ci-dim: var(--teal-dim); }
-.contact-item.t-green { --ci: var(--green); --ci-dim: var(--green-dim); }
-.contact-item.t-pink { --ci: var(--pink); --ci-dim: var(--pink-dim); }
-.contact-item.t-mauve { --ci: var(--mauve); --ci-dim: var(--mauve-dim); }
+/* 联系方式色相:数据里写哪个色相名就用哪个(Toml 的 hue 字段) */
+$contact-hues: (
+  'blue': 'primary',
+  'rosewater': 'rosewater',
+  'flamingo': 'flamingo',
+  'pink': 'pink',
+  'mauve': 'mauve',
+  'red': 'red',
+  'maroon': 'maroon',
+  'peach': 'peach',
+  'yellow': 'yellow',
+  'green': 'green',
+  'teal': 'teal',
+  'sky': 'sky',
+  'sapphire': 'sapphire',
+  'lavender': 'lavender',
+);
+@each $cls, $tok in $contact-hues {
+  .contact-item.t-#{$cls} { --ci: var(--#{$tok}); --ci-dim: var(--#{$tok}-dim); }
+}
 
 /* ============ Right column: content flow ============ */
 .content {
@@ -296,35 +231,16 @@
   --acc: var(--primary);
   --acc-dim: var(--primary-dim);
   position: relative;
+  /* 卡片面是主题的半透明玻璃底;不描边、不投影。
+     用 --glass 而不是 bg-card:双主题都由同一支令牌决定卡片与纸底的关系。 */
   background: var(--glass);
-  -webkit-backdrop-filter: blur(16px) saturate(1.35);
-  backdrop-filter: blur(16px) saturate(1.35);
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  padding: 26px;
-  box-shadow: var(--edge), var(--shadow);
-  transition: border-color 0.2s, box-shadow 0.3s var(--ease-out);
+  border: 0;
+  border-radius: var(--radius);
+  padding: 28px;
+  transition: background-color 0.2s;
 }
-/* 区块上沿的一道色相细线:把「一个区块一种颜色」提前写在最外层轮廓上,
-   静止时收在两角内,悬停时向两侧展开一点。用 --acc 纯色变量,不依赖 color-mix。 */
-.block::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 18px;
-  right: 18px;
-  height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, transparent, var(--acc) 50%, transparent);
-  opacity: 0.55;
-  pointer-events: none;
-  transition: opacity 0.25s var(--ease-out), left 0.35s var(--ease-out), right 0.35s var(--ease-out);
-}
-.block:hover::before {
-  left: 8px;
-  right: 8px;
-  opacity: 0.9;
-}
+/* 区块上沿不再画色相细线:色相由标题前的方块与卡片内的凹槽表达 */
+
 html.motion-js .block { opacity: 0; }
 html.motion-js .block.in {
   animation: blockIn 0.65s var(--ease-out) both;
@@ -361,7 +277,7 @@ $block-hues: (
 }
 .block:hover {
   border-color: var(--acc);
-  box-shadow: var(--edge), 0 2px 4px rgba(0, 0, 0, 0.18), 0 14px 36px color-mix(in srgb, var(--acc) 20%, transparent);
+  box-shadow: var(--shadow-lift);
 }
 
 .block-header {
@@ -369,8 +285,6 @@ $block-hues: (
   align-items: baseline;
   gap: 12px;
   margin-bottom: 18px;
-  padding-bottom: 13px;
-  border-bottom: 1px solid color-mix(in srgb, var(--acc) 32%, var(--border));
 }
 .block-header h2 {
   display: inline-flex;
@@ -381,32 +295,27 @@ $block-hues: (
   font-weight: 700;
   letter-spacing: -0.02em;
 }
-/* 标题前的菱形色块:标识区块色相(无 JS 时同样可见) */
+/* 标题前的色相方块:标识区块色相(无 JS 时同样可见) */
 .block-header h2::before {
   content: "";
   flex: none;
-  width: 9px;
-  height: 9px;
-  border-radius: 3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
   background: var(--acc);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--acc) 65%, transparent);
-  transform: rotate(45deg);
 }
-/* 标题右侧的计数 / 副注:等宽小字,靠右对齐,给区块一个「规格行」的收尾 */
+/* 标题右侧的计数 / 副注:注释尺寸,靠右对齐 */
 .block-note {
   margin-left: auto;
   flex: none;
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-note);
   color: var(--text-muted);
   white-space: nowrap;
 }
 
 p {
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: var(--fs-body);
   line-height: 1.7;
   text-wrap: pretty;
 }
@@ -426,8 +335,7 @@ p {
   text-align: center;
   padding: 28px 0 8px;
   color: var(--text-muted);
-  font-size: 0.78rem;
-  border-top: 1px solid color-mix(in srgb, var(--mauve) 34%, var(--border));
+  font-size: 0.82rem;
   margin-top: 16px;
   display: flex;
   align-items: center;
@@ -458,10 +366,7 @@ p {
   border-radius: 999px;
   border: 1px solid var(--glass-border);
   background: var(--surface);
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.8rem;
 }
 html[data-mode] .mode-switch {
   display: inline-flex;

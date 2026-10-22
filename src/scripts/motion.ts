@@ -11,11 +11,6 @@
 
   root.classList.add('motion-js');
 
-  /* 低配精简模式(Base.astro 的 head 脚本已判定):滚动入场这类一次性动效保留,
-     但跳过指针光斑与 3D 倾斜,省掉每帧的样式写入与重绘 */
-  const lite = root.classList.contains('lite');
-  const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
   /* ---------- 1. 区块滚动入场:一次性,触发后取消观察 ---------- */
   const blocks = Array.prototype.slice.call(document.querySelectorAll('.block'));
@@ -74,122 +69,7 @@
     startEntry();
   }
 
-  /* ---------- 2. 指针光斑 + 卡片 3D 微倾斜(仅精确指针,低配精简模式跳过) ---------- */
-  if (fine && !lite) {
-    const TILT = 5.5;
-    const cards = Array.prototype.slice.call(document.querySelectorAll('.project-card'));
-    /* 行卡(其他站点 / 下载)是横向布局,不做 3D 倾斜,只参与指针光斑 */
-    const listCards = Array.prototype.slice.call(
-      document.querySelectorAll('.site-card, .download-card')
-    );
-    const spots = blocks.concat(cards, listCards);
-
-    function spotlight(el: Element) {
-      let raf: number | null = null,
-        px = 0,
-        py = 0,
-        inside = false;
-      function apply() {
-        raf = null;
-        if (!inside) return;
-        const r = el.getBoundingClientRect();
-        const x = clamp((px - r.left) / r.width, 0, 1);
-        const y = clamp((py - r.top) / r.height, 0, 1);
-        (el as HTMLElement).style.setProperty('--sx', (x * 100).toFixed(1) + '%');
-        (el as HTMLElement).style.setProperty('--sy', (y * 100).toFixed(1) + '%');
-      }
-      el.addEventListener('pointerenter', (e: PointerEvent) => {
-        inside = true;
-        px = e.clientX;
-        py = e.clientY;
-        el.classList.add('hot');
-        if (!raf) raf = requestAnimationFrame(apply);
-      });
-      el.addEventListener('pointermove', (e: PointerEvent) => {
-        px = e.clientX;
-        py = e.clientY;
-        if (!raf) raf = requestAnimationFrame(apply);
-      });
-      el.addEventListener('pointerleave', () => {
-        inside = false;
-        el.classList.remove('hot');
-      });
-    }
-
-    function tilt(el: Element) {
-      let raf: number | null = null,
-        px = 0,
-        py = 0,
-        inside = false;
-      function apply() {
-        raf = null;
-        const r = el.getBoundingClientRect();
-        const x = clamp((px - r.left) / r.width, 0, 1);
-        const y = clamp((py - r.top) / r.height, 0, 1);
-        (el as HTMLElement).style.setProperty('--rx', inside ? ((0.5 - y) * 2 * TILT).toFixed(2) + 'deg' : '0deg');
-        (el as HTMLElement).style.setProperty('--ry', inside ? ((x - 0.5) * 2 * TILT).toFixed(2) + 'deg' : '0deg');
-      }
-      el.addEventListener('pointerenter', (e: PointerEvent) => {
-        inside = true;
-        px = e.clientX;
-        py = e.clientY;
-        if (!raf) raf = requestAnimationFrame(apply);
-      });
-      el.addEventListener('pointermove', (e: PointerEvent) => {
-        px = e.clientX;
-        py = e.clientY;
-        if (!raf) raf = requestAnimationFrame(apply);
-      });
-      el.addEventListener('pointerleave', () => {
-        inside = false;
-        if (!raf) raf = requestAnimationFrame(apply);
-      });
-    }
-
-    spots.forEach(spotlight);
-    cards.forEach(tilt);
-
-    /* 2.5 指针柔光 + 背景光斑视差:共用一次 pointermove 与一次 rAF。
-       背景光斑(--mx / --my)直接跟手;指针柔光用惯性插值追上去,
-       比瞬移更接近一枚有重量的柔光。 */
-    const cursorGlow = document.createElement('div');
-    cursorGlow.className = 'cursor-glow';
-    cursorGlow.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(cursorGlow);
-
-    let gRaf: number | null = null,
-      gx = 0,
-      gy = 0,
-      cx = window.innerWidth / 2,
-      cy = window.innerHeight / 2,
-      tx = cx,
-      ty = cy;
-
-    function glowApply() {
-      gRaf = null;
-      root.style.setProperty('--mx', gx.toFixed(3));
-      root.style.setProperty('--my', gy.toFixed(3));
-      cx += (tx - cx) * 0.14;
-      cy += (ty - cy) * 0.14;
-      cursorGlow.style.transform =
-        'translate3d(' + cx.toFixed(1) + 'px, ' + cy.toFixed(1) + 'px, 0)';
-      /* 还没追上就继续追:停下后不再空转 rAF */
-      if (Math.abs(tx - cx) > 0.4 || Math.abs(ty - cy) > 0.4) {
-        gRaf = requestAnimationFrame(glowApply);
-      }
-    }
-    window.addEventListener(
-      'pointermove',
-      (e: PointerEvent) => {
-        gx = e.clientX / window.innerWidth - 0.5;
-        gy = e.clientY / window.innerHeight - 0.5;
-        tx = e.clientX;
-        ty = e.clientY;
-        if (!gRaf) gRaf = requestAnimationFrame(glowApply);
-      },
-      { passive: true }
-    );
-  }
+  /* ---------- 2. 悬停抬升由 CSS 完成(_motion.scss),这里不再挂指针监听 ---------- */
 
   /* ---------- 3. 阅读进度线 ---------- */
   const bar = document.createElement('div');

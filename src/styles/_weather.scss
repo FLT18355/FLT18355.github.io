@@ -8,9 +8,7 @@
   gap: 18px;
   padding: 18px;
   border-radius: var(--radius);
-  background: color-mix(in srgb, var(--acc) 8%, var(--glass-item));
-  border: 1px solid color-mix(in srgb, var(--acc) 22%, var(--glass-border));
-  box-shadow: var(--edge), var(--shadow);
+  background: var(--surface);
 }
 
 .weather-icon {
@@ -32,22 +30,17 @@
 .weather-main {
   min-width: 0;
 }
-/* 温度是这张卡的「主数字」:与 rail 标题 / search 时钟同一套品牌渐变裁字 */
+/* 温度是这张卡的主数字:实色,字号与正文拉开 */
 .weather-temp {
   display: flex;
   align-items: baseline;
   gap: 4px;
-  font-family: var(--mono);
-  font-size: 2.4rem;
+  font-size: clamp(2.2rem, 1.9rem + 1vw, 3rem);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
-  background: var(--grad-brand);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  color: var(--text);
 }
 .weather-unit {
   font-size: 1.05rem;
@@ -65,23 +58,22 @@
   align-items: center;
   gap: 7px;
   padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: transparent;
+  border-radius: 8px;
+  border: 0;
+  background: var(--surface-strong);
   color: var(--text-secondary);
-  font-size: 0.78rem;
+  font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
+  transition: color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
 }
 .weather-refresh svg {
   width: 14px;
   height: 14px;
 }
 .weather-refresh:hover:not(:disabled) {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-dim);
+  color: var(--text);
+  background: color-mix(in srgb, var(--primary) 16%, var(--surface-strong));
 }
 .weather-refresh:active:not(:disabled) {
   transform: scale(0.96);
@@ -102,19 +94,14 @@
 .weather-tile {
   padding: 12px 14px;
   border-radius: 12px;
-  background: var(--glass-item);
-  border: 1px solid var(--glass-border);
-  transition: border-color 0.15s;
+  background: var(--surface);
+  transition: background-color 0.15s;
 }
 .weather-tile:hover {
-  border-color: color-mix(in srgb, var(--acc) 45%, var(--glass-border));
+  background: var(--surface-strong);
 }
 .weather-tile dt {
-  font-family: var(--mono);
-  font-size: 0.66rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: 0.78rem;
   color: var(--text-muted);
   margin-bottom: 4px;
 }
@@ -125,8 +112,7 @@
   min-width: 0;
 }
 .weather-value {
-  font-family: var(--mono);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text);
   font-variant-numeric: tabular-nums;

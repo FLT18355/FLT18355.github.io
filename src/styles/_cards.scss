@@ -13,10 +13,8 @@
   gap: 7px;
   padding: 6px 11px 6px 8px;
   border-radius: 999px;
-  border: 1px solid var(--border);
   background: var(--surface);
-  font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.84rem;
   color: var(--text-secondary);
   transition: transform 0.15s var(--ease-out), border-color 0.15s, color 0.15s;
 }
@@ -89,23 +87,18 @@ $interest-hues: (
 .tech-tag {
   padding: 6px 13px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 0.88rem;
   font-weight: 500;
-  border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-secondary);
-  transition: border-color 0.15s, color 0.15s, transform 0.15s var(--ease-out), background-color 0.15s;
-  cursor: default;
-}
-.tech-tag.main {
-  font-weight: 600;
-  font-family: var(--mono);
+  transition: color 0.15s, transform 0.15s var(--ease-out), background-color 0.15s;
 }
 .tech-tag--icon {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   padding-left: 10px;
+  font-weight: 600;
 }
 .tech-ico {
   display: inline-flex;
@@ -123,25 +116,29 @@ $interest-hues: (
 :root[data-theme="latte"] .tech-ico .tech-ico-latte { display: block; }
 $tech-colors: (
   'blue': 'primary',
+  'rosewater': 'rosewater',
+  'flamingo': 'flamingo',
+  'pink': 'pink',
+  'mauve': 'mauve',
+  'red': 'red',
+  'maroon': 'maroon',
+  'peach': 'peach',
+  'yellow': 'yellow',
   'green': 'green',
   'teal': 'teal',
-  'pink': 'pink',
-  'peach': 'peach',
-  'mauve': 'mauve',
-  'lavender': 'lavender',
   'sky': 'sky',
+  'sapphire': 'sapphire',
+  'lavender': 'lavender',
 );
 @each $cls, $tok in $tech-colors {
   .tech-tag.t-#{$cls} {
-    background: color-mix(in srgb, var(--#{$tok}) 8%, var(--surface));
+    background: color-mix(in srgb, var(--#{$tok}) 9%, var(--surface));
     color: color-mix(in srgb, var(--#{$tok}), var(--text) var(--hue-fg-mix));
-    border-color: transparent;
   }
 }
 .tech-tag:hover {
-  border-color: currentColor;
   color: var(--text);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 /* ============ Catppuccin palette swatches ============ */
@@ -152,11 +149,9 @@ $tech-colors: (
   margin-bottom: 24px;
 }
 .palette-preview-title {
-  font-size: 0.72rem;
-  font-family: var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
 }
 .palette-preview-note {
   font-size: 0.82rem;
@@ -167,11 +162,9 @@ $tech-colors: (
   max-width: 340px;
   padding: 18px;
   border-radius: 14px;
-  background: var(--glass-item);
-  border: 1px solid var(--glass-border);
-  -webkit-backdrop-filter: blur(10px) saturate(1.25);
-  backdrop-filter: blur(10px) saturate(1.25);
-  box-shadow: var(--edge), var(--shadow);
+  background: var(--surface);
+  border: 0;
+  box-shadow: none;
 }
 .preview-top {
   display: flex;
@@ -183,7 +176,7 @@ $tech-colors: (
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: var(--grad-brand);
+  background: var(--primary);
   flex-shrink: 0;
 }
 .preview-name {
@@ -192,7 +185,6 @@ $tech-colors: (
   color: var(--text);
 }
 .preview-sub {
-  font-family: var(--mono);
   font-size: 0.72rem;
   color: var(--text-muted);
 }
@@ -227,7 +219,6 @@ $tech-colors: (
 .preview-input {
   padding: 9px 14px;
   border-radius: 10px;
-  border: 1px solid var(--border);
   background: var(--bg-input);
   color: var(--text-muted);
   font-size: 0.8rem;
@@ -241,10 +232,8 @@ $tech-colors: (
 .preview-tag {
   padding: 3px 10px;
   border-radius: 999px;
-  font-size: 0.68rem;
-  font-family: var(--mono);
+  font-size: 0.76rem;
   background: var(--surface-strong);
-  border: 1px solid var(--border);
   color: var(--text-muted);
 }
 .preview-tag--mauve { color: var(--mauve); border-color: color-mix(in srgb, var(--mauve) 35%, transparent); }
@@ -258,11 +247,9 @@ $tech-colors: (
   margin-bottom: 24px;
 }
 .palette-compare-title {
-  font-size: 0.72rem;
-  font-family: var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
 }
 .palette-compare-note {
   font-size: 0.82rem;
@@ -284,7 +271,6 @@ $tech-colors: (
   flex: none;
   width: 80px;
   font-size: 0.72rem;
-  font-family: var(--mono);
   color: var(--text-secondary);
   text-align: right;
 }
@@ -293,10 +279,7 @@ $tech-colors: (
   height: 1px;
 }
 .compare-flavor {
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.78rem;
   color: var(--text-muted);
   text-align: center;
   white-space: nowrap;
@@ -335,11 +318,9 @@ $compare-flavor-hues: (
 }
 .compare-cell:hover .compare-bar {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: var(--shadow);
 }
 .compare-hex {
   font-size: 0.58rem;
-  font-family: var(--mono);
   color: var(--text-muted);
   text-align: center;
   overflow: hidden;
@@ -365,7 +346,6 @@ $compare-flavor-hues: (
   letter-spacing: -0.01em;
 }
 .palette-head span {
-  font-family: var(--mono);
   font-size: 0.72rem;
   color: var(--text-muted);
 }
@@ -373,19 +353,10 @@ $compare-flavor-hues: (
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 16px 0 8px;
-}
-.palette-group::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+  margin: 22px 0 10px;
 }
 .palette-group span {
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-size: 0.84rem;
   color: var(--text-muted);
 }
 .swatch-grid {
@@ -412,7 +383,6 @@ $compare-flavor-hues: (
 }
 .swatch:hover .swatch-chip {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: var(--shadow);
 }
 .swatch:active .swatch-chip {
   transform: scale(0.97);
@@ -429,7 +399,6 @@ $compare-flavor-hues: (
   line-height: 1.2;
 }
 .swatch-hex {
-  font-family: var(--mono);
   font-size: 0.62rem;
   color: var(--text-muted);
   line-height: 1.2;
@@ -459,29 +428,35 @@ $compare-flavor-hues: (
   color: inherit;
   padding: 18px;
   border-radius: 14px;
-  background: var(--glass-item);
-  border: 1px solid var(--glass-border);
-  -webkit-backdrop-filter: blur(10px) saturate(1.25);
-  backdrop-filter: blur(10px) saturate(1.25);
-  box-shadow: var(--edge), var(--shadow);
+  background: var(--surface);
+  border: 0;
+  box-shadow: none;
   transition: background-color 0.15s, border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
   /* 裁剪斜向扫光带:静止时 translateX(-110%) 在卡片左外,必须裁掉,否则会画到左边邻居卡片上 */
   overflow: hidden;
 }
-.project-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(115deg, transparent 30%, color-mix(in srgb, var(--acc) 14%, transparent) 50%, transparent 70%);
-  transform: translateX(-110%);
-  transition: transform 0.7s var(--ease-out);
-  pointer-events: none;
-}
 /* 卡片色相:由数据(hue 字段)给出的类名驱动,同页卡片各占一色;
    .f-catppuccin 是高优先级的特殊卡,色相固定为 mauve,不出现在 hue 数据里 */
-$card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauve', 'sapphire', 'maroon', 'flamingo', 'red';
-@each $tok in $card-hues {
-  .project-card.h-#{$tok} {
+/* 表里列出每一个允许写进 TOML 的色相名(blue 是 --primary 的别名),
+   保证数据里无论写哪个,卡片都有对应色相,不会静默掉回默认蓝。 */
+$card-hues: (
+  'blue': 'primary',
+  'teal': 'teal',
+  'peach': 'peach',
+  'lavender': 'lavender',
+  'sky': 'sky',
+  'green': 'green',
+  'pink': 'pink',
+  'yellow': 'yellow',
+  'mauve': 'mauve',
+  'sapphire': 'sapphire',
+  'maroon': 'maroon',
+  'flamingo': 'flamingo',
+  'red': 'red',
+  'rosewater': 'rosewater',
+);
+@each $cls, $tok in $card-hues {
+  .project-card.h-#{$cls} {
     --acc: var(--#{$tok});
     --acc-dim: var(--#{$tok}-dim);
   }
@@ -510,9 +485,8 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
 .project-card:hover {
   border-color: var(--acc);
   transform: translateY(-3px);
-  box-shadow: var(--edge), 0 2px 4px rgba(0, 0, 0, 0.2), 0 14px 34px color-mix(in srgb, var(--acc) 26%, transparent);
+  box-shadow: var(--shadow-lift);
 }
-.project-card:hover::after { transform: translateX(110%); }
 .project-card:active { transform: translateY(0) scale(0.985); }
 .project-card:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
 
@@ -530,6 +504,7 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   display: flex;
   align-items: center;
   justify-content: center;
+  /* taste-skill-ignore: 终端提示符 `>_` 是图形标记,不是正文 */
   font-family: var(--mono);
   font-size: 0.85rem;
   font-weight: 700;
@@ -550,7 +525,6 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   transition: color 0.15s;
 }
 .project-sub {
-  font-family: var(--mono);
   font-size: 0.74rem;
   color: var(--text-muted);
   line-height: 1.4;
@@ -575,7 +549,6 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   padding: 2px 8px;
   border-radius: 999px;
   font-size: 0.7rem;
-  font-family: var(--mono);
   background: color-mix(in srgb, var(--acc) 8%, var(--surface-strong));
   border: 1px solid transparent;
   color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
@@ -610,17 +583,15 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   color: inherit;
   padding: 16px 18px;
   border-radius: 14px;
-  background: var(--glass-item);
-  border: 1px solid var(--glass-border);
-  -webkit-backdrop-filter: blur(10px) saturate(1.25);
-  backdrop-filter: blur(10px) saturate(1.25);
-  box-shadow: var(--edge), var(--shadow);
+  background: var(--surface);
+  border: 0;
+  box-shadow: none;
   transition: background-color 0.15s, border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
 }
 .download-card:hover {
   border-color: var(--acc);
   transform: translateY(-3px);
-  box-shadow: var(--edge), var(--shadow-lift);
+  box-shadow: var(--shadow-lift);
 }
 .download-card:active { transform: translateY(0) scale(0.985); }
 .download-card:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
@@ -649,14 +620,12 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text);
-  font-family: var(--mono);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color 0.15s;
 }
 .download-sub {
-  font-family: var(--mono);
   font-size: 0.76rem;
   color: var(--text-muted);
   line-height: 1.4;
@@ -670,7 +639,6 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 700;
-  font-family: var(--mono);
   background: var(--acc-dim);
   color: var(--acc);
   border: 1px solid transparent;
@@ -727,36 +695,39 @@ $card-hues: 'teal', 'peach', 'lavender', 'sky', 'green', 'pink', 'yellow', 'mauv
   border-radius: 14px;
   text-decoration: none;
   color: inherit;
-  background: var(--glass-item);
-  border: 1px solid var(--glass-border);
-  -webkit-backdrop-filter: blur(10px) saturate(1.25);
-  backdrop-filter: blur(10px) saturate(1.25);
-  box-shadow: var(--edge), var(--shadow);
+  background: var(--surface);
+  border: 0;
+  box-shadow: none;
   overflow: hidden;
   transition: background-color 0.15s, border-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
 }
 /* 站点卡色相:与项目卡同一组 .h-<hue> 类,数据里给 hue 即可 */
-$site-hues: 'peach', 'teal', 'mauve', 'sky', 'green', 'pink', 'yellow';
-@each $tok in $site-hues {
-  .site-card.h-#{$tok} {
+$site-hues: (
+  'blue': 'primary',
+  'teal': 'teal',
+  'peach': 'peach',
+  'lavender': 'lavender',
+  'sky': 'sky',
+  'green': 'green',
+  'pink': 'pink',
+  'yellow': 'yellow',
+  'mauve': 'mauve',
+  'sapphire': 'sapphire',
+  'maroon': 'maroon',
+  'flamingo': 'flamingo',
+  'red': 'red',
+  'rosewater': 'rosewater',
+);
+@each $cls, $tok in $site-hues {
+  .site-card.h-#{$cls} {
     --acc: var(--#{$tok});
     --acc-dim: var(--#{$tok}-dim);
   }
 }
-.site-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(115deg, transparent 30%, color-mix(in srgb, var(--acc) 12%, transparent) 50%, transparent 70%);
-  transform: translateX(110%);
-  transition: transform 0.7s var(--ease-out);
-  pointer-events: none;
-}
-.site-card:hover::after { transform: translateX(-110%); }
 .site-card:hover {
   border-color: var(--acc);
   transform: translateY(-2px);
-  box-shadow: var(--edge), 0 2px 4px rgba(0, 0, 0, 0.2), 0 14px 34px color-mix(in srgb, var(--acc) 24%, transparent);
+  box-shadow: var(--shadow-lift);
 }
 .site-card:active { transform: translateY(0) scale(0.99); }
 .site-card:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
@@ -800,7 +771,6 @@ $site-hues: 'peach', 'teal', 'mauve', 'sky', 'green', 'pink', 'yellow';
   transition: color 0.15s;
 }
 .site-sub {
-  font-family: var(--mono);
   font-size: 0.72rem;
   color: var(--text-muted);
   transition: color 0.15s;
@@ -822,7 +792,6 @@ $site-hues: 'peach', 'teal', 'mauve', 'sky', 'green', 'pink', 'yellow';
 .site-tags span {
   padding: 2px 8px;
   border-radius: 999px;
-  font-family: var(--mono);
   font-size: 0.68rem;
   background: color-mix(in srgb, var(--acc) 8%, var(--surface-strong));
   border: 1px solid transparent;
@@ -841,7 +810,6 @@ $site-hues: 'peach', 'teal', 'mauve', 'sky', 'green', 'pink', 'yellow';
   gap: 7px;
   padding: 8px 14px;
   border-radius: 999px;
-  font-family: var(--mono);
   font-size: 0.76rem;
   font-weight: 700;
   background: var(--acc-dim);
@@ -883,16 +851,8 @@ $site-hues: 'peach', 'teal', 'mauve', 'sky', 'green', 'pink', 'yellow';
   gap: 18px;
   padding: 20px;
   border-radius: 14px;
-  background: var(--glass-item);
-  border: 1px solid var(--glass-border);
-  -webkit-backdrop-filter: blur(10px) saturate(1.25);
-  backdrop-filter: blur(10px) saturate(1.25);
-  box-shadow: var(--edge), var(--shadow);
-  transition: border-color 0.15s, box-shadow 0.2s var(--ease-out);
-}
-.gh-card:hover {
-  border-color: color-mix(in srgb, var(--acc) 55%, var(--glass-border));
-  box-shadow: var(--edge), 0 2px 4px rgba(0, 0, 0, 0.2), 0 14px 34px color-mix(in srgb, var(--acc) 20%, transparent);
+  background: var(--surface);
+  border: 0;
 }
 
 /* ---------- 头部:头像 + 名号 + 徽章 + 简介 ---------- */
@@ -943,7 +903,6 @@ $site-hues: 'peach', 'teal', 'mauve', 'sky', 'green', 'pink', 'yellow';
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  font-family: var(--mono);
   font-size: 0.78rem;
 }
 .gh-login a {
@@ -956,13 +915,9 @@ $site-hues: 'peach', 'teal', 'mauve', 'sky', 'green', 'pink', 'yellow';
 .gh-badge {
   padding: 2px 8px;
   border-radius: 999px;
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-size: 0.76rem;
   color: var(--text-muted);
   background: var(--surface-strong);
-  border: 1px solid var(--border);
 }
 .gh-bio {
   font-size: 0.88rem;
@@ -1009,7 +964,6 @@ $gh-stat-hues: (
   transform: translateY(-2px);
 }
 .gh-stat-value {
-  font-family: var(--mono);
   font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.1;
@@ -1017,10 +971,7 @@ $gh-stat-hues: (
   color: color-mix(in srgb, var(--sh), var(--text) var(--hue-fg-mix));
 }
 .gh-stat-label {
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 
@@ -1041,10 +992,7 @@ $gh-stat-hues: (
 }
 .gh-detail dt {
   flex: none;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.82rem;
   color: var(--text-muted);
 }
 .gh-detail dd {
@@ -1054,7 +1002,6 @@ $gh-stat-hues: (
   overflow-wrap: anywhere;
 }
 .gh-detail dd.is-mono {
-  font-family: var(--mono);
   font-size: 0.78rem;
   color: var(--text-secondary);
 }
@@ -1071,7 +1018,6 @@ $gh-stat-hues: (
 
 /* ---------- API 端点:默认折叠,需要时再展开 ---------- */
 .gh-api {
-  font-family: var(--mono);
   font-size: 0.74rem;
 }
 .gh-api summary {
@@ -1080,10 +1026,8 @@ $gh-stat-hues: (
   gap: 9px;
   cursor: pointer;
   padding: 4px 0;
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
   transition: color 0.15s;
   /* 自绘折角:默认三角在各浏览器大小不一,这里用 currentColor 画一个跟着文字走的 */
   list-style: none;
@@ -1140,7 +1084,6 @@ $gh-stat-hues: (
   padding: 9px 18px;
   border-radius: 999px;
   text-decoration: none;
-  font-family: var(--mono);
   font-size: 0.8rem;
   font-weight: 700;
   background: var(--acc-dim);
@@ -1167,8 +1110,7 @@ $gh-stat-hues: (
   justify-content: space-between;
   gap: 14px;
   user-select: none;
-  /* 展开 / 收起时分隔线与留白一并过渡,不硬跳 */
-  transition: border-color 0.24s var(--ease-out), padding-bottom 0.24s var(--ease-out), margin-bottom 0.24s var(--ease-out);
+  transition: padding-bottom 0.24s var(--ease-out), margin-bottom 0.24s var(--ease-out);
 }
 .fold-head::-webkit-details-marker { display: none; }
 .fold-head h2 { flex: none; }
@@ -1180,7 +1122,6 @@ $gh-stat-hues: (
   min-width: 0;
 }
 .fold-stat {
-  font-family: var(--mono);
   font-size: 0.7rem;
   color: var(--text-muted);
   white-space: nowrap;
@@ -1199,11 +1140,9 @@ $gh-stat-hues: (
 }
 .fold[open] .fold-caret { transform: rotate(225deg); }
 .fold-head:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
-/* 收起态:标题下那条分隔线与留白一并撤掉(悬停时再指出「这行可点」) */
+/* 收起态:留白一并撤掉 */
 .fold:not([open]) > .fold-head {
   margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom-color: transparent;
 }
 .fold:not([open]) > .fold-head::after { display: none; }
 .fold[open] > .fold-body { animation: foldIn 0.42s var(--ease-out) both; }
@@ -1271,14 +1210,11 @@ $gh-stat-hues: (
   align-items: center;
   gap: 6px;
   padding: 18px 10px;
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--sc) 8%, var(--glass-item));
-  border: 1px solid color-mix(in srgb, var(--sc) 22%, var(--glass-border));
-  -webkit-backdrop-filter: blur(10px) saturate(1.25);
-  backdrop-filter: blur(10px) saturate(1.25);
-  box-shadow: var(--edge), var(--shadow);
+  border-radius: 12px;
+  background: var(--surface);
+  border: 0;
   text-align: center;
-  transition: border-color 0.15s, background-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
+  transition: background-color 0.15s, transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
 }
 /* 四个数字各占一色 */
 $stat-hues: (
@@ -1293,13 +1229,10 @@ $stat-hues: (
   }
 }
 .stat-card:hover {
-  border-color: var(--sc);
-  background: color-mix(in srgb, var(--sc) 14%, var(--glass-item));
-  transform: translateY(-3px);
-  box-shadow: var(--edge), 0 2px 4px rgba(0, 0, 0, 0.16), 0 10px 28px color-mix(in srgb, var(--sc) 26%, transparent);
+  background: color-mix(in srgb, var(--sc) 10%, var(--surface));
+  transform: translateY(-2px);
 }
 .stat-value {
-  font-family: var(--mono);
   font-size: 1.7rem;
   font-weight: 700;
   color: color-mix(in srgb, var(--sc), var(--text) var(--hue-fg-mix));
@@ -1307,11 +1240,8 @@ $stat-hues: (
   line-height: 1.1;
 }
 .stat-label {
-  font-size: 0.72rem;
+  font-size: 0.84rem;
   color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 @media (max-width: 560px) {
   .stats-grid {
@@ -1329,7 +1259,6 @@ $stat-hues: (
   padding: 18px;
   text-align: center;
   font-size: 0.85rem;
-  font-family: var(--mono);
   color: var(--text-muted);
   border: 1px dashed var(--border);
   border-radius: 12px;
@@ -1338,11 +1267,8 @@ $stat-hues: (
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 14px 6px;
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  padding: 0 14px 8px;
+  font-size: 0.82rem;
   color: var(--text-muted);
 }
 .leaderboard-head-rank {
@@ -1381,27 +1307,24 @@ $stat-hues: (
   gap: 12px;
   padding: 8px 14px;
   border-radius: 10px;
-  background: var(--glass-item);
-  border: 1px solid var(--glass-border);
+  background: var(--surface);
+  border: 0;
   min-height: 52px;
-  transition: border-color 0.15s, background-color 0.15s, transform 0.15s var(--ease-out);
+  transition: background-color 0.15s, transform 0.15s var(--ease-out);
 }
 .leaderboard-row:hover {
-  border-color: var(--acc);
+  background: var(--surface-strong);
   transform: translateX(2px);
 }
 /* 前三名整行上色:金 / 银 / 铜,颜色之外还有奖牌图标与名次数字,不靠颜色单独表意 */
 .leaderboard-row--1 {
-  background: color-mix(in srgb, var(--yellow) 13%, var(--glass-item));
-  border-color: color-mix(in srgb, var(--yellow) 36%, var(--glass-border));
+  background: color-mix(in srgb, var(--yellow) 10%, var(--surface));
 }
 .leaderboard-row--2 {
-  background: color-mix(in srgb, var(--text) 10%, var(--glass-item));
-  border-color: color-mix(in srgb, var(--text) 24%, var(--glass-border));
+  background: color-mix(in srgb, var(--text) 7%, var(--surface));
 }
 .leaderboard-row--3 {
-  background: color-mix(in srgb, var(--peach) 12%, var(--glass-item));
-  border-color: color-mix(in srgb, var(--peach) 34%, var(--glass-border));
+  background: color-mix(in srgb, var(--peach) 9%, var(--surface));
 }
 .leaderboard-rank {
   flex: none;
@@ -1413,7 +1336,6 @@ $stat-hues: (
   border-radius: 8px;
   background: var(--surface-strong);
   color: var(--text-muted);
-  font-family: var(--mono);
   font-size: 0.78rem;
   font-weight: 700;
 }
@@ -1456,7 +1378,6 @@ $stat-hues: (
   white-space: nowrap;
 }
 .leaderboard-creator {
-  font-family: var(--mono);
   font-size: 0.68rem;
   color: var(--text-muted);
   overflow: hidden;
@@ -1485,7 +1406,6 @@ $stat-hues: (
 }
 .leaderboard-score-num {
   position: relative;
-  font-family: var(--mono);
   font-size: 0.92rem;
   font-weight: 700;
   color: color-mix(in srgb, var(--acc) 78%, var(--text));
@@ -1495,9 +1415,7 @@ $stat-hues: (
 .leaderboard-score-label {
   position: relative;
   flex: 1;
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-size: 0.78rem;
   color: var(--text-muted);
   text-align: right;
   overflow: hidden;

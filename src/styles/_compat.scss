@@ -28,29 +28,18 @@
       radial-gradient(58vw 42vw at 10% -6%, var(--primary-dim) 0%, transparent 64%),
       radial-gradient(52vw 40vw at 97% 4%, var(--mauve-dim) 0%, transparent 66%);
   }
-  .glow-a { background: radial-gradient(circle, var(--primary-glow) 0%, transparent 68%); }
-  .glow-b { background: radial-gradient(circle, var(--mauve-dim) 0%, transparent 70%); }
   ::selection { background: var(--mauve-dim); }
   html { scrollbar-color: var(--bg-input) var(--bg); }
 
   /* ---------- 3. 身份卡 ---------- */
-  .profile::before { background: linear-gradient(180deg, var(--primary-dim), transparent); }
-  .avatar-ring {
-    box-shadow: inset 0 0 0 1px var(--glass-border), 0 6px 18px rgba(0, 0, 0, 0.28);
-  }
-  .profile:hover .avatar-ring {
-    box-shadow: inset 0 0 0 1px var(--glass-border), 0 8px 24px var(--mauve-dim);
-  }
-  .rail .handle { color: var(--lavender); }
-  .rail-label { color: var(--teal); }
-  .rail-label::after { background: var(--border); }
+  .rail .handle { color: var(--text-muted); }
+  .rail-label { color: var(--text-secondary); }
   .contact-item {
     background: var(--glass);
     border: 1px solid var(--glass-border);
   }
   .contact-item:hover {
     background: var(--ci-dim);
-    box-shadow: var(--shadow);
   }
   .contact-ico { background: var(--ci-dim); }
   .contact-label { color: var(--text-muted); }
@@ -62,14 +51,9 @@
      是玻璃的灵魂高光,任何覆盖都等于把它降级成一块半透明板。 */
   .glass-card.ps-glass:hover,
   .profile-glass.ps-glass:hover {
-    box-shadow: 0 16px 40px -14px var(--acc-dim);
+    box-shadow: var(--shadow-lift);
   }
-  .block-header { border-bottom: 1px solid var(--border); }
   .about-lead strong { color: var(--acc); }
-  .footline { border-top: 1px solid var(--border); }
-  html.motion-js .block::after {
-    background: radial-gradient(320px circle at var(--sx, 50%) var(--sy, 50%), var(--acc-dim), transparent 65%);
-  }
 
   /* ---------- 5. 筹码 / 标签 ---------- */
   .flavor i { border: 1px solid var(--glass-border); }
@@ -103,15 +87,9 @@
   .swatch-chip { border: 1px solid var(--glass-border); }
 
   /* ---------- 6. 项目卡 / 统计 / 排行榜 ---------- */
-  .project-card::after {
-    background: linear-gradient(115deg, transparent 30%, var(--acc-dim) 50%, transparent 70%);
-  }
   .project-card.f-catppuccin { border-color: var(--mauve-dim); }
   .project-card.f-catppuccin:hover { border-color: var(--mauve); }
   .project-card:hover { box-shadow: var(--shadow-lift); }
-  html.motion-js .project-card::before {
-    background: radial-gradient(260px circle at var(--sx, 50%) var(--sy, 50%), var(--acc-dim), transparent 60%);
-  }
   .project-meta span {
     background: var(--surface-strong);
     color: var(--text-muted);
@@ -144,9 +122,6 @@
   .leaderboard-score-num { color: var(--acc); }
 
   /* ---------- 6.5 其他站点卡(projects 页) ---------- */
-  .site-card::after {
-    background: linear-gradient(115deg, transparent 30%, var(--acc-dim) 50%, transparent 70%);
-  }
   .site-card:hover { box-shadow: var(--shadow-lift); }
   .site-tags span {
     background: var(--surface-strong);
@@ -190,12 +165,6 @@
   .font-picker { background: var(--bg); }
 
   /* ---------- 9. search 页 ---------- */
-  .search-bg {
-    background:
-      radial-gradient(46vw 46vw at 18% 22%, var(--primary-glow) 0%, transparent 70%),
-      radial-gradient(40vw 40vw at 84% 28%, var(--mauve-dim) 0%, transparent 72%),
-      radial-gradient(52vw 52vw at 66% 88%, var(--teal-dim) 0%, transparent 70%);
-  }
   .search-time { filter: none; }
   .search-time-sec {
     color: var(--pink);
@@ -321,15 +290,7 @@
   .reader-doc tbody tr:hover td {
     background: var(--acc-dim);
   }
-  /* ---------- 13. 阅读器美化新增面 ----------
-     工具条改成「柔光 + 谱系线」两层 background-image,旧浏览器会把整条 image 丢掉,
-     连下沿那条谱系线一起消失;这里退回单层谱系线。 */
-  .reader-bar {
-    background-image: var(--grad-spectrum);
-    background-repeat: no-repeat;
-    background-position: bottom left;
-    background-size: 100% 2px;
-  }
+  /* ---------- 13. 阅读器:当前文档项补回页面色相 ---------- */
   /* 当前文档项:color-mix 那层文字色丢掉会退回继承色,补回页面色相 */
   .reader-node--file[aria-current="true"] {
     color: var(--acc);
@@ -359,32 +320,14 @@
   ::-webkit-scrollbar-thumb {
     background: var(--bg-input);
   }
-  /* 色环与头像之间的 1px 描边(原来是 .avatar-ring 的 inset box-shadow,
-     被旋转色层盖住后用 ::after 重画,这里补等价描边) */
-  .avatar-ring::after {
-    box-shadow: inset 0 0 0 1px var(--glass-border);
-  }
-  /* 行卡指针光斑:与第 4 节 .block::after 同样的处理 */
-  html.motion-js .site-card::before,
-  html.motion-js .download-card::before {
-    background: radial-gradient(
-      240px circle at var(--sx, 50%) var(--sy, 50%),
-      var(--acc-dim),
-      transparent 62%
-    );
-  }
   /* 骨架屏占位条:丢掉渐变会变成全透明的空行,加载中看起来像坏了 */
   .skel-line,
   .skel-chip {
     background: var(--surface-strong);
   }
   /* 指针柔光:丢掉混色就什么都看不见了,退回同色相的淡光令牌 */
-  .cursor-glow {
-    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 62%);
-  }
   /* 播放中封面高亮 */
   .music-player.is-playing .music-cover {
     border-color: var(--acc);
-    box-shadow: var(--shadow);
   }
 }

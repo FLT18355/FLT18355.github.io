@@ -1,0 +1,26 @@
+# weather.toml - 首页 Local Weather 卡的设置
+#
+# 天气数据来自 Open-Meteo(免费、无需 Key),定位在访客浏览器里完成:
+#   浏览器精确定位 -> IP 粗定位(两个端点依次尝试)-> 下面的默认坐标。
+# 访客第一次看到卡片时会询问一次定位授权;30 分钟内复用缓存,不会反复询问。
+
+[weather]
+# 定位失败 / 访客拒绝授权时的兜底城市
+default_place = "Beijing"
+default_lat = 39.9
+default_lon = 116.4
+
+# 缓存时长(分钟):同一坐标在这段时间内不再请求 API
+cache_minutes = 30
+
+# 依次尝试的无 Key 定位端点,字段名按各端点实际返回写。
+# 全部失败就退回上面的默认坐标;响应里只取经纬度,其余字段不用。
+[[weather.ip_endpoints]]
+url = "https://ipwho.is/"
+lat = "latitude"
+lon = "longitude"
+
+[[weather.ip_endpoints]]
+url = "https://get.geojs.io/v1/ip/geo.json"
+lat = "latitude"
+lon = "longitude"

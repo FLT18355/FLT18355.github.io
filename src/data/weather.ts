@@ -2,6 +2,9 @@
 // 与 GitHub 资料卡(github.ts,构建时拉取)方向相反:天气依赖访客所在位置,
 // 只能在浏览器侧请求,所以这里的一切都是给 client:load 的 Vue 岛(WeatherWidget.vue)用的。
 // 定位链路:navigator.geolocation -> 无 Key 的 IP 定位端点 -> 默认坐标(北京)。
+// 设置项(兜底城市 / IP 端点 / 缓存时长)在 content/weather.toml,由 src/data/runtime.ts 读入。
+
+import { DEFAULT_PLACE } from './runtime';
 
 export interface Coords {
   lat: number;
@@ -11,22 +14,10 @@ export interface Coords {
 /** 定位方式:浏览器定位 / IP 定位 / 兜底默认值 */
 export type PositionSource = 'gps' | 'ip' | 'default';
 
-/** 定位全部失败时的兜底坐标(北京),保证卡片永远有内容 */
-export const DEFAULT_COORDS: Coords = { lat: 39.9, lon: 116.4 };
-
-/** 兜底坐标对应的地名:卡片文案与定位方式标签都取自这里,换默认地点只改一处 */
-export const DEFAULT_PLACE = 'Beijing';
-
 /** Open-Meteo 当前天气(免费,无需 API Key)。
- *  不传 temperature_unit / windspeed_unit,即用默认单位:°C 与 km/h。 */
+ *  不传 temperature_unit / windspeed_unit,即用默认单位:°C 与 km/h。
+ *  兜底坐标、IP 端点、缓存时长来自 content/weather.toml(见 src/data/runtime.ts)。 */
 export const FORECAST_ENDPOINT = 'https://api.open-meteo.com/v1/forecast';
-
-/** 无 Key 的 IP 定位端点:按顺序尝试,全部失败才退回 DEFAULT_COORDS。
- *  只取经纬度两个字段,响应里其余字段一律不用(隐私最小化)。 */
-export const IP_ENDPOINTS: { url: string; lat: string; lon: string }[] = [
-  { url: 'https://ipwho.is/', lat: 'latitude', lon: 'longitude' },
-  { url: 'https://get.geojs.io/v1/ip/geo.json', lat: 'latitude', lon: 'longitude' },
-];
 
 export const SOURCE_LABELS: Record<PositionSource, string> = {
   gps: 'GPS',
@@ -34,9 +25,8 @@ export const SOURCE_LABELS: Record<PositionSource, string> = {
   default: `Default (${DEFAULT_PLACE})`,
 };
 
-/** 结果缓存:同一坐标 30 分钟内直接复用,避免每次进首页都弹一次定位授权 */
+/** 结果缓存键:同一坐标在 CACHE_TTL 内直接复用,避免每次进首页都弹一次定位授权 */
 export const CACHE_KEY = 'weather-cache';
-export const CACHE_TTL = 30 * 60 * 1000;
 
 /** Open-Meteo 响应里真正用到的部分(字段名与 API 一致,保持 snake_case) */
 export interface CurrentWeather {

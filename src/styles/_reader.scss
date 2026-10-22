@@ -20,7 +20,7 @@
         一律挂 prefers-reduced-motion 关闭。
         注意:不给 .reader 本体挂 transform / 不透明动画——那会给 fixed 浮层造包含块,
         也会把浮层关进卡的层叠上下文里(与材质一段同因)。
-   视觉主线:工具条下沿 / h1 下沿 / hr 用同一笔 --grad-spectrum;
+   视觉主线:工具条下沿 / h1 下沿 / hr 用同一支实色 --acc;
         正文标题按级走一轮 Catppuccin 色相;目录当前项与链接同取页面色相 sky;
         代码块自成一支(pink 描边 + 语言标签 + 复制按钮),与标题谱系色相分离。 */
 
@@ -40,7 +40,7 @@
   border-radius: 14px;
   border: 1px solid var(--glass-border);
   background: var(--bg-card);
-  box-shadow: var(--edge), var(--shadow);
+  box-shadow: none;
   /* 不用 overflow:hidden(会吞掉 sticky 定位),圆角交给内部各面自己收 */
 }
 /* 上传了自定义字体:ReadingFont 只补在栈首,字体里没有的字回落到系统字体。
@@ -69,14 +69,11 @@
   -webkit-backdrop-filter: blur(14px) saturate(1.3);
   backdrop-filter: blur(14px) saturate(1.3);
   border-radius: 14px 14px 0 0;
-  /* 两层图:左上角一层页面色相的柔光(把工具条从卡面上「抬」起来),
-     下沿一笔站点谱系线。写成 background-image 多层,别用简写,免得盖掉上面的底色。 */
-  background-image:
-    radial-gradient(130% 170% at 0% 0%, color-mix(in srgb, var(--acc) 13%, transparent), transparent 58%),
-    var(--grad-spectrum);
-  background-repeat: no-repeat, no-repeat;
-  background-position: top left, bottom left;
-  background-size: 100% 100%, 100% 2px;
+  /* 下沿一笔页面色相:工具条与文档之间的一条实色分隔 */
+  background-image: linear-gradient(var(--acc), var(--acc));
+  background-repeat: no-repeat;
+  background-position: bottom left;
+  background-size: 100% 2px;
 }
 /* 桌面:工具条不粘(有树 + 文档,滚动是页级);只有窄屏需要它跟手。
    角度保留 14px 14px 0 0——工具条现在带一层色相柔光,顶角若切成直角,
@@ -115,7 +112,6 @@
 }
 .reader-count {
   flex: none;
-  font-family: var(--mono);
   font-size: 0.68rem;
   letter-spacing: 0.04em;
   color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
@@ -269,17 +265,14 @@
     max-height: calc(100vh - 96px);
   }
 }
-/* 目录标题:mono 小字 + 右侧淡出细线,和 rail 的 .rail-label 同一手 */
+/* 目录标题 + 右侧留白 */
 .reader-tree-label {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 0 6px 8px;
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
+  font-size: 0.84rem;
+  color: var(--text-secondary);
 }
 .reader-tree-label::after {
   content: "";
@@ -335,7 +328,6 @@
 }
 .reader-tree-count {
   flex: none;
-  font-family: var(--mono);
   font-size: 0.66rem;
   color: var(--text-muted);
 }
@@ -542,8 +534,8 @@
   gap: 10px;
   padding: 14px 12px 10px 16px;
   border-bottom: 1px solid var(--border);
-  /* 抽屉标题下沿同样收一笔谱系线,与工具条、h1 一致 */
-  background-image: var(--grad-spectrum);
+  /* 抽屉标题下沿同样收一笔色相线,与工具条、h1 一致 */
+  background-image: linear-gradient(var(--acc), var(--acc));
   background-repeat: no-repeat;
   background-position: bottom left;
   background-size: 100% 2px;
@@ -611,7 +603,7 @@
   background: var(--glass);
   -webkit-backdrop-filter: blur(16px) saturate(1.35);
   backdrop-filter: blur(16px) saturate(1.35);
-  box-shadow: var(--edge), var(--shadow-lift);
+  box-shadow: var(--shadow-lift);
   animation: readerFade 0.16s ease-out both;
 }
 .reader-font-head {
@@ -753,7 +745,7 @@
      层次同时由字号和色相表达。
    - 交互:链接用页面色相 sky,与工具条、目录树当前项同色。
    - 语义:强调 yellow、行内代码 pink、删除红、插入绿。
-   - 分隔:工具条下沿与文档标题下沿都用站点谱系线(--grad-spectrum)。
+   - 分隔:工具条下沿与文档标题下沿都用页面色相的一笔实色(--acc)。
    不用渐变文字,不用 1px 以上的彩色左边条。 */
 .reader-doc {
   font-size: 1rem;
@@ -788,7 +780,7 @@
   height: 2px;
   margin-top: 14px;
   border-radius: 2px;
-  background: var(--grad-spectrum);
+  background: var(--acc);
   opacity: 0.55;
 }
 .reader-doc h2 {
@@ -990,9 +982,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--reader-code-font);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: 0.72rem;
   color: color-mix(in srgb, var(--pink), var(--text) var(--hue-fg-mix));
 }
 .reader-doc .md-code-copy {
@@ -1083,7 +1073,7 @@
   height: 2px;
   margin: 32px 0;
   border-radius: 2px;
-  background: var(--grad-spectrum);
+  background: var(--acc);
   opacity: 0.35;
 }
 .reader-doc img {

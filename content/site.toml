@@ -1,0 +1,156 @@
+# site.toml - 站点身份、首页文案、导航、统计、联系方式
+#
+# 这些是日常最常改的东西;改完跑 `bash scripts/deploy.sh` 即可上线。
+# 规则:
+#   · 引号里的文字就是页面上显示的文字,支持 **粗体** 与 HTML 实体;
+#   · hue 只能取 Catppuccin 色相名:
+#     rosewater flamingo pink mauve red maroon peach yellow green teal sky sapphire lavender;
+#   · 删掉某个 [[contact]] 条目 = 页面上少一条联系方式;stat 同理。
+
+[site]
+name = "FLT18355"
+handle = "@FLT18355"
+tagline = "Python. Arch. Catppuccin."
+url = "https://flt18355.github.io/"
+og_image = "https://flt18355.github.io/logo.svg"
+description = "FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。"
+theme_color_mocha = "#1c1b26"
+theme_color_latte = "#f1ece6"
+
+[profile]
+avatar = "/images/avatar.webp"
+# 首页 About Me 的导语
+about = "A **Catppuccin** enjoyer. Python user tinkering with dotfiles and TUI tools on Arch Linux."
+# 四种风味的展示顺序
+flavors = ["Mocha", "Latte", "Frappé", "Macchiato"]
+# 身份卡底部的技术规格行
+built_with = ["Astro", "Vue", "SCSS"]
+
+[[stats]]
+value = 5
+label = "Featured Projects"
+
+[[stats]]
+value = 104
+label = "Palette Swatches"
+
+[[stats]]
+value = 3
+label = "Music Tracks"
+
+[[stats]]
+value = 7
+label = "Pages"
+
+# icon 指向 /images/svg/ 下的同名文件;有 _l 后缀的是浅色主题版本。
+# 没有 icon 的条目只渲染文字筹码。
+[[tech]]
+name = "Python"
+hue = "blue"
+icon = "python"
+
+[[tech]]
+name = "TypeScript"
+hue = "teal"
+icon = "typescript"
+
+[[tech]]
+name = "Node.js"
+hue = "green"
+
+[[tech]]
+name = "Shell"
+hue = "pink"
+
+[[tech]]
+name = "HTML"
+hue = "peach"
+
+[[tech]]
+name = "Lua"
+hue = "mauve"
+
+[[interest]]
+name = "Terminal &amp; dotfiles"
+
+[[interest]]
+name = "Catppuccin theming"
+
+[[interest]]
+name = "Music"
+
+[[interest]]
+name = "Open source"
+
+[[interest]]
+name = "TUI tools"
+
+[[interest]]
+name = "Vibe coding"
+
+# key 必须与页面文件名一致:home projects palette following search reader
+[[nav]]
+key = "home"
+href = "/index.html"
+label = "Home"
+
+[[nav]]
+key = "projects"
+href = "/projects.html"
+label = "Projects"
+
+[[nav]]
+key = "palette"
+href = "/catppuccin.html"
+label = "Palette"
+
+[[nav]]
+key = "following"
+href = "/following.html"
+label = "Following"
+
+[[nav]]
+key = "search"
+href = "/search.html"
+label = "Search"
+
+[[nav]]
+key = "reader"
+href = "/reader.html"
+label = "Reader"
+
+# icon 可选:github / qq / wechat / bilibili(图标在 ContactIcon.astro 里)
+[[contact]]
+label = "GitHub"
+value = "FLT18355"
+href = "https://github.com/FLT18355"
+hue = "blue"
+icon = "github"
+
+[[contact]]
+label = "QQ"
+value = "1583951454"
+href = "https://wpa.qq.com/msgrd?v=3&uin=1583951454&site=qq&menu=yes"
+hue = "teal"
+icon = "qq"
+
+[[contact]]
+label = "微信"
+value = "cnFLT18355"
+href = "https://weixin.qq.com"
+hue = "green"
+icon = "wechat"
+
+[[contact]]
+label = "Bilibili 大号"
+value = "FLT18355"
+href = "https://space.bilibili.com/517296410"
+hue = "pink"
+icon = "bilibili"
+
+[[contact]]
+label = "Bilibili 小号"
+value = "FLT18356"
+href = "https://space.bilibili.com/3707030153988562"
+hue = "mauve"
+icon = "bilibili"

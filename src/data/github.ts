@@ -4,8 +4,9 @@
 // 拉取失败(限流 / 断网)时退回仓库内的快照,卡片不开天窗;快照用 `npm run snapshot:github` 刷新。
 
 import snapshot from './github-user.snapshot.json';
+import { GITHUB_LOGIN } from './content';
 
-export const GITHUB_LOGIN = 'FLT18355';
+export { GITHUB_LOGIN };
 export const GITHUB_USER_API = `https://api.github.com/users/${GITHUB_LOGIN}`;
 
 /** /users/{login} 里指向其它 API 资源的端点字段,展示为可点开的链接 */

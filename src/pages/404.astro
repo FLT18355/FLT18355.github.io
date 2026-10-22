@@ -4,7 +4,7 @@ import '../styles/global.scss';
 /* liquid-glass 的 chrome 装饰层样式(固定部分);挂载闸门见 scripts/glass.ts */
 import '@liquidglassjs/core/css';
 import HeadPrefs from '../components/HeadPrefs.astro';
-import { SITE } from '../data/site';
+import { SITE } from '../data/content';
 ---
 
 <!DOCTYPE html>
@@ -51,17 +51,11 @@ import { SITE } from '../data/site';
         margin: 0 auto 16px;
       }
       .err404-code {
-        font-family: var(--mono);
-        font-size: 2.6rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
-        /* 与 rail 标题同款渐变裁字 */
-        background: var(--grad-brand);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        -webkit-text-fill-color: transparent;
+        font-size: clamp(3rem, 2.2rem + 4vw, 4.6rem);
+        font-weight: 700;
+        letter-spacing: -0.045em;
+        line-height: 1.05;
+        color: var(--text);
       }
       .err404-card p {
         margin-top: 10px;
@@ -177,8 +171,6 @@ import { SITE } from '../data/site';
     </style>
   </head>
   <body>
-    <div class="glow glow-a" aria-hidden="true"></div>
-    <div class="glow glow-b" aria-hidden="true"></div>
 
     <div class="err404">
       <!-- 玻璃外壳:错误卡本体(.font-picker-card)在低配 / 无 JS 时仍是自己的 CSS 玻璃 -->

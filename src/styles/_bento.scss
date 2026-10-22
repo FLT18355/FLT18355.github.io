@@ -24,41 +24,23 @@
   .content--bento {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 20px;
-    align-items: stretch;
-  }
-  .content--bento .glass-card {
-    display: flex;
-    flex-direction: column;
-  }
-  .content--bento .glass-card > .ps-glass__content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .content--bento .glass-card > .ps-glass__content > .block {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .content--bento .glass-card > .ps-glass__content > .block > .fold-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    gap: 24px;
+    /* 卡片按自身内容取高,不再被拉成整行高度。
+       之前 align-items:stretch + 整条 flex:1 链会把内容少的卡(音乐 / 兴趣)撑成
+       与邻卡等高,卡片下半截就是一片空白。 */
+    align-items: start;
   }
   .content--bento .b-about     { grid-column: span 7; }
   .content--bento .b-stats     { grid-column: span 5; }
   .content--bento .b-tech      { grid-column: span 5; }
   .content--bento .b-interests { grid-column: span 7; }
-  .content--bento .b-music     { grid-column: span 6; }
-  .content--bento .b-weather   { grid-column: span 6; }
   .content--bento .footline    { grid-column: 1 / -1; }
 
-  /* 筹码组在拉伸后的卡片里居中 */
-  .content--bento .b-tech .ps-glass__content > .block > .fold-body,
-  .content--bento .b-interests .ps-glass__content > .block > .fold-body {
-    justify-content: center;
-  }
+  /* 音乐与天气并排,各自按内容取高;音乐卡因为多了曲目列表而更高,
+     天气卡停在顶部,不再被拉伸到与它同高 */
+  .content--bento .b-music     { grid-column: span 6; }
+  .content--bento .b-weather   { grid-column: span 6; }
+
   /* 统计块在 5 栏卡里从 4 列改 2 列,数字才有呼吸空间 */
   .content--bento .b-stats .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

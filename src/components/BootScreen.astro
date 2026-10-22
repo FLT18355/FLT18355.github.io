@@ -7,8 +7,8 @@
 // 无 JS 时两个类都不存在,.boot 保持 display:none,页面照常可用。
 // 启动层一律用系统字体渲染:此时字体选择还没发生(首启)或刚恢复,用 --ui-font 会在
 // 选过 Maple 的机器上把 7.1MB 的 woff2 拖进首屏(与 _font-picker.scss 同一取舍)。
-import { NAV } from '../data/site';
-import type { PageKey } from '../data/site';
+import { NAV } from '../data/content';
+import type { PageKey } from '../data/content';
 
 interface Props {
   /** 当前页键:回访卡片用它显示「即将进入哪一页」 */

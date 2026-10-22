@@ -5,7 +5,7 @@ import CardFold from '../components/CardFold.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import SiteCard from '../components/SiteCard.astro';
 import GithubCard from '../components/GithubCard.astro';
-import { featuredProjects, otherSites } from '../data/projects';
+import { featuredProjects, otherSites, DOWNLOAD } from '../data/content';
 import { getGithubUser } from '../data/github';
 
 const githubUser = await getGithubUser();
@@ -64,7 +64,7 @@ const ghSummary = githubUser
   <CardFold id="b-download" class="b-download" title="Download">
     <a
       class="download-card"
-      href="https://v4.gh-proxy.org/https://github.com/FLT18355/dsh-pet-inAndroid/releases/download/1.0.1/app-release.apk"
+      href={DOWNLOAD.href}
       target="_blank"
       rel="noopener"
     >
@@ -72,8 +72,8 @@ const ghSummary = githubUser
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 5-5m-5 5-5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
       </span>
       <span class="download-info">
-        <span class="download-title">app-release.apk</span>
-        <span class="download-sub">dsh-pet-inAndroid · v1.0.1</span>
+        <span class="download-title">{DOWNLOAD.title}</span>
+        <span class="download-sub">{DOWNLOAD.sub}</span>
       </span>
       <span class="download-go">Download</span>
     </a>

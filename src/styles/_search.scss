@@ -1,39 +1,4 @@
-/* _search.scss - search 页:背景光斑、时钟、Bing 搜索、快捷链接、最近搜索 */
-
-/* ---------- 背景光斑(漂浮动画在 _motion.scss,门控 html.motion-js) ---------- */
-.search-bg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-  background:
-    radial-gradient(46vw 46vw at 18% 22%, color-mix(in srgb, var(--primary) 19%, transparent) 0%, transparent 70%),
-    radial-gradient(40vw 40vw at 84% 28%, color-mix(in srgb, var(--mauve) 19%, transparent) 0%, transparent 72%),
-    radial-gradient(52vw 52vw at 66% 88%, color-mix(in srgb, var(--teal) 17%, transparent) 0%, transparent 70%),
-    radial-gradient(36vw 36vw at 26% 74%, color-mix(in srgb, var(--pink) 15%, transparent) 0%, transparent 72%);
-}
-.search-bg::before,
-.search-bg::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  will-change: transform, opacity;
-}
-.search-bg::before {
-  width: 42vw;
-  height: 42vw;
-  left: -8vw;
-  bottom: -12vw;
-  background: radial-gradient(circle, var(--primary-dim) 0%, transparent 62%);
-}
-.search-bg::after {
-  width: 34vw;
-  height: 34vw;
-  right: -6vw;
-  top: -10vw;
-  background: radial-gradient(circle, var(--pink-dim) 0%, transparent 62%);
-}
+/* _search.scss - search 页:时钟、Bing 搜索、快捷链接、最近搜索 */
 
 /* ---------- 时钟 + Bing 搜索 ---------- */
 .b-search {
@@ -42,26 +7,18 @@
 }
 .search-clock { margin-bottom: 26px; }
 .search-time {
-  font-family: var(--mono);
-  font-size: 3.4rem;
+  font-size: clamp(2.8rem, 2rem + 3vw, 4rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
-  /* 时钟用品牌渐变裁字:与 rail 标题同一套色 */
-  background: var(--grad-brand);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  /* 时钟是本页唯一的焦点:实色大字,秒数用注释色压一级 */
+  color: var(--text);
   font-variant-numeric: tabular-nums;
-  filter: drop-shadow(0 6px 26px color-mix(in srgb, var(--primary) 32%, transparent));
 }
 .search-time-sec {
-  color: color-mix(in srgb, var(--pink), var(--text) var(--hue-fg-mix));
-  -webkit-text-fill-color: color-mix(in srgb, var(--pink), var(--text) var(--hue-fg-mix));
-  font-size: 0.55em;
-  vertical-align: 0.5em;
-  margin-left: 2px;
+  color: var(--text-muted);
+  font-size: 0.5em;
+  margin-left: 4px;
 }
 .search-date {
   margin-top: 8px;
@@ -200,11 +157,9 @@
   margin-bottom: 12px;
 }
 .search-label {
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  color: var(--text-secondary);
 }
 .search-clear {
   border: none;
@@ -269,11 +224,8 @@
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--mauve) 55%, transparent), transparent);
 }
 .search-greeting-text {
-  font-size: 0.72rem;
-  font-family: var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: color-mix(in srgb, var(--mauve) 55%, var(--text-muted));
+  font-size: 0.86rem;
+  color: var(--text-muted);
 }
 
 /* ---------- 搜索表单内图标 ---------- */
@@ -336,7 +288,6 @@
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 0.78rem;
-  font-family: var(--mono);
   font-weight: 600;
   color: var(--text-muted);
   cursor: pointer;

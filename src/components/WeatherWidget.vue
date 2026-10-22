@@ -4,21 +4,8 @@
 // 天气:Open-Meteo current_weather(免费、无需 Key)。
 // 数据依赖访客位置,只能在浏览器侧请求(与 GitHub 卡片的构建时拉取正好相反,见 README「天气卡」)。
 import { computed, onMounted, ref } from 'vue';
-import {
-  CACHE_KEY,
-  CACHE_TTL,
-  DEFAULT_COORDS,
-  DEFAULT_PLACE,
-  IP_ENDPOINTS,
-  SOURCE_LABELS,
-  WEATHER_ICONS,
-  buildForecastUrl,
-  compassPoint,
-  formatCoords,
-  isCoords,
-  num,
-  weatherInfo,
-} from '../data/weather';
+import { CACHE_KEY, buildForecastUrl, compassPoint, formatCoords, isCoords, num, weatherInfo, SOURCE_LABELS, WEATHER_ICONS } from '../data/weather';
+import { CACHE_TTL, DEFAULT_COORDS, DEFAULT_PLACE, IP_ENDPOINTS } from '../data/runtime';
 import type {
   CachedWeather,
   Coords,

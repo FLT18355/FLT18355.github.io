@@ -17,11 +17,20 @@
 /* ============================================================
    0. 令牌:max 档的「薄玻璃」底色(高配仍用 --glass)
    ============================================================ */
+/* max 档的卡面:更薄,背后的结构才透得过来。
+   浅色主题不能照抄深色主题的低不透明度:同样 0.26 在暖白底上几乎等于消失,
+   玻璃的边和折射都读不出来。 */
 :root {
-  --glass-thin: rgba(38, 37, 50, 0.26);
+  /* high:玻璃挂上后的卡面薄纱。必须比 low 档的 --glass 透:
+     0.6 以上的白纱会把背后everything糊成一块白板,折射完全看不见。 */
+  --glass-veil: rgba(38, 37, 50, 0.34);
+  /* max:再薄一档,让网格与边缘位移更清楚 */
+  --glass-thin: rgba(38, 37, 50, 0.24);
 }
 :root[data-theme="latte"] {
-  --glass-thin: rgba(255, 253, 249, 0.26);
+  /* 浅色主题同样透,但底色本身就是暖白,0.3 左右仍然读得出「一层玻璃」 */
+  --glass-veil: rgba(255, 253, 249, 0.36);
+  --glass-thin: rgba(255, 253, 249, 0.28);
 }
 
 /* ============================================================
@@ -35,8 +44,8 @@ liquid-glass {
      --glass-ink 故意不覆盖:用它自己的 #000 默认值,
      暗色描边 + 白顶高光正是 iOS 玻璃的读法,mocha / latte 两支都成立。 */
   --glass-paper: var(--bg-card);
-  /* 磨砂路径的卡面底色 = 组件原本的半透明玻璃底,保证背后仍透得出纸层与网格 */
-  --glass-frost-bg: var(--glass);
+  /* 磨砂路径的卡面底色:一层薄玻璃,不是 low 档那张实色卡面 */
+  --glass-frost-bg: var(--glass-veil);
   /* 悬停柔光用的色相:区块卡由 .b-xxx 覆盖,身份卡用主色;
      --acc-dim 是给老浏览器(_compat.scss)的纯色兜底,与 --acc 成对 */
   --acc: var(--primary);
@@ -77,7 +86,7 @@ liquid-glass.ps-glass {
    3. 档位:max 把「看得见折射」需要的两头一起拉满
    玻璃参数(strength / chroma / blur / tint / behind)由 scripts/glass.ts
    在元素注册之前写进属性,这里只补 CSS 侧的改动:卡面换成更薄的 --glass-thin,
-   让背后的高频网格真能透过来(高频背景层见 _paper.scss 第 4 节)。
+   让背后的纸色与卡片层次能透过来。
    ============================================================ */
 html[data-mode="max"] liquid-glass {
   --glass-frost-bg: var(--glass-thin);
@@ -99,7 +108,7 @@ html[data-mode="max"] liquid-glass.ps-glass {
 }
 .glass-card.ps-glass:hover,
 .profile-glass.ps-glass:hover {
-  box-shadow: 0 16px 40px -14px color-mix(in srgb, var(--acc) 30%, transparent);
+  /* 悬停不再加投影:卡片边界已经由玻璃 rim 说明 */
 }
 
 /* ============================================================

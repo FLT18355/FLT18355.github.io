@@ -6,7 +6,7 @@
 // 合到一个组件里,是因为 Base.astro 与 404.astro 都要用,而两份拷贝已经漂移过:
 // 404 页当初用 prefers-color-scheme 判主题,其余页面用本机时间判,
 // 于是同一个访客在这两处会拿到不同的主题。
-import { SITE } from '../data/site';
+import { SITE } from '../data/content';
 ---
 
 <meta

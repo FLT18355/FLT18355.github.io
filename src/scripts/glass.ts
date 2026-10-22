@@ -73,7 +73,7 @@
       chroma: '0.55',
       blur: '4',
       tint: '6',
-      behind: '.bg-art',
+      behind: 'body',
     };
     document.querySelectorAll('liquid-glass').forEach((el) => {
       for (const k in MAX_PRESET) el.setAttribute(k, MAX_PRESET[k]);

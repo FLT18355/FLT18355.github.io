@@ -1,10 +1,11 @@
 <script setup lang="ts">
-// MusicPlayer.vue - 首页 Music Player - Test 播放器
-// 多曲目(TRACKS):左侧/右侧键切换;preload=auto 自动下载;退出时 localStorage 保存当前曲目与进度
-// 音源来自 src/data/music.ts(gh-proxy 直链,浏览器端下载,不落地到仓库)
+// MusicPlayer.vue - 首页 Music Player
+// 三个部分:封面 + 曲目信息 + 播放控制,下面是曲目列表(点一行即切歌)。
+// 曲目来自 content/music.toml(gh-proxy 直链,浏览器端下载,不落地到仓库)。
+// 播放中会把曲目与进度写进 localStorage,下次进站接着放;键盘 ← → 切歌。
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
-import { TRACKS } from '../data/music';
-import type { MusicTrack } from '../data/music';
+import { TRACKS } from '../data/runtime';
+import type { MusicTrack } from '../data/runtime';
 
 const STORE_KEY = 'music-player-state';
 
@@ -29,7 +30,9 @@ function fmt(s: number): string {
 function play(): void {
   const a = audioEl.value;
   if (!a) return;
-  a.play().catch(() => { failed.value = true; });
+  a.play().catch(() => {
+    failed.value = true;
+  });
 }
 function pause(): void {
   const a = audioEl.value;
@@ -42,25 +45,24 @@ function toggle(): void {
   else pause();
 }
 
-/** 切换曲目:前往 next/prev;保持播放状态(若正在播放则继续下一首) */
-function step(delta: number): void {
+/** 切到第 i 首;keepPlaying = true 时接着播(列表点击 / 上一首下一首) */
+function select(i: number, keepPlaying = true): void {
   const n = TRACKS.length;
-  if (n < 2) return;
-  index.value = (index.value + delta + n) % n;
+  if (n === 0) return;
+  index.value = ((i % n) + n) % n;
   current.value = 0;
   duration.value = 0;
   failed.value = false;
   loading.value = true;
-  if (playing.value) {
-    /* audio 元素随 :key 重挂载,须等 DOM 更新后再 play,否则会继续播旧歌 */
-    nextTick(() => play());
-  }
+  /* audio 元素随 :key 重挂载,须等 DOM 更新后再 play,否则会继续播旧歌 */
+  if (keepPlaying) nextTick(() => play());
 }
+
 function next(): void {
-  step(1);
+  select(index.value + 1, playing.value);
 }
 function prev(): void {
-  step(-1);
+  select(index.value - 1, playing.value);
 }
 
 function onTime(): void {
@@ -92,7 +94,7 @@ function onError(): void {
 function onEnded(): void {
   playing.value = false;
   current.value = 0;
-  next();
+  select(index.value + 1);
 }
 function onSeek(e: Event): void {
   const a = audioEl.value;
@@ -141,7 +143,7 @@ onMounted(() => {
     /* 解析失败用默认第一首 */
   }
   document.addEventListener('keydown', onKeydown);
-  /* 退出/离开页面时保存(关闭标签页/刷新/跳走都会触发 pagehide) */
+  /* 关闭标签页 / 刷新 / 跳走都会触发 pagehide */
   window.addEventListener('pagehide', save);
   const a = audioEl.value;
   if (a) a.currentTime = current.value;
@@ -161,97 +163,107 @@ onUnmounted(() => {
     <div class="ps-glass__content">
       <details class="block fold card-fold" data-fold="b-music" open>
         <summary class="block-header fold-head">
-          <h2>Music Player - Test</h2>
-          <span class="fold-tail"><span class="fold-caret" aria-hidden="true" /></span>
+          <h2>Music</h2>
+          <span class="fold-tail">
+            <span class="block-note">{{ TRACKS.length }} tracks</span>
+            <span class="fold-caret" aria-hidden="true" />
+          </span>
         </summary>
 
         <div class="fold-body">
           <div class="music-player" :class="{ 'is-playing': playing }">
-            <button
-              class="music-nav"
-              type="button"
-              aria-label="Previous track"
-              :disabled="TRACKS.length < 2"
-              @click="prev"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M6 6h2v12H6zM20 6v12L9 12z" />
-              </svg>
-            </button>
-
-            <div class="music-cover-wrap">
-              <img v-if="hasCover" class="music-cover" :src="track.cover" :alt="track.title" width="96" height="96" />
-              <div v-else class="music-cover music-cover--placeholder" role="img" aria-label="No cover art">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z" />
-                </svg>
-              </div>
-              <!-- 播放中浮在封面上的均衡器:纯装饰,状态语义仍由 .music-status 承担 -->
-              <span class="music-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-            </div>
-
-            <div class="music-body">
-              <div class="music-head">
-                <div class="music-meta">
-                  <span class="music-title">{{ track.title }}</span>
-                  <span class="music-artist">{{ track.artist }}</span>
-                </div>
-                <button
-                  class="music-toggle"
-                  type="button"
-                  :aria-label="playing ? 'Pause' : 'Play'"
-                  :aria-pressed="playing"
-                  @click="toggle"
-                >
-                  <svg v-if="playing" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
-                  </svg>
-                  <svg v-else viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </button>
-              </div>
-
-              <div class="music-bar">
-                <input
-                  class="music-seek"
-                  type="range"
-                  min="0"
-                  :max="duration || 0"
-                  step="0.1"
-                  :value="current"
-                  :disabled="!duration"
-                  :aria-label="'Seek'"
-                  @input="onSeek"
+            <div class="music-stage">
+              <div class="music-cover-wrap">
+                <img
+                  v-if="hasCover"
+                  class="music-cover"
+                  :src="track.cover"
+                  :alt="`${track.title} cover art`"
+                  width="132"
+                  height="132"
                 />
-                <div class="music-time">
-                  <span>{{ fmt(current) }}</span>
-                  <span class="music-status" role="status">
-                    {{ failed ? 'Load failed' : loading ? 'Buffering...' : playing ? 'Playing' : 'Paused' }}
-                  </span>
-                  <span>{{ fmt(duration) }}</span>
+                <div v-else class="music-cover music-cover--placeholder" role="img" aria-label="No cover art">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z" />
+                  </svg>
+                </div>
+                <span class="music-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              </div>
+
+              <div class="music-body">
+                <p class="music-title">{{ track.title }}</p>
+                <p class="music-artist">{{ track.artist }}</p>
+
+                <div class="music-controls">
+                  <button class="music-nav" type="button" aria-label="Previous track" :disabled="TRACKS.length < 2" @click="prev">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M6 6h2v12H6zM20 6v12L9 12z" />
+                    </svg>
+                  </button>
+                  <button
+                    class="music-toggle"
+                    type="button"
+                    :aria-label="playing ? 'Pause' : 'Play'"
+                    :aria-pressed="playing"
+                    @click="toggle"
+                  >
+                    <svg v-if="playing" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+                    </svg>
+                    <svg v-else viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </button>
+                  <button class="music-nav" type="button" aria-label="Next track" :disabled="TRACKS.length < 2" @click="next">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M16 6h2v12h-2zM4 6v12l11-6z" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
 
-            <button
-              class="music-nav"
-              type="button"
-              aria-label="Next track"
-              :disabled="TRACKS.length < 2"
-              @click="next"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M16 6h2v12h-2zM4 6v12l11-6z" />
-              </svg>
-            </button>
+            <div class="music-bar">
+              <input
+                class="music-seek"
+                type="range"
+                min="0"
+                :max="duration || 0"
+                step="0.1"
+                :value="current"
+                :disabled="!duration"
+                aria-label="Seek"
+                @input="onSeek"
+              />
+              <div class="music-time">
+                <span>{{ fmt(current) }}</span>
+                <span class="music-status" role="status">
+                  {{ failed ? 'Load failed' : loading ? 'Buffering…' : playing ? 'Playing' : 'Paused' }}
+                </span>
+                <span>{{ fmt(duration) }}</span>
+              </div>
+            </div>
           </div>
+
+          <ol class="music-list">
+            <li v-for="(t, i) in TRACKS" :key="t.src">
+              <button
+                class="music-row"
+                type="button"
+                :aria-current="i === index ? 'true' : undefined"
+                @click="select(i)"
+              >
+                <span class="music-row-title">{{ t.title }}</span>
+                <span class="music-row-artist">{{ t.artist }}</span>
+              </button>
+            </li>
+          </ol>
 
           <audio
             ref="audioEl"
             :src="track.src"
             :key="track.src"
-            preload="auto"
+            preload="metadata"
             @timeupdate="onTime"
             @loadedmetadata="onMeta"
             @durationchange="onMeta"

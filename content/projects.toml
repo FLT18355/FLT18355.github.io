@@ -1,0 +1,121 @@
+# projects.toml - 项目卡 / 站点卡 / 关注列表 / 下载卡
+#
+# 加一个项目 = 复制一段 [[featured]] 改字段;删掉一段 = 页面上少一张卡。
+# 字段:
+#   href   目标地址            title 标题          sub  次级标识(仓库名 / 域名)
+#   desc   一句话说明          tags  标签数组       hue  强调色(Catppuccin 色相名)
+#   icon   卡片左上角的图标,三选一:
+#            · 省略        -> 用标题首字母
+#            · 文本        -> 原样显示(如 "&gt;_")
+#            · "svg:名字"  -> 用 /images/svg/icons.toml 里登记的行内 SVG
+#   accent = "catppuccin" 时这张卡用紫色强调(only Catppuccin 那张用)
+
+[github]
+login = "FLT18355"
+
+[[featured]]
+href = "https://github.com/FLT18355/terminal"
+icon = "&gt;_"
+title = "Terminal"
+sub = "FLT18355/terminal"
+desc = "Terminal & desktop configs, v2.0: alacritty, fish, fastfetch and more, all themed Catppuccin."
+tags = ["alacritty", "fish", "catppuccin"]
+hue = "teal"
+
+[[featured]]
+href = "https://github.com/FLT18355/lxm"
+icon = "M"
+title = "LX Music"
+sub = "FLT18355/lxm"
+desc = "Local terminal music player driven by mpv, with a Bilibili video/audio downloader. Built on OpenTUI."
+tags = ["mpv", "bilibili", "openTUI"]
+hue = "peach"
+
+[[featured]]
+href = "https://github.com/FLT18355/dotfiles"
+icon = "D"
+title = "Dotfiles"
+sub = "FLT18355/dotfiles"
+desc = "Configured dev environment with Catppuccin theming, deployed with GNU Stow."
+tags = ["shell", "stow", "catppuccin"]
+hue = "lavender"
+
+[[featured]]
+href = "https://github.com/FLT18355/dsh-pet-inAndroid"
+icon = "P"
+title = "dsh-pet"
+sub = "FLT18355/dsh-pet-inAndroid"
+desc = "dsh-pet desktop pet, native Android port. Kotlin + Compose MD3 with Catppuccin Mocha theming."
+tags = ["android", "kotlin", "catppuccin"]
+hue = "sky"
+
+[[featured]]
+href = "https://github.com/FLT18355/gitx"
+icon = "svg:git"
+title = "gitx"
+sub = "FLT18355/gitx"
+desc = "A GitHub accelerator and sync CLI for Chinese users. Clone, download, push, pull, branch, stash, tag and commit through fast mirrors, all in one command."
+tags = ["python", "cli", "github"]
+hue = "green"
+
+# ---------------- 本站之外、自己维护的站点 ----------------
+[[sites]]
+href = "https://flt18355.github.io/Lumen/"
+icon = "svg:sun"
+title = "Lumen"
+sub = "flt18355.github.io/Lumen"
+desc = "A minimalist SVG renderer. Import, transform, optimize and export SVG right in the browser, with Catppuccin variables resolved on export."
+tags = ["svg", "renderer", "catppuccin"]
+hue = "peach"
+
+[[sites]]
+href = "https://flt18355.github.io/Lumen/music.html"
+icon = "svg:note"
+title = "Lumen Player"
+sub = "flt18355.github.io/Lumen/music"
+desc = "A music player. Local playlists with LRC lyrics, a 5-band equalizer, playback speed, sleep timer and a fullscreen visualizer, all running in the browser."
+tags = ["music", "player", "lrc"]
+hue = "mauve"
+
+# ---------------- 关注列表 ----------------
+[[following]]
+href = "https://github.com/herdrdev/herdr"
+icon = "H"
+title = "herdr"
+sub = "herdrdev/herdr"
+desc = "The runtime your coding agents live on. A Rust terminal multiplexer and workspace manager for AI coding agents."
+tags = ["rust", "tui", "agents"]
+hue = "green"
+
+[[following]]
+href = "https://github.com/can1357/oh-my-pi"
+icon = "&pi;"
+title = "oh-my-pi"
+sub = "can1357/oh-my-pi"
+desc = "A coding agent with the IDE wired in. Multi-provider terminal assistant built on Bun and TypeScript."
+tags = ["typescript", "tui", "coding-agent"]
+hue = "pink"
+
+[[following]]
+href = "https://github.com/catppuccin/catppuccin"
+icon = "svg:cat"
+title = "Catppuccin"
+sub = "catppuccin/catppuccin"
+desc = "Soothing pastel theme for the high-spirited. 4 flavors, 26 colors each, ported everywhere."
+tags = ["palette", "theme", "pastel"]
+accent = "catppuccin"
+
+[[following]]
+href = "https://github.com/neovim/neovim"
+icon = "N"
+title = "Neovim"
+sub = "neovim/neovim"
+desc = "Vim-fork focused on extensibility and usability."
+tags = ["editor", "vim", "lua"]
+hue = "yellow"
+
+# ---------------- Download 卡 ----------------
+[download]
+title = "app-release.apk"
+sub = "dsh-pet-inAndroid · v1.0.1"
+href = "https://v4.gh-proxy.org/https://github.com/FLT18355/dsh-pet-inAndroid/releases/download/1.0.1/app-release.apk"

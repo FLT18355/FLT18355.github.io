@@ -1,50 +1,96 @@
-/* _music.scss - 首页 Music Player - Test 音乐播放器 */
+/* _music.scss - 首页 Music 卡:封面 + 曲目信息 + 控制 + 曲目列表
+   版面按「一张唱片」的读法排:封面与文字同处一行,进度条压在下面,
+   曲目列表是卡的最后一段。三部分各自有内容,大屏上不再靠拉伸卡片填空。 */
 
 .music-player {
   display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.music-stage {
+  display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 18px;
 }
 .music-cover-wrap {
+  position: relative;
   flex: none;
 }
 .music-cover {
-  width: 96px;
-  height: 96px;
-  border-radius: 12px;
+  display: block;
+  width: 116px;
+  height: 116px;
+  border-radius: 10px;
   object-fit: cover;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  background: var(--surface);
+  transition: filter 0.4s var(--ease-out);
 }
 .music-cover--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--pink-dim), var(--mauve-dim));
-  color: var(--pink);
+  color: color-mix(in srgb, var(--acc) 70%, var(--text));
+  background: var(--acc-dim);
 }
 .music-cover--placeholder svg {
   width: 40px;
   height: 40px;
 }
+.music-player.is-playing .music-cover {
+  filter: brightness(1.06);
+}
+
+.music-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.music-title {
+  color: var(--text);
+  font-size: 1.22rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.music-artist {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 控制组:三个圆钮排一行,play 最大,两侧的换曲按钮压到同一视觉重量 */
+.music-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
 .music-nav {
   flex: none;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text-muted);
+  border: 0;
+  background: var(--surface);
+  color: var(--text-secondary);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.15s, color 0.15s, transform 0.15s var(--ease-out), background 0.15s;
+  transition: background-color 0.15s, color 0.15s, transform 0.15s var(--ease-out);
 }
 .music-nav:hover:not(:disabled) {
-  border-color: var(--acc);
-  color: var(--acc);
-  transform: translateY(-2px);
+  background: var(--surface-strong);
+  color: var(--text);
+  transform: translateY(-1px);
 }
 .music-nav:focus-visible {
   outline: 2px solid var(--acc);
@@ -55,86 +101,50 @@
   cursor: default;
 }
 .music-nav svg {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   fill: currentColor;
-}
-.music-body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.music-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.music-meta {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.music-title {
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.music-artist {
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  font-family: var(--mono);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .music-toggle {
   flex: none;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--acc) 35%, transparent);
-  background: var(--acc-dim);
-  color: color-mix(in srgb, var(--acc) 80%, var(--text));
+  border: 0;
+  background: var(--acc);
+  color: var(--bg);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s var(--ease-out), border-color 0.15s, background 0.15s, color 0.15s;
+  transition: filter 0.15s, transform 0.15s var(--ease-out);
 }
 .music-toggle:hover {
-  border-color: var(--acc);
-  background: color-mix(in srgb, var(--acc) 26%, transparent);
-  color: var(--acc);
-  transform: translateY(-2px);
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.music-toggle:active {
+  transform: scale(0.97);
 }
 .music-toggle:focus-visible {
   outline: 2px solid var(--acc);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 .music-toggle svg {
-  width: 20px;
-  height: 20px;
+  width: 21px;
+  height: 21px;
   fill: currentColor;
 }
 
-/* 进度条 */
+/* 进度条:轨道是一块中性面,已播部分由滑块位置读出 */
 .music-bar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 .music-seek {
   width: 100%;
-  height: 5px;
+  height: 4px;
   border-radius: 999px;
   appearance: none;
   -webkit-appearance: none;
@@ -149,7 +159,6 @@
   border-radius: 999px;
   background: var(--acc);
   border: 2px solid var(--bg-card);
-  box-shadow: 0 0 0 1px var(--border);
 }
 .music-seek::-moz-range-thumb {
   width: 14px;
@@ -157,7 +166,6 @@
   border-radius: 999px;
   background: var(--acc);
   border: 2px solid var(--bg-card);
-  box-shadow: 0 0 0 1px var(--border);
 }
 .music-seek:disabled {
   opacity: 0.45;
@@ -167,72 +175,125 @@
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 .music-status {
   flex: 1;
   text-align: center;
 }
 
-/* ---------- 小屏适配 ---------- */
+/* 曲目列表:一行一首,当前曲目用实底标出,行高足够点按 */
+.music-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+}
+.music-row {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: background-color 0.15s, color 0.15s;
+}
+.music-row:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+.music-row:focus-visible {
+  outline: 2px solid var(--acc);
+  outline-offset: -2px;
+}
+.music-row[aria-current="true"] {
+  background: var(--acc-dim);
+  color: var(--text);
+}
+.music-row-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.music-row-artist {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.music-row[aria-current="true"] .music-row-artist {
+  color: var(--text-secondary);
+}
+
+/* 均衡器:播放中浮在封面左下角,纯装饰,状态语义由 .music-status 承担 */
+.music-eq {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  height: 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 3px 4px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+  pointer-events: none;
+}
+.music-player.is-playing .music-eq {
+  opacity: 1;
+  transform: none;
+}
+.music-eq i {
+  display: block;
+  width: 2px;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--acc);
+  transform: scaleY(0.28);
+  transform-origin: bottom center;
+}
+
+/* ---------- 小屏:封面缩一档,列表行不换行 ---------- */
 @media (max-width: 560px) {
-  .music-player {
-    gap: 10px;
+  .music-stage {
+    gap: 14px;
   }
   .music-cover {
-    width: 68px;
-    height: 68px;
-    border-radius: 10px;
+    width: 84px;
+    height: 84px;
   }
   .music-cover--placeholder svg {
     width: 30px;
     height: 30px;
   }
-  .music-nav {
-    width: 32px;
-    height: 32px;
-  }
-  .music-nav svg {
-    width: 16px;
-    height: 16px;
-  }
-  .music-toggle {
-    width: 40px;
-    height: 40px;
-  }
-  .music-toggle svg {
-    width: 18px;
-    height: 18px;
-  }
   .music-title {
-    font-size: 0.86rem;
-  }
-  .music-artist {
-    font-size: 0.72rem;
-  }
-  .music-head {
-    gap: 8px;
-  }
-}
-@media (max-width: 430px) {
-  .music-player {
-    gap: 7px;
-  }
-  .music-cover {
-    width: 56px;
-    height: 56px;
-  }
-  .music-nav {
-    width: 29px;
-    height: 29px;
+    font-size: 1.08rem;
   }
   .music-toggle {
+    width: 46px;
+    height: 46px;
+  }
+  .music-nav {
     width: 36px;
     height: 36px;
   }
-  .music-body {
-    gap: 8px;
+  .music-row {
+    padding: 8px 10px;
   }
 }

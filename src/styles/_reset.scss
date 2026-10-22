@@ -22,9 +22,8 @@ body {
   }
 }
 
-/* 全页氛围层:固定定位,z-index:0,内容(.shell z-index:1)与导航(z-index:40)始终在其上。
-   最上面一层是顶部受光(纸面被从上方照亮),下面四层是压淡后的 Catppuccin 色晕,
-   纸质背景层(.bg-art)会盖住右下角,所以色晕刻意收在各角。 */
+/* 全页底色:一支纸色 + 顶部一层极淡受光。
+   背景不参与滚动合成,也没有可辨的色晕:卡片本身(半透明玻璃面)才是层次。 */
 body::before {
   content: "";
   position: fixed;
@@ -32,11 +31,32 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(120vw 72vh at 50% -18%, var(--art-light), transparent 70%),
-    radial-gradient(58vw 42vw at 10% -6%, color-mix(in srgb, var(--primary) 13%, transparent), transparent 64%),
-    radial-gradient(52vw 40vw at 97% 4%, color-mix(in srgb, var(--mauve) 13%, transparent), transparent 66%),
-    radial-gradient(56vw 44vw at 84% 98%, color-mix(in srgb, var(--pink) 10%, transparent), transparent 68%),
-    radial-gradient(50vw 40vw at 12% 94%, color-mix(in srgb, var(--teal) 10%, transparent), transparent 68%);
+    radial-gradient(140vw 60vh at 50% -20%, var(--art-light), transparent 72%),
+    var(--bg);
+}
+
+/* high / max 档:玻璃的折射要「有边可弯」才看得见。
+   平滑底色被位移之后还是平滑的,所以在背景层补一张 1px 直角网格,
+   卡片边缘的位移贴图才有高频结构可以弯。low 不画。
+   high 用淡一档的 alpha,不抢正文;max 用满档。 */
+html[data-mode="high"] body::before,
+html[data-mode="max"] body::before {
+  /* taste-skill-ignore: 位移折射需要的高频背景结构,不是装饰渐变 */
+  background-image:
+    linear-gradient(var(--art-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--art-grid) 1px, transparent 1px),
+    radial-gradient(140vw 60vh at 50% -20%, var(--art-light), transparent 72%);
+  background-size: 44px 44px, 44px 44px, auto;
+  background-position: 0 0, 0 0, 0 0;
+}
+html[data-mode="high"] body::before {
+  opacity: 1;
+}
+html[data-mode="high"] {
+  --art-grid: rgba(205, 214, 244, 0.1);
+}
+html[data-mode="high"][data-theme="latte"] {
+  --art-grid: rgba(108, 103, 92, 0.16);
 }
 
 /* 启用 Maple Mono 后才引用 woff2;默认不触发字体下载,页面秒开。

@@ -44,20 +44,14 @@ html.boot-first { overflow: hidden; }
   overflow: hidden auto;
   padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
     max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
-  background:
-    radial-gradient(120vw 82vh at 50% -20%, var(--art-light), transparent 70%),
-    radial-gradient(70vw 52vw at 10% 6%, var(--primary-dim), transparent 66%),
-    radial-gradient(66vw 50vw at 94% 94%, var(--mauve-dim), transparent 68%),
-    radial-gradient(58vw 44vw at 88% 4%, var(--pink-dim), transparent 70%),
-    radial-gradient(140vw 108vh at 50% 48%, transparent 46%, var(--art-shade) 168%),
-    var(--bg);
+  background: var(--bg);
   transition: opacity 420ms var(--ease-out), transform 560ms var(--ease-out);
 }
 html.boot-first .boot__first { display: flex; }
 html.boot-transition .boot__cover { display: flex; }
 
 /* ============================================================
-   纸叠:卡片下面垫两张错开并轻微旋转的纸,一眼就是本站的纸质语言
+   卡片的居中容器
    ============================================================ */
 .boot__stack {
   position: relative;
@@ -67,22 +61,6 @@ html.boot-transition .boot__cover { display: flex; }
      放得下就居中,放不下就回到顶部并让父层滚动 */
   margin: auto;
 }
-.boot__stack::before,
-.boot__stack::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-.boot__stack::before {
-  background: var(--paper-3);
-  transform: translate(9px, 8px) rotate(1.15deg);
-}
-.boot__stack::after {
-  background: var(--paper-1);
-  transform: translate(-8px, 13px) rotate(-1.5deg);
-}
 
 .boot__card {
   position: relative;
@@ -90,12 +68,8 @@ html.boot-transition .boot__cover { display: flex; }
   width: 100%;
   padding: 30px 28px 24px;
   border-radius: var(--radius);
-  background: var(--glass);
+  background: var(--bg-card);
   border: 1px solid var(--glass-border);
-  /* 玻璃面统一写法:--edge 与 --shadow 必须在同一条里,老浏览器才不会整条阴影失效 */
-  box-shadow: var(--edge), var(--shadow-lift);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
   text-align: center;
   /* 不用 fill-mode:动画结束后必须把 opacity / transform 还给元素本身,
      否则离场的上浮会被残留的填充值吃掉 */
@@ -107,7 +81,7 @@ html.boot-transition .boot__cover { display: flex; }
   to   { opacity: 1; transform: none; }
 }
 
-/* ---------- 头像环:与左栏 avatar-ring 同一语言(品牌渐变细环 + 纸色内圈)。
+/* ---------- 头像环:品牌色细环 + 纸色内圈。
      图走 background 而不是 <img>,两张卡才能共用同一段标记,换图也留在 CSS 里 ---------- */
 .boot__mark {
   position: relative;
@@ -116,8 +90,7 @@ html.boot-transition .boot__cover { display: flex; }
   height: 68px;
   margin: 0 auto 12px;
   border-radius: 50%;
-  background: var(--grad-brand);
-  box-shadow: var(--shadow);
+  background: var(--primary);
 }
 .boot__mark::after {
   content: "";
@@ -130,35 +103,19 @@ html.boot-transition .boot__cover { display: flex; }
   background-image: url("/images/latte_circle.png");
 }
 
-/* ---------- 词标:两张卡共同的识别点,品牌渐变裁字 ---------- */
+/* ---------- 词标:两张卡共同的识别点 ---------- */
 .boot__wordmark {
-  font-family: var(--mono);
-  font-size: 1.55rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   line-height: 1.25;
-  background-image: var(--grad-brand);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: var(--text);
   animation: bootWord 1.1s var(--ease-out);
 }
 @keyframes bootWord {
-  from { opacity: 0; transform: translateY(8px); background-position: 100% 0; }
-  to   { opacity: 1; transform: none; background-position: 0% 0; }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
 }
-/* 渐变裁字不可用时退回单色,不能留下一行透明字。
-   条件只写标准属性:带 or 的 @supports 在老浏览器上会整块判假,兜底反而失效 */
-@supports not (background-clip: text) {
-  .boot__wordmark {
-    background-image: none;
-    color: var(--lavender);
-    -webkit-text-fill-color: currentColor;
-  }
-}
-
 .boot__title {
   margin-top: 6px;
   font-size: 1.02rem;
@@ -192,9 +149,9 @@ html.boot-transition .boot__cover { display: flex; }
    进度爬到刻度处会停一下等门控,所以刻度是信息,不是装饰 */
 html.boot-first .boot__rail {
   background-image:
-    linear-gradient(var(--art-line), var(--art-line)),
-    linear-gradient(var(--art-line), var(--art-line)),
-    linear-gradient(var(--art-line), var(--art-line));
+    linear-gradient(var(--border), var(--border)),
+    linear-gradient(var(--border), var(--border)),
+    linear-gradient(var(--border), var(--border));
   background-size: 1px 58%;
   background-position: var(--boot-tick-1, 34%) 50%, var(--boot-tick-2, 60%) 50%,
     var(--boot-tick-3, 84%) 50%;
@@ -205,7 +162,7 @@ html.boot-first .boot__rail {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: var(--grad-spectrum);
+  background: var(--primary);
   transform: scaleX(var(--boot-p, 0));
   transform-origin: left center;
   will-change: transform;
@@ -254,14 +211,11 @@ html.motion-js .boot__rail-fill::after {
 }
 .boot__pct {
   flex: none;
-  font-family: var(--mono);
   font-variant-numeric: tabular-nums;
   color: var(--text-secondary);
 }
-/* 回访卡右侧是页名而不是数字:等宽大写,和左侧状态同一行的右端 */
+/* 回访卡右侧是页名而不是数字 */
 .boot__pct--label {
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
   color: var(--text-muted);
 }
 
@@ -280,7 +234,7 @@ html.motion-js .boot__rail-fill::after {
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: var(--edge), var(--shadow);
+  box-shadow: none;
   transition: border-color 0.18s, transform 0.18s var(--ease-out), background-color 0.18s;
 }
 .boot__skip:hover { border-color: var(--primary); }

@@ -3,8 +3,8 @@
 // 单独拆出来是因为 Nav.astro 有两种形态(浮动玻璃胶囊 / reader 页的整条玻璃栏),
 // 内容必须完全一致,不想在两种形态里各写一遍。
 import ThemeToggle from './ThemeToggle.vue';
-import { NAV } from '../data/site';
-import type { PageKey } from '../data/site';
+import { NAV } from '../data/content';
+import type { PageKey } from '../data/content';
 
 interface Props {
   current: PageKey;
