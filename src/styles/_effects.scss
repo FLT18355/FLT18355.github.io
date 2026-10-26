@@ -1,0 +1,202 @@
+/* _effects.scss - 全站点击涟漪 + 低配档液态玻璃方块
+   涟漪:tap.ts 在每次 pointerdown 处插一个 .tap-ripple,动画结束后自删。
+   方块:ball.ts 挂载(仅 low 档),位移贴图与 backdrop-filter 由脚本内联,
+         这里只管白玻璃质地、高光、果冻形变(只动 border-radius,不动 transform)。 */
+
+/* ---------- 1. 点击特效(参考 demo 的 volumeLight + 果冻按压) ----------
+   落点处起两层:白色体积光(demo 的 volumeLight:先胀后散,白心带主色余晖)
+   与一圈细描边环(浅色主题里白光是看不见的,靠这圈把点击读出来)。
+   两层都只动 transform / opacity,合成器完成。 */
+.tap-ripple {
+  --tap-size: 320px;
+  position: fixed;
+  z-index: 9990;
+  width: var(--tap-size);
+  height: var(--tap-size);
+  margin: calc(var(--tap-size) / -2) 0 0 calc(var(--tap-size) / -2);
+  border-radius: 50%;
+  pointer-events: none;
+  contain: layout style;
+}
+
+.tap-ripple::before,
+.tap-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* 体积光:白心 + 主色余晖,浅色主题下也能看出「亮了一下」 */
+.tap-ripple::before {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.88) 0%,
+    color-mix(in srgb, var(--primary) 26%, transparent) 34%,
+    transparent 66%
+  );
+  animation: tapLight 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* 细环:压住光的边缘,像水波撞出去的那一圈 */
+.tap-ripple::after {
+  border: 1.5px solid color-mix(in srgb, var(--primary) 62%, transparent);
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--primary) 34%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--primary) 20%, transparent);
+  animation: tapRing 0.66s cubic-bezier(0.16, 0.84, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes tapLight {
+  0%   { transform: scale(0.26); opacity: 0.95; }
+  32%  { opacity: 0.72; }
+  100% { transform: scale(1.06); opacity: 0; }
+}
+
+@keyframes tapRing {
+  0%   { transform: scale(0.1); opacity: 0.95; }
+  70%  { opacity: 0.3; }
+  100% { transform: scale(0.66); opacity: 0; }
+}
+
+/* 减弱动效:不扩散,只留一小片很快消失的光 + 一圈静止的淡环 */
+.tap-ripple--calm::before {
+  animation: tapCalm 0.42s ease-out forwards;
+  transform: scale(0.4);
+}
+.tap-ripple--calm::after {
+  animation: none;
+  transform: scale(0.2);
+  opacity: 0.5;
+}
+
+@keyframes tapCalm {
+  from { opacity: 0.6; }
+  to   { opacity: 0; }
+}
+
+/* 无 color-mix 的老引擎:退回单色,形状与节奏不变 */
+@supports not (background: color-mix(in srgb, red 10%, transparent)) {
+  .tap-ripple::before {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, var(--primary-dim) 36%, transparent 66%);
+  }
+  .tap-ripple::after {
+    border-color: var(--primary-dim);
+    box-shadow: 0 0 12px var(--primary-glow);
+  }
+  .theme-wave {
+    border-color: var(--primary-dim);
+    box-shadow: 0 0 40px var(--primary-glow);
+  }
+}
+
+/* ---------- 2. 液态玻璃圆球(仅 low 档由脚本插入) ---------- */
+.lg-ball {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 35; /* 低于导航(40)与启动层(120),不挡站点控件 */
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  /* demo 的 tint:一层很薄的白 + 顶部受光。
+     深色主题里正是这层白让球保持「透明玻璃」而不是一块黑饼。 */
+  background:
+    linear-gradient(
+      158deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.07) 46%,
+      rgba(255, 255, 255, 0.12) 74%,
+      rgba(255, 255, 255, 0.2) 100%
+    );
+  /* --bloom / --bloom-a 由拖动帧写入:速度越快外发光越亮(demo 的同款反馈) */
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    0 0 calc(var(--bloom, 0) * 1px) rgba(255, 255, 255, var(--bloom-a, 0)),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6),
+    inset 0 -16px 30px rgba(255, 255, 255, 0.12);
+  will-change: transform, left, top;
+  transition: box-shadow 0.2s var(--ease-out);
+}
+
+/* 跟随指针的柔光层(demo 的 .lit-glow):soft-light 把白光照进玻璃里,
+   它是子元素,所以改渐变不会让底下的 backdrop-filter 重新取景 */
+.lg-ball__glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--lx, 50%) var(--ly, 50%),
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.25) 40%,
+    transparent 70%
+  );
+  mix-blend-mode: soft-light;
+  opacity: var(--lit, 0);
+  transition: opacity 0.25s var(--ease-out);
+}
+
+/* 底部反光:玻璃厚度的下半圈 */
+.lg-ball::before {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 4%;
+  height: 26%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255, 255, 255, 0.36), transparent 72%);
+  pointer-events: none;
+}
+
+/* 顶部小高光:一眼认出是玻璃,而不是半透明色块 */
+.lg-ball::after {
+  content: '';
+  position: absolute;
+  left: 20%;
+  top: 9%;
+  width: 42%;
+  height: 18%;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0));
+  filter: blur(0.6px);
+  pointer-events: none;
+}
+
+.lg-ball.is-dragging {
+  cursor: grabbing;
+}
+
+/* ---------- 3. 主题切换的通用扩散环 ----------
+   原生 View Transition 的圆形揭示只在 Chromium 里画,这里补一圈任何引擎都渲染的光环:
+   ThemeToggle.vue 用 WAAPI 从拨钮中心把这一圈推到全屏。 */
+.theme-wave {
+  position: fixed;
+  z-index: 95; /* 压在内容上、启动层(120)之下 */
+  border-radius: 50%;
+  pointer-events: none;
+  border: 2px solid color-mix(in srgb, var(--primary) 70%, transparent);
+  box-shadow:
+    0 0 48px color-mix(in srgb, var(--primary) 30%, transparent),
+    inset 0 0 64px color-mix(in srgb, var(--primary) 14%, transparent);
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-ball {
+    transition: none;
+  }
+  .lg-ball__glow {
+    transition: none;
+  }
+}

@@ -6,12 +6,15 @@ interface Props {
   project: Project;
 }
 const { project } = Astro.props;
+/* 搜索用的归一化串:标题 + 仓库名 + 标签,一处生成,页面里不用再拼 */
+const searchName = [project.title, project.sub, ...project.tags].join(' ').toLowerCase();
 ---
 
 <a
   href={project.href}
   target="_blank"
   rel="noopener"
+  data-name={searchName}
   class:list={['project-card', project.cls, project.hue && `h-${project.hue}`]}
 >
   <span class="project-go" aria-hidden="true">

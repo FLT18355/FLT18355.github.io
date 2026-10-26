@@ -3,6 +3,7 @@
 import Base from '../layouts/Base.astro';
 import CardFold from '../components/CardFold.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import ProjectFilter from '../components/ProjectFilter.astro';
 import SiteCard from '../components/SiteCard.astro';
 import GithubCard from '../components/GithubCard.astro';
 import { featuredProjects, otherSites, DOWNLOAD } from '../data/content';
@@ -31,9 +32,9 @@ const ghSummary = githubUser
     title="Featured Projects"
     note={`${featuredProjects.length} repositories`}
   >
-    <div class="project-grid">
+    <ProjectFilter count={featuredProjects.length} placeholder="Search personal projects by name…">
       {featuredProjects.map((p) => <ProjectCard project={p} />)}
-    </div>
+    </ProjectFilter>
   </CardFold>
 
   {

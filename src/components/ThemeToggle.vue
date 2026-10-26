@@ -28,6 +28,37 @@ onMounted(() => {
     if (meta) meta.setAttribute('content', THEME_COLOR[root.getAttribute('data-theme') || 'mocha'] || THEME_COLOR.mocha);
   };
 
+  /* 通用扩散环:原生 View Transition 的圆形揭示只有 Chromium 会画,
+     这一圈用 WAAPI 推出去,任何引擎、任何档位、任何动效偏好都能渲染。
+     颜色取 var(--primary),会随主题令牌一起过渡。 */
+  const playWave = (ox: number, oy: number, radius: number, reduce: boolean) => {
+    const wave = document.createElement('span');
+    wave.className = 'theme-wave';
+    wave.setAttribute('aria-hidden', 'true');
+    wave.style.cssText =
+      `left:${ox}px;top:${oy}px;width:${radius * 2}px;height:${radius * 2}px;` +
+      `margin-left:${-radius}px;margin-top:${-radius}px`;
+    document.body.appendChild(wave);
+    const done = () => wave.remove();
+    if (typeof wave.animate !== 'function') {
+      window.setTimeout(done, 700);
+      return;
+    }
+    const anim = wave.animate(
+      [
+        { transform: 'scale(0.02)', opacity: 0.92 },
+        { transform: 'scale(1)', opacity: 0 },
+      ],
+      {
+        duration: reduce ? 340 : 680,
+        easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)',
+      }
+    );
+    anim.onfinish = done;
+    /* 兜底:页面切到后台时 animation 可能不走完 */
+    window.setTimeout(done, 1400);
+  };
+
   const commitTheme = (prevTheme: string | null, nextTheme: string) => {
     if (prevTheme === nextTheme) return;
     const apply = () => {
@@ -39,17 +70,25 @@ onMounted(() => {
         /* 隐私模式下写入失败可忽略 */
       }
     };
-    /* 圆形揭示:新主题快照从拨钮中心向外扩散盖过旧快照。
-       用原生 View Transition API,扩散的是新主题画面本身,不存在遮罩层,
-       切换全程不遮挡任何内容;不支持或减弱动效时直接瞬切。 */
+
+    const r = btn.getBoundingClientRect();
+    const ox = r.left + r.width / 2;
+    const oy = r.top + r.height / 2;
+    const radius =
+      Math.hypot(Math.max(ox, window.innerWidth - ox), Math.max(oy, window.innerHeight - oy)) + 2;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* 低配档平时关掉了颜色令牌过渡(_lite.scss),切换这一下临时放回来,
+       让背景 / 文字 / 卡面随扩散环一起换色,而不是硬跳 */
+    root.classList.add('theme-fx');
+    window.setTimeout(() => root.classList.remove('theme-fx'), 720);
+
+    playWave(ox, oy, radius, reduce);
+
+    /* Chromium:再把新主题画面本身做成圆形揭示(画中画,不遮内容);
+       其它引擎就靠上面的光环 + 令牌过渡。 */
     const doc = document as VTDocument;
     if (doc.startViewTransition && !reduce) {
-      const r = btn.getBoundingClientRect();
-      const ox = r.left + r.width / 2;
-      const oy = r.top + r.height / 2;
-      const radius =
-        Math.hypot(Math.max(ox, window.innerWidth - ox), Math.max(oy, window.innerHeight - oy)) + 2;
       const vt = doc.startViewTransition(apply);
       vt.ready.then(
         () => {

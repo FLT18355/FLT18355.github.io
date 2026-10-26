@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import CardFold from '../components/CardFold.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import Leaderboard from '../components/Leaderboard.vue';
+import ProjectFilter from '../components/ProjectFilter.astro';
 import { followingProjects } from '../data/content';
 ---
 
@@ -13,9 +14,9 @@ import { followingProjects } from '../data/content';
   current="following"
 >
   <CardFold id="b-following" class="b-following" title="Recently Following">
-    <div class="project-grid">
+    <ProjectFilter count={followingProjects.length} placeholder="Search followed projects by name…">
       {followingProjects.map((p) => <ProjectCard project={p} />)}
-    </div>
+    </ProjectFilter>
   </CardFold>
 
   <Leaderboard client:load />

@@ -417,6 +417,111 @@ $compare-flavor-hues: (
   .project-grid { grid-template-columns: 1fr 1fr; }
 }
 
+/* ---------- 项目搜索 + 超过 5 条时的滚动预览(scripts/filter.ts) ---------- */
+.project-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project-filter__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--surface);
+  transition: border-color 0.15s, box-shadow 0.2s var(--ease-out);
+}
+
+.project-filter__bar:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.project-filter__icon {
+  display: flex;
+  flex: none;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+
+.project-filter__bar:focus-within .project-filter__icon {
+  color: var(--primary);
+}
+
+.project-filter__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 9px 2px;
+}
+
+.project-filter__input::placeholder {
+  color: var(--text-muted);
+}
+
+/* 搜索框右侧的实时条数 */
+.project-filter__count {
+  flex: none;
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.project-filter__empty {
+  margin: 2px 2px 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* 过滤掉的卡片:display:flex 会压过浏览器默认的 [hidden],必须显式关掉 */
+.project-card[hidden] {
+  display: none;
+}
+
+/* 滚动预览:高度由脚本收到「第 5 张卡片的底边」,右侧是主题色竖向滚动条 */
+.project-scroll {
+  position: relative;
+  border-radius: 14px;
+}
+
+.project-scroll.is-scroll {
+  overflow-y: auto;
+  padding-right: 8px;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 55%, transparent) transparent;
+}
+
+.project-scroll.is-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.project-scroll.is-scroll::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  border-radius: 999px;
+}
+
+.project-scroll.is-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary) 55%, transparent);
+  border-radius: 999px;
+}
+
+.project-scroll.is-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
 .project-card {
   --acc: var(--primary);
   --acc-dim: var(--primary-dim);

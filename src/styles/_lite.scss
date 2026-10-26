@@ -36,8 +36,10 @@ html.lite .boot__card {
   backdrop-filter: none;
 }
 
-/* ---------- 2. 主题切换:几十个颜色令牌的过渡会让整页重绘,低配下直接跳变 ---------- */
-html.lite {
+/* ---------- 2. 主题切换:几十个颜色令牌的过渡会让整页重绘,低配下默认跳变;
+   但切换的当下会短暂挂上 .theme-fx(ThemeToggle.vue),那时放回 :root 的令牌过渡,
+   让「主题色慢慢铺开」这一下在任何档位都看得见 ---------- */
+html.lite:not(.theme-fx) {
   transition: none;
 }
 
