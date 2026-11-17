@@ -15,7 +15,7 @@ url = "https://flt18355.github.io/"
 og_image = "https://flt18355.github.io/logo.svg"
 description = "FLT18355 的个人主页。Catppuccin 爱好者,Python、Arch、终端与 TUI 工具。"
 theme_color_mocha = "#1c1b26"
-theme_color_latte = "#f1ece6"
+theme_color_latte = "#eff1f5"
 
 [profile]
 avatar = "/images/avatar.webp"

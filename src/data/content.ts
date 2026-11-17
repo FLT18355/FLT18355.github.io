@@ -122,7 +122,7 @@ export const SITE = {
   ogImage: str(siteT, 'og_image', 'site'),
   description: str(siteT, 'description', 'site'),
   themeColorMocha: str(siteT, 'theme_color_mocha', 'site', '#1c1b26'),
-  themeColorLatte: str(siteT, 'theme_color_latte', 'site', '#f1ece6'),
+  themeColorLatte: str(siteT, 'theme_color_latte', 'site', '#eff1f5'),
 };
 
 export const PROFILE = {

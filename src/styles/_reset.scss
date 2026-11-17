@@ -56,7 +56,7 @@ html[data-mode="high"] {
   --art-grid: rgba(205, 214, 244, 0.1);
 }
 html[data-mode="high"][data-theme="latte"] {
-  --art-grid: rgba(108, 103, 92, 0.16);
+  --art-grid: rgba(76, 79, 105, 0.14);
 }
 
 /* 启用 Maple Mono 后才引用 woff2;默认不触发字体下载,页面秒开。

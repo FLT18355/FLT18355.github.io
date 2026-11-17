@@ -63,15 +63,15 @@ $latte-tokens: (
   'text': #4c4f69,
   'text-secondary': #5c5f77,
   'text-muted': #6c6f85,
-  'bg': #f1ece6,
-  'bg-card': #f7f2ea,
-  'bg-input': #c9c4b9,
-  'border': #c9c4b9,
-  /* 浅色主题的卡片是「暖白纸」而不是灰米色:
-     玻璃面叠在 #f1ece6 的底上必须更亮,否则整列卡片像蒙了一层灰 */
-  'glass': rgba(255, 253, 249, 0.62),
-  'glass-item': rgba(255, 255, 255, 0.55),
-  'glass-border': rgba(88, 82, 70, 0.14),
+  /* 官方 Latte 中性色:base 是页面,mantle 是卡面,surface0 是输入框 / 描边 */
+  'bg': #eff1f5,
+  'bg-card': #e6e9ef,
+  'bg-input': #ccd0da,
+  'border': #ccd0da,
+  /* 玻璃面取 mantle 半透明,与实色卡面同色温;内层小块取 base,保持一层亮 */
+  'glass': rgba(230, 233, 239, 0.72),
+  'glass-item': rgba(239, 241, 245, 0.72),
+  'glass-border': rgba(76, 79, 105, 0.14),
   'rosewater': #dc8a78,
   'flamingo': #dd7878,
   'pink': #ea76cb,
@@ -189,19 +189,19 @@ $transitions: ();
 /* ---------- 浅色主题 latte ---------- */
 :root[data-theme="latte"] {
   color-scheme: light;
-  /* 浅底上色相文字必须压深:掺 55% --text,黄/桃/粉也能过 4.5:1 */
+  /* 浅底上色相文字必须压深:掺 72% --text,黄/桃/粉也能过 4.5:1 */
   --hue-fg-mix: 72%;
   @each $name, $val in $latte-tokens {
     --#{$name}: #{$val};
   }
-  /* 浅色主题:暖白纸面。高光是几乎不透明的白(纸的受光面),
-     暗边是极淡的暖灰(纸的背光面),两者都压在 0.1 以下,避免变成硬边描线 */
-  --emboss-light: rgba(255, 255, 255, 0.95);
-  --emboss-dark: rgba(124, 110, 90, 0.07);
-  --art-light: rgba(255, 255, 255, 0.6);
-  --art-grid: rgba(108, 103, 92, 0.28);
-  --paper-1: #ebe5da;
+  /* 浅色主题:Latte 的冷白纸面。高光仍是白,暗边取 text 的冷灰,
+     两者都压在 0.1 以下,避免变成硬边描线 */
+  --emboss-light: rgba(255, 255, 255, 0.9);
+  --emboss-dark: rgba(76, 79, 105, 0.08);
+  --art-light: rgba(255, 255, 255, 0.55);
+  --art-grid: rgba(76, 79, 105, 0.22);
+  --paper-1: #dce0e8;
   --shadow: 0 0 #0000;
-  --shadow-lift: 0 10px 24px -18px rgba(124, 110, 90, 0.35);
+  --shadow-lift: 0 10px 24px -18px rgba(76, 79, 105, 0.3);
   --edge: inset 0 1px 0 var(--emboss-light), inset 0 -1px 0 var(--emboss-dark);
 }

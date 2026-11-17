@@ -11,8 +11,8 @@ html.lite {
   --glass-item: rgba(60, 59, 76, 0.96);
 }
 html.lite[data-theme="latte"] {
-  --glass: rgba(255, 253, 249, 0.97);
-  --glass-item: rgba(255, 255, 255, 0.99);
+  --glass: rgba(230, 233, 239, 0.97);
+  --glass-item: rgba(239, 241, 245, 0.99);
 }
 html.lite .site-nav,
 html.lite .site-nav--float .nav-inner,
@@ -106,8 +106,8 @@ html.lite .music-player.is-playing .music-eq i:nth-child(4) { transform: scaleY(
     --glass-item: rgba(60, 59, 76, 0.97);
   }
   :root[data-theme="latte"] {
-    --glass: rgba(255, 253, 249, 0.98);
-    --glass-item: rgba(255, 255, 255, 0.99);
+    --glass: rgba(230, 233, 239, 0.98);
+    --glass-item: rgba(239, 241, 245, 0.99);
   }
   .site-nav,
   .site-nav--float .nav-inner,
