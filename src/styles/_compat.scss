@@ -21,6 +21,10 @@
     --surface: #dee1e8;
     --surface-strong: #d8dbe3;
   }
+  /* macOS 工具栏靠 color-mix 掺色相;不支持时退回中性面,工具栏不会变透明 */
+  .card-fold > .block-header {
+    background: var(--surface-strong);
+  }
 
   /* ---------- 2. 氛围层:回到只用 rgba 令牌的渐变 ---------- */
   body::before {

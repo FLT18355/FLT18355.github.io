@@ -228,15 +228,17 @@ $contact-hues: (
 
 /* ---------- 区块 ---------- */
 .block {
-  --acc: var(--primary);
-  --acc-dim: var(--primary-dim);
+  /* 色相由外层 .b-* 设置在 --acc 上;这里不能再声明 --acc: var(--primary),
+     否则会把继承来的色相盖掉,所有卡片退回同一个主色。
+     内边距提成变量:macOS 工具栏靠负边距铺满卡宽,断点只改变量。 */
+  --pad: 28px;
   position: relative;
   /* 卡片面是主题的半透明玻璃底;不描边、不投影。
      用 --glass 而不是 bg-card:双主题都由同一支令牌决定卡片与纸底的关系。 */
   background: var(--glass);
   border: 0;
   border-radius: var(--radius);
-  padding: 28px;
+  padding: var(--pad);
   transition: background-color 0.2s;
 }
 /* 区块上沿不再画色相细线:色相由标题前的方块与卡片内的凹槽表达 */
