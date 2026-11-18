@@ -1,7 +1,7 @@
 ---
 // search.astro - Bing 搜索页(无左栏,单列居中)
 import Base from '../layouts/Base.astro';
-import SearchPanel from '../components/SearchPanel.vue';
+import SearchPanel from '../components/SearchPanel.tsx';
 ---
 
 <Base
@@ -10,5 +10,6 @@ import SearchPanel from '../components/SearchPanel.vue';
   current="search"
   rail={false}
 >
+  <h1 class="sr-only">Search</h1>
   <SearchPanel client:load />
 </Base>

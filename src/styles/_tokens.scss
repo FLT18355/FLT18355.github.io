@@ -151,8 +151,8 @@ $transitions: ();
   /* 版面尺度:标题、正文、注释各一档,避免「什么都差不多大」。
      标题走 --fs-title(区块标题),正文 --fs-body,注释 --fs-note。 */
   --fs-title: clamp(1.25rem, 1.1rem + 0.45vw, 1.5rem);
-  --fs-body: 0.95rem;
-  --fs-note: 0.82rem;
+  --fs-body: 1rem;
+  --fs-note: 0.875rem;
   /* 强调用的实色:标题与主数字用一支固定色,不再用渐变裁字。
      渐变裁字在浅色主题、放大字体与截图工具里都会掉成透明,读不出重量。 */
   --ink-strong: var(--text);

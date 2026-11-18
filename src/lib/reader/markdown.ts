@@ -179,7 +179,7 @@ export async function renderDocument(opts: RenderOptions): Promise<DocumentFragm
   }
 
   // 6. 代码块:包一层 figure,顶部给出语言标签与复制按钮。
-  //    复制逻辑在 MarkdownReader.vue 的 onDocClick 里兜(按 data-code-copy 找按钮)。
+  //    复制逻辑在 MarkdownReader.tsx 的 onDocClick 里兜(按 data-code-copy 找按钮)。
   for (const pre of Array.from(root.querySelectorAll('pre'))) {
     const code = pre.querySelector('code');
     if (!code) continue;

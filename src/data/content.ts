@@ -4,7 +4,7 @@
 // 并把结果整理成组件真正用的形状。TOML 写错(字段拼错 / 色相名不存在)会在
 // `npm run build` 时直接报错并指出文件,不会静默渲染出一张错卡。
 //
-// 只给 .astro 用。浏览器侧组件(client:load 的 Vue 岛)走 src/data/runtime.ts:
+// 只给 .astro 用。浏览器侧组件(client:load 的 React 岛)走 src/data/runtime.ts:
 // 那边只读 music.toml 与 weather.toml,不把整份站点内容打进前端 bundle。
 import { parse } from 'smol-toml';
 

@@ -45,7 +45,7 @@
   text-wrap: pretty;
 }
 .font-picker-note {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   line-height: 1.6;
   margin-bottom: 16px;
@@ -92,14 +92,14 @@
 .font-option-name em {
   font-style: normal;
   font-weight: 600;
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 .font-option[data-font-choice="maple"] .font-option-name {
   font-family: var(--mono);
 }
 .font-option-desc {
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   line-height: 1.5;
 }

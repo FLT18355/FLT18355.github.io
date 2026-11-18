@@ -1,4 +1,4 @@
-/* _polish.scss - 精修层:材质、分层入场与微交互
+/* _polish.scss - 精修层:材质与微交互
    本文件只做「增量美化」,不改任何布局结构与内容语义,所有规则都可整段删除而无副作用。
 
    沿用本站既有三条纪律(见 README「维护要点」):
@@ -50,55 +50,6 @@
 }
 ::-webkit-scrollbar-corner {
   background: var(--bg);
-}
-
-/* ============================================================
-   3. 入口动效:区块用「位移 + 轻微缩放」,比纯位移更稳、更有落点
-   (_layout.scss 的 blockIn 在此被同优先级、更靠后的规则覆盖)
-   ============================================================ */
-@keyframes polishBlockIn {
-  from { opacity: 0; transform: translateY(26px) scale(0.994); }
-  55%  { opacity: 1; }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-html.motion-js .block.in {
-  animation: polishBlockIn 0.72s var(--ease-out) both;
-  animation-delay: var(--d, 0s);
-}
-
-/* 标题:从左侧轻推入,和已有的「强调线从左画出」同一方向,读起来是一件事 */
-@keyframes polishTitleIn {
-  from { opacity: 0; transform: translateX(-12px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-html.motion-js .block.in > .block-header > h2 {
-  animation: polishTitleIn 0.6s var(--ease-out) backwards;
-  animation-delay: calc(var(--d, 0s) + 0.04s);
-}
-/* 标题行右侧的小注 / 统计:比标题再晚一拍,形成 标题 → 规格行 的阅读顺序 */
-html.motion-js .block.in > .block-header .fold-tail > * {
-  animation: polishTitleIn 0.5s var(--ease-out) backwards;
-  animation-delay: calc(var(--d, 0s) + 0.14s);
-}
-
-/* 卡片正文:按 DOM 顺序逐级入场。用 backwards 而不是 both ——
-   动画结束后必须把 transform 还给元素本身,否则 .download-card 之类的
-   悬停位移会被残留的填充值吃掉。 */
-@keyframes polishItemIn {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: none; }
-}
-html.motion-js .block.in .fold-body > * {
-  animation: polishItemIn 0.58s var(--ease-out) backwards;
-}
-@for $i from 1 through 8 {
-  html.motion-js .block.in .fold-body > *:nth-child(#{$i}) {
-    animation-delay: calc(var(--d, 0s) + #{0.16s + ($i - 1) * 0.07s});
-  }
-}
-/* 超过 8 项后不再累加延迟,否则长页面最后一个区块要等太久 */
-html.motion-js .block.in .fold-body > *:nth-child(n+9) {
-  animation-delay: calc(var(--d, 0s) + 0.65s);
 }
 
 /* ============================================================
@@ -264,20 +215,6 @@ html.motion-js .weather-refresh:disabled svg {
 }
 
 /* ============================================================
-   11. 搜索页:快捷入口逐个浮起
-   ============================================================ */
-@for $i from 1 through 5 {
-  html.motion-js .block.in .search-quicklinks > *:nth-child(#{$i}) {
-    animation: polishItemIn 0.5s var(--ease-out) backwards;
-    animation-delay: calc(var(--d, 0s) + #{0.2s + ($i - 1) * 0.06s});
-  }
-}
-html.motion-js .block.in .search-quicklinks > *:nth-child(n+6) {
-  animation: polishItemIn 0.5s var(--ease-out) backwards;
-  animation-delay: calc(var(--d, 0s) + 0.5s);
-}
-
-/* ============================================================
    12. 节奏微调:内容列间距
    注意:这里刻意不改 .block 的内边距 —— .b-search 自己写了 padding: 40px 28px,
    两边同为 (0,1,0),本文件排在 _search.scss 之后会把那条盖掉。
@@ -290,11 +227,6 @@ html.motion-js .block.in .search-quicklinks > *:nth-child(n+6) {
    13. 减弱动效:本文件新增的动效整体熄火(其余规则来自 _responsive.scss)
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  html.motion-js .block.in,
-  html.motion-js .block.in > .block-header > h2,
-  html.motion-js .block.in > .block-header .fold-tail > *,
-  html.motion-js .block.in .fold-body > *,
-  html.motion-js .block.in .search-quicklinks > *,
   html.motion-js .avatar-halo,
   html.motion-js .music-eq i,
   html.motion-js .music-player.is-playing .music-cover--placeholder svg,

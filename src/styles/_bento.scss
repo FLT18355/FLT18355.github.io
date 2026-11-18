@@ -16,8 +16,8 @@
    行内卡片由 align-items:stretch 补足到整行高度,短卡片的筹码组垂直居中,
    读起来是刻意的留白,而不是「没排满」。
 
-   网格项现在是 <liquid-glass> 玻璃壳(卡片本体在其内部),色相类也挂在壳上。
-   Vue 岛外面还套着 Astro 的 <astro-island>(display:contents),所以这里的
+   网格项现在是 .glass-shell 玻璃壳(卡片本体在其内部),色相类也挂在壳上。
+   React 岛外面还套着 Astro 的 <astro-island>(display:contents),所以这里的
    选择器一律用后代而不是直接子元素,否则音乐 / 天气两张卡会掉出网格。
    ============================================================ */
 @media (min-width: 1120px) {

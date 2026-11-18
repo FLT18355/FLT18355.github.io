@@ -1,6 +1,6 @@
 // weather.ts - 首页 Local Weather 卡的数据源:定位链路、Open-Meteo 请求、WMO 天气码与图标
 // 与 GitHub 资料卡(github.ts,构建时拉取)方向相反:天气依赖访客所在位置,
-// 只能在浏览器侧请求,所以这里的一切都是给 client:load 的 Vue 岛(WeatherWidget.vue)用的。
+// 只能在浏览器侧请求,所以这里的一切都是给 client:load 的 React 岛(WeatherWidget.tsx)用的。
 // 定位链路:navigator.geolocation -> 无 Key 的 IP 定位端点 -> 默认坐标(北京)。
 // 设置项(兜底城市 / IP 端点 / 缓存时长)在 content/weather.toml,由 src/data/runtime.ts 读入。
 

@@ -40,7 +40,7 @@ details.block.card-fold {
 }
 
 /* 展开动画只发给「用户操作」:脚本就绪后给 <html> 加 .fold-anim,
-   首屏渲染不播,避免与区块入场(blockIn)叠成两层动画 */
+   首屏渲染不播,只在用户操作时播放 */
 .fold[open] > .fold-body {
   animation: none;
 }

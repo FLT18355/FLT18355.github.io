@@ -1,74 +1,29 @@
-/* _motion.scss - 增量动效层(规则需要 html.motion-js 门控)
-   由 motion.ts 在「支持 IntersectionObserver 且用户未要求减弱动效」时
-   给 <html> 加上该类;否则本文件内动效规则均为惰性。 */
+/* _motion.scss - 悬停与状态微动效
+   页面内容首帧完整可见:不做滚动入场、不画滚动进度线,滚动只移动页面本身。
+   规则由 html.motion-js 门控;减弱动效时该门控类不存在,位移与动画整段不生效,
+   颜色、边框与焦点环照常变化(规则见 _responsive.scss 的 reduced-motion 段)。 */
 
-/* ---------- 1. 标题入场:标题本身的上浮已由 _polish.scss 提供,这里不再画强调线 ---------- */
-
-/* ---------- 2. 标签/筹码跟随区块做二级错峰入场 ---------- */
-html.motion-js .block.in .interest,
-html.motion-js .block.in .tech-tag,
-html.motion-js .block.in .flavor,
-html.motion-js .block.in .weather-tile,
-html.motion-js .block.in .stat-card {
-  animation: chipIn 0.5s var(--ease-out) backwards;
-}
-@for $i from 1 through 4 {
-  html.motion-js .block.in .interest:nth-child(#{$i}),
-  html.motion-js .block.in .tech-tag:nth-child(#{$i}),
-  html.motion-js .block.in .flavor:nth-child(#{$i}),
-  html.motion-js .block.in .weather-tile:nth-child(#{$i}),
-  html.motion-js .block.in .stat-card:nth-child(#{$i}) {
-    animation-delay: calc(var(--d, 0s) + #{0.18s + ($i - 1) * 0.06s});
-  }
-}
-html.motion-js .block.in .interest:nth-child(n+5),
-html.motion-js .block.in .tech-tag:nth-child(n+5),
-html.motion-js .block.in .flavor:nth-child(n+5),
-html.motion-js .block.in .weather-tile:nth-child(n+5),
-html.motion-js .block.in .stat-card:nth-child(n+5) {
-  animation-delay: calc(var(--d, 0s) + 0.42s);
-}
-@keyframes chipIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ---------- 3. 卡片悬停只抬一档,不铺跟随鼠标的光斑 ---------- */
+/* ---------- 1. 卡片悬停只抬一档,不铺跟随鼠标的光斑 ---------- */
 html.motion-js .project-card {
   transition: transform 0.2s var(--ease-out);
 }
 html.motion-js .project-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 html.motion-js .project-card:active {
-  transform: translateY(0) scale(0.99);
+  transform: translateY(0) scale(0.985);
 }
 
 /* 主题切换圆形揭示:关掉 View Transition 默认交叉淡化,
-   扩散动画由 ThemeToggle.vue 用 clip-path 施加在 ::view-transition-new(root) 上。
-   不能挂 .motion-js 门控:拨钮逻辑在 ThemeToggle.vue,与动效层无关。 */
+   扩散动画由 ThemeToggle.tsx 用 clip-path 施加在 ::view-transition-new(root) 上。
+   不能挂 .motion-js 门控:拨钮逻辑在 ThemeToggle.tsx,与动效层无关。 */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
-/* ---------- 4. 阅读进度线:页面最顶上的主色细线 ---------- */
-.progress-line {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  z-index: 60;
-  pointer-events: none;
-  background: var(--primary);
-  transform: scaleX(var(--p, 0));
-  transform-origin: left center;
-  opacity: 0.85;
-}
-
-/* ---------- 6. 联系方式图标:悬停时轻轻抖一下 ---------- */
+/* ---------- 2. 联系方式图标:悬停时轻轻抖一下 ---------- */
 html.motion-js .contact-item:hover .contact-ico {
   animation: iconPop 0.45s var(--ease-out);
 }
@@ -79,61 +34,35 @@ html.motion-js .contact-item:hover .contact-ico {
   100% { transform: scale(1) rotate(0deg); }
 }
 
-/* ---------- 7. 页脚:滚动到附近时浮现 ---------- */
-html.motion-js .footline {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
-}
-html.motion-js .footline.in {
-  opacity: 1;
-  transform: none;
-}
-
-/* ---------- 9. Search 页快捷链接:悬停微浮起;最近搜索 chips 入场 ---------- */
+/* ---------- 3. Search 页快捷链接:悬停微浮起 ---------- */
 html.motion-js .quicklink:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 html.motion-js .quicklink {
   transition: border-color 0.15s, color 0.15s, background-color 0.2s var(--ease-out), transform 0.25s var(--ease-out);
 }
-html.motion-js .search-chip {
-  animation: chipIn 0.4s var(--ease-out) backwards;
-}
-@for $i from 1 through 4 {
-  html.motion-js .search-chip:nth-child(#{$i}) {
-    animation-delay: #{$i * 0.05s};
-  }
-}
-html.motion-js .search-chip:nth-child(n+5) {
-  animation-delay: 0.25s;
-}
 
-/* ---------- 减弱动效:整体熄火 ---------- */
+/* ---------- 4. 减弱动效:位移整体熄火 ---------- */
 @media (prefers-reduced-motion: reduce) {
-  html.motion-js .block,
-  html.motion-js .block-header::after,
-  html.motion-js .footline,
-  html.motion-js .interest,
-  html.motion-js .tech-tag,
-  html.motion-js .flavor,
-  html.motion-js .stat-card,
-  html.motion-js .contact-ico {
+  html.motion-js .avatar-halo,
+  html.motion-js .music-eq i,
+  html.motion-js .music-player.is-playing .music-cover--placeholder svg,
+  html.motion-js .skel-line,
+  html.motion-js .skel-chip,
+  html.motion-js .weather-refresh:disabled svg {
     animation: none !important;
     opacity: 1;
     transform: none;
-    transition: none;
   }
-  html.motion-js .project-card {
-    transform: none !important;
-  }
-  html.motion-js .quicklink {
+  .project-card:hover,
+  .project-card:active,
+  .quicklink:hover,
+  .contact-item:hover,
+  .download-card:hover,
+  .site-card:hover {
     transform: none;
-    transition: none;
   }
-  html.motion-js .search-chip {
-    animation: none;
-    opacity: 1;
+  .nav-item:hover:not(:active) {
     transform: none;
   }
 }

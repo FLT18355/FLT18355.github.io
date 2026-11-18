@@ -1,14 +1,12 @@
 ---
 // Base.astro - 全站骨架:head 元信息 + 主题/字体恢复内联脚本 + 导航 + 两栏壳
 import '../styles/global.scss';
-/* liquid-glass 的 chrome 三个装饰层样式(固定部分,随页面样式一起下发)。
-   挂载闸门在 scripts/glass.ts,低配 / 老浏览器下不会引入任何玻璃 JS。 */
-import '@liquidglassjs/core/css';
+import '@vepando/liquid-glass-react/style.css';
 import Nav from '../components/Nav.astro';
 import Rail from '../components/Rail.astro';
 import Footline from '../components/Footline.astro';
 import BootScreen from '../components/BootScreen.astro';
-import FontPicker from '../components/FontPicker.vue';
+import FontPicker from '../components/FontPicker.tsx';
 import HeadPrefs from '../components/HeadPrefs.astro';
 import { SITE } from '../data/content';
 import type { PageKey } from '../data/content';
@@ -57,7 +55,7 @@ const ldJson = JSON.stringify(
     <meta property="og:description" content={description} />
     <meta property="og:url" content={SITE.url} />
     <meta property="og:image" content={SITE.ogImage} />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <script type="application/ld+json" set:html={ldJson}></script>
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <title>{title}</title>
@@ -96,6 +94,7 @@ const ldJson = JSON.stringify(
     </script>
   </head>
   <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <!-- 启动界面(首启加载 / 回访过渡):固定层压在最上面,显隐由 html 上的
          .boot-first / .boot-transition 决定,两个类已在 head 内联脚本里写好 -->
     <BootScreen current={current} />
@@ -110,7 +109,7 @@ const ldJson = JSON.stringify(
     <div class:list={['shell', !rail && 'shell--bare', !rail && wide && 'shell--wide']}>
       {rail && <Rail />}
       <!-- ============ Right column: content ============ -->
-      <main class:list={['content', contentClass]}>
+      <main class:list={['content', contentClass]} id="main" tabindex="-1">
         <slot />
 
         <Footline />
@@ -123,11 +122,8 @@ const ldJson = JSON.stringify(
       import '../scripts/motion.ts';
       import '../scripts/nav.ts';
       import '../scripts/fold.ts';
-      /* 必须排在 fold.ts 之后:boot.ts 要把右下角折叠坞一并 inert,
-         而且 motion.ts 会监听它派发的 boot:done 才开始滚动入场 */
+      /* 必须排在 fold.ts 之后:启动层离场时要与折叠状态一起收口 */
       import '../scripts/boot.ts';
-      /* liquid-glass 挂载闸门:低配 / 减弱透明度 / 老浏览器直接跳过(见 glass.ts) */
-      import '../scripts/glass.ts';
       /* 页脚的渲染档位开关(低配 / 高配) */
       import '../scripts/mode.ts';
       /* 全站点击涟漪(所有档位) + 低配档专属的液态玻璃圆球(见 tap.ts / ball.ts) */

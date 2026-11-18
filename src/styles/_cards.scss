@@ -185,11 +185,11 @@ $tech-colors: (
   color: var(--text);
 }
 .preview-sub {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 .preview-text {
-  font-size: 0.82rem;
+  font-size: 1rem;
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 14px;
@@ -205,7 +205,7 @@ $tech-colors: (
   border: 1px solid transparent;
   background: var(--primary);
   color: var(--bg);
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.15s var(--ease-out);
@@ -221,7 +221,7 @@ $tech-colors: (
   border-radius: 10px;
   background: var(--bg-input);
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   margin-bottom: 12px;
 }
 .preview-tags {
@@ -232,7 +232,7 @@ $tech-colors: (
 .preview-tag {
   padding: 3px 10px;
   border-radius: 999px;
-  font-size: 0.76rem;
+  font-size: 0.8125rem;
   background: var(--surface-strong);
   color: var(--text-muted);
 }
@@ -270,7 +270,7 @@ $tech-colors: (
 .compare-name {
   flex: none;
   width: 80px;
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
   text-align: right;
 }
@@ -279,7 +279,7 @@ $tech-colors: (
   height: 1px;
 }
 .compare-flavor {
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   text-align: center;
   white-space: nowrap;
@@ -320,7 +320,7 @@ $compare-flavor-hues: (
   transform: translateY(-2px) scale(1.02);
 }
 .compare-hex {
-  font-size: 0.58rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   text-align: center;
   overflow: hidden;
@@ -329,9 +329,9 @@ $compare-flavor-hues: (
 }
 /* 窄屏:名字列收窄、Hex 缩一号,四列仍然对得齐 */
 @media (max-width: 560px) {
-  .compare-name { width: 54px; font-size: 0.66rem; }
+  .compare-name { width: 54px; font-size: 0.8125rem; }
   .compare-bars { gap: 4px; }
-  .compare-hex { font-size: 0.52rem; }
+  .compare-hex { display: none; }
 }
 .palette-head {
   display: flex;
@@ -346,7 +346,7 @@ $compare-flavor-hues: (
   letter-spacing: -0.01em;
 }
 .palette-head span {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 .palette-group {
@@ -393,13 +393,13 @@ $compare-flavor-hues: (
   border-radius: 10px;
 }
 .swatch-name {
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text);
   line-height: 1.2;
 }
 .swatch-hex {
-  font-size: 0.62rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   line-height: 1.2;
 }
@@ -470,7 +470,7 @@ $compare-flavor-hues: (
 /* 搜索框右侧的实时条数 */
 .project-filter__count {
   flex: none;
-  font-size: 0.76rem;
+  font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
   padding: 2px 8px;
@@ -589,7 +589,7 @@ $card-hues: (
 }
 .project-card:hover {
   border-color: var(--acc);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-lift);
 }
 .project-card:active { transform: translateY(0) scale(0.985); }
@@ -623,14 +623,14 @@ $card-hues: (
 }
 
 .project-title {
-  font-size: 0.98rem;
+  font-size: 1.0625rem;
   font-weight: 700;
   color: var(--text);
   line-height: 1.3;
   transition: color 0.15s;
 }
 .project-sub {
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   line-height: 1.4;
   transition: color 0.15s;
@@ -638,8 +638,8 @@ $card-hues: (
 .project-card:hover .project-title { color: var(--acc); }
 .project-card:hover .project-sub { color: var(--text-secondary); }
 .project-desc {
-  font-size: 0.86rem;
-  color: var(--text-muted);
+  font-size: 1rem;
+  color: var(--text);
   line-height: 1.6;
   flex: 1;
   text-wrap: pretty;
@@ -653,7 +653,7 @@ $card-hues: (
 .project-meta span {
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   background: color-mix(in srgb, var(--acc) 8%, var(--surface-strong));
   border: 1px solid transparent;
   color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
@@ -695,7 +695,7 @@ $card-hues: (
 }
 .download-card:hover {
   border-color: var(--acc);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-lift);
 }
 .download-card:active { transform: translateY(0) scale(0.985); }
@@ -722,7 +722,7 @@ $card-hues: (
   gap: 3px;
 }
 .download-title {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text);
   overflow: hidden;
@@ -731,7 +731,7 @@ $card-hues: (
   transition: color 0.15s;
 }
 .download-sub {
-  font-size: 0.76rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   line-height: 1.4;
   transition: color 0.15s;
@@ -742,7 +742,7 @@ $card-hues: (
   flex: none;
   padding: 8px 16px;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   background: var(--acc-dim);
   color: var(--acc);
@@ -768,7 +768,7 @@ $card-hues: (
   }
   .download-go {
     padding: 7px 14px;
-    font-size: 0.76rem;
+    font-size: 0.8125rem;
   }
 }
 @media (max-width: 430px) {
@@ -869,22 +869,22 @@ $site-hues: (
   gap: 3px 10px;
 }
 .site-title {
-  font-size: 1rem;
+  font-size: 1.0625rem;
   font-weight: 700;
   color: var(--text);
   line-height: 1.3;
   transition: color 0.15s;
 }
 .site-sub {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   transition: color 0.15s;
 }
 .site-card:hover .site-title { color: var(--acc); }
 .site-card:hover .site-sub { color: var(--text-secondary); }
 .site-desc {
-  font-size: 0.86rem;
-  color: var(--text-muted);
+  font-size: 1rem;
+  color: var(--text);
   line-height: 1.6;
   text-wrap: pretty;
 }
@@ -897,7 +897,7 @@ $site-hues: (
 .site-tags span {
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 0.68rem;
+  font-size: 0.8125rem;
   background: color-mix(in srgb, var(--acc) 8%, var(--surface-strong));
   border: 1px solid transparent;
   color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
@@ -915,7 +915,7 @@ $site-hues: (
   gap: 7px;
   padding: 8px 14px;
   border-radius: 999px;
-  font-size: 0.76rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   background: var(--acc-dim);
   color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
@@ -1008,7 +1008,7 @@ $site-hues: (
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
 }
 .gh-login a {
   color: color-mix(in srgb, var(--acc), var(--text) var(--hue-fg-mix));
@@ -1020,14 +1020,14 @@ $site-hues: (
 .gh-badge {
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 0.76rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   background: var(--surface-strong);
 }
 .gh-bio {
-  font-size: 0.88rem;
+  font-size: 1rem;
   line-height: 1.6;
-  color: var(--text-secondary);
+  color: var(--text);
   text-wrap: pretty;
 }
 
@@ -1076,7 +1076,7 @@ $gh-stat-hues: (
   color: color-mix(in srgb, var(--sh), var(--text) var(--hue-fg-mix));
 }
 .gh-stat-label {
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
 }
 
@@ -1107,7 +1107,7 @@ $gh-stat-hues: (
   overflow-wrap: anywhere;
 }
 .gh-detail dd.is-mono {
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
 }
 .gh-detail dd.is-empty {
@@ -1123,7 +1123,7 @@ $gh-stat-hues: (
 
 /* ---------- API 端点:默认折叠,需要时再展开 ---------- */
 .gh-api {
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
 }
 .gh-api summary {
   display: flex;
@@ -1227,7 +1227,7 @@ $gh-stat-hues: (
   min-width: 0;
 }
 .fold-stat {
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   white-space: nowrap;
   transition: color 0.15s;
@@ -1237,7 +1237,7 @@ $gh-stat-hues: (
   flex: none;
   width: 8px;
   height: 8px;
-  margin: 0 2px 4px;
+  margin: 0 2px;
   border-right: 1.8px solid var(--acc);
   border-bottom: 1.8px solid var(--acc);
   transform: rotate(45deg);
@@ -1335,7 +1335,6 @@ $stat-hues: (
 }
 .stat-card:hover {
   background: color-mix(in srgb, var(--sc) 10%, var(--surface));
-  transform: translateY(-2px);
 }
 .stat-value {
   font-size: 1.7rem;
@@ -1345,7 +1344,7 @@ $stat-hues: (
   line-height: 1.1;
 }
 .stat-label {
-  font-size: 0.84rem;
+  font-size: 0.875rem;
   color: var(--text-muted);
 }
 @media (max-width: 560px) {
@@ -1441,7 +1440,7 @@ $stat-hues: (
   border-radius: 8px;
   background: var(--surface-strong);
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   font-weight: 700;
 }
 .leaderboard-medal {
@@ -1475,7 +1474,7 @@ $stat-hues: (
   gap: 1px;
 }
 .leaderboard-model {
-  font-size: 0.86rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text);
   overflow: hidden;
@@ -1483,7 +1482,7 @@ $stat-hues: (
   white-space: nowrap;
 }
 .leaderboard-creator {
-  font-size: 0.68rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1511,7 +1510,7 @@ $stat-hues: (
 }
 .leaderboard-score-num {
   position: relative;
-  font-size: 0.92rem;
+  font-size: 1rem;
   font-weight: 700;
   color: color-mix(in srgb, var(--acc) 78%, var(--text));
   font-variant-numeric: tabular-nums;
@@ -1520,7 +1519,7 @@ $stat-hues: (
 .leaderboard-score-label {
   position: relative;
   flex: 1;
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   color: var(--text-muted);
   text-align: right;
   overflow: hidden;

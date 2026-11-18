@@ -79,7 +79,7 @@
 }
 .search-note kbd {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   padding: 1px 6px;
   border-radius: 5px;
   border: 1px solid var(--border);
@@ -134,7 +134,7 @@
   height: 100%;
 }
 .quicklink-name {
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 /* 快捷链接品牌色:多色仅在语义处(品牌入口),与联系方式一致 */
@@ -165,7 +165,7 @@
   border: none;
   background: none;
   color: var(--text-muted);
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
   padding: 2px 8px;
   border-radius: 999px;
   cursor: pointer;
@@ -287,7 +287,7 @@
   background: none;
   padding: 6px 14px;
   border-radius: 999px;
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-muted);
   cursor: pointer;

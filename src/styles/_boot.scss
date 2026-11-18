@@ -257,7 +257,7 @@ html.motion-js .boot__rail-fill::after {
 
 /* ============================================================
    离场:封面轻轻推近并淡出,卡片同时上浮。
-   boot.ts 在「开始离场」这一刻就派发 boot:done,正文的滚动入场正好从封面后面接上来
+   boot.ts 在「开始离场」这一刻派发 boot:done,需要同步收口的脚本监听它
    ============================================================ */
 html.boot-leaving .boot { pointer-events: none; }
 html.boot-leaving .boot__first,

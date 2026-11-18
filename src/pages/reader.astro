@@ -1,7 +1,7 @@
 ---
 // reader.astro - Markdown 阅读器页(无左栏、占满 shell 宽度的 bare+wide 模式)
 import Base from '../layouts/Base.astro';
-import MarkdownReader from '../components/MarkdownReader.vue';
+import MarkdownReader from '../components/MarkdownReader.tsx';
 ---
 
 <Base
@@ -12,5 +12,6 @@ import MarkdownReader from '../components/MarkdownReader.vue';
   wide
   glassNav={false}
 >
+  <h1 class="sr-only">Markdown Reader</h1>
   <MarkdownReader client:load />
 </Base>

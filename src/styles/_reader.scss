@@ -287,7 +287,7 @@
   gap: 8px;
   margin: 0 6px 8px;
 }
-/* 图标是绝对定位的放大镜,占 x=9→24px(见 MarkdownReader.vue 的 searchIconStyle),
+/* 图标是绝对定位的放大镜,占 x=9→24px(见 MarkdownReader.tsx 的 searchIconStyle),
    所以左内边距必须让出来,否则占位文字压在图标上 */
 .reader-filter {
   flex: 1;
@@ -1011,7 +1011,7 @@
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
-/* 复制成功:按钮转绿 1.4s,由 MarkdownReader.vue 的计时器复位 */
+/* 复制成功:按钮转绿 1.4s,由 MarkdownReader.tsx 的计时器复位 */
 .reader-doc .md-code-copy.is-done {
   color: var(--green);
   border-color: color-mix(in srgb, var(--green) 55%, var(--border));

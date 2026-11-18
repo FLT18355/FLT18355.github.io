@@ -3,7 +3,7 @@
 // 默认展开(未折叠);折叠 / 展开由浏览器原生实现,无 JS 也能点标题收起。
 // 状态记忆、右下角折叠坞、快捷键与深链展开见 src/scripts/fold.ts;样式见 src/styles/_fold.scss。
 //
-// 外面套一层 <liquid-glass>(components/Glass.astro):玻璃面画在这层上,<details> 仍是
+// 外面套一层 .glass-shell(components/Glass.astro):玻璃面画在这层上,<details> 仍是
 // 折叠能力的本体。色相类(cls)挂在玻璃壳上,--acc 继承进卡片,原来的 .b-xxx 选择器不受影响。
 import Glass from './Glass.astro';
 

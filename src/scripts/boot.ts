@@ -68,8 +68,7 @@
     if (finished) return;
     finished = true;
     window.clearTimeout(safety);
-    /* 在「开始离场」这一刻就通知动效层:正文的滚动入场要和封面淡出叠着播,
-       等揭幕完再播就只剩一个已经静止的页面,那一口气接不上 */
+    /* 离场开始的信号:其他脚本需要与揭幕同步收口时监听它 */
     document.dispatchEvent(new CustomEvent('boot:done'));
     if (instant || reduce) {
       teardown();
@@ -264,7 +263,7 @@
     );
   }
 
-  /* 门控 4:字体向导已经决定显隐(见 FontPicker.vue 派发的 fontpicker:state)。
+  /* 门控 4:字体向导已经决定显隐(见 FontPicker.tsx 派发的 fontpicker:state)。
      组件可能先于本脚本完成挂载,所以先查标记再挂监听,并留 2200ms 上限 */
   if (root.dataset.fontPickerState) {
     pass('picker');

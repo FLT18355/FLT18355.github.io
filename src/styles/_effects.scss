@@ -179,7 +179,7 @@
 
 /* ---------- 3. 主题切换的通用扩散环 ----------
    原生 View Transition 的圆形揭示只在 Chromium 里画,这里补一圈任何引擎都渲染的光环:
-   ThemeToggle.vue 用 WAAPI 从拨钮中心把这一圈推到全屏。 */
+   ThemeToggle.tsx 用 WAAPI 从拨钮中心把这一圈推到全屏。 */
 .theme-wave {
   position: fixed;
   z-index: 95; /* 压在内容上、启动层(120)之下 */

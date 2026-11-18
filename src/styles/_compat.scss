@@ -50,13 +50,6 @@
 
   /* ---------- 4. 区块 ---------- */
   .block:hover { box-shadow: var(--shadow-lift); }
-  /* liquid-glass:悬停柔光用的是 color-mix,这里给一版纯色。
-     注意:绝不要在这里碰 .ps-glass__rim —— 库那条 rim(内圈细线 + 顶部高光 + 底部暗边)
-     是玻璃的灵魂高光,任何覆盖都等于把它降级成一块半透明板。 */
-  .glass-card.ps-glass:hover,
-  .profile-glass.ps-glass:hover {
-    box-shadow: var(--shadow-lift);
-  }
   .about-lead strong { color: var(--acc); }
 
   /* ---------- 5. 筹码 / 标签 ---------- */

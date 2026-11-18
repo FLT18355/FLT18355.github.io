@@ -37,7 +37,7 @@ html.lite .boot__card {
 }
 
 /* ---------- 2. 主题切换:几十个颜色令牌的过渡会让整页重绘,低配下默认跳变;
-   但切换的当下会短暂挂上 .theme-fx(ThemeToggle.vue),那时放回 :root 的令牌过渡,
+   但切换的当下会短暂挂上 .theme-fx(ThemeToggle.tsx),那时放回 :root 的令牌过渡,
    让「主题色慢慢铺开」这一下在任何档位都看得见 ---------- */
 html.lite:not(.theme-fx) {
   transition: none;
@@ -69,7 +69,7 @@ html.lite .search-time {
 }
 
 /* ---------- 7. 精修层(_polish.scss)的常驻动效与材质:
-   滚动入场这类的「一次性」动效保留(与 motion.ts 的取舍一致),
+   悬停 / 状态动效保留(与 motion.ts 的取舍一致),
    逐帧重绘的常驻动效、以及固定层全屏噪点,低配下一并熄火。 */
 html.lite body::after {
   display: none;

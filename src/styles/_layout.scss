@@ -5,7 +5,7 @@
 
 /* ============ Layout: two-column shell ============ */
 .shell {
-  max-width: 1240px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 28px 28px 24px;
   display: grid;
@@ -20,11 +20,11 @@
   grid-template-columns: 1fr;
 }
 .shell--bare .content {
-  max-width: 640px;
+  max-width: 760px;
   margin: 0 auto;
   width: 100%;
 }
-/* reader 页无左栏且不限宽:阅读器占满 shell 宽度(1240 - 56 = 1184px) */
+/* reader 页无左栏且不限宽:阅读器占满 shell 宽度(1360 - 56 = 1304px) */
 .shell--bare.shell--wide .content {
   max-width: none;
 }
@@ -132,7 +132,7 @@
 .contact-item:hover {
   border-color: var(--ci);
   background: color-mix(in srgb, var(--ci) 15%, var(--glass));
-  transform: translateX(3px);
+  transform: translateY(-2px);
   box-shadow: none;
 }
 .contact-item:active {
@@ -243,18 +243,8 @@ $contact-hues: (
 }
 /* 区块上沿不再画色相细线:色相由标题前的方块与卡片内的凹槽表达 */
 
-html.motion-js .block { opacity: 0; }
-html.motion-js .block.in {
-  animation: blockIn 0.65s var(--ease-out) both;
-  animation-delay: var(--d, 0s);
-}
-@for $i from 1 through 6 {
-  html.motion-js .content .block:nth-child(#{$i}) {
-    --d: #{0.06s + ($i - 1) * 0.08s};
-  }
-}
 /* 区块色相:每个区块一种 Catppuccin 色,区块描边、标题方块、指针光斑、
-   入场强调线统一取 --acc;动作控件(按钮/焦点环)仍固定用 --primary。 */
+   标题方块与悬停描边统一取 --acc;动作控件(按钮/焦点环)仍固定用 --primary。 */
 $block-hues: (
   'b-about': 'primary',
   'b-interests': 'mauve',
@@ -316,7 +306,8 @@ $block-hues: (
 }
 
 p {
-  color: var(--text-secondary);
+  /* 正文用满墨色;灰色留给标签与注释(对比度与阅读重量都更稳) */
+  color: var(--text);
   font-size: var(--fs-body);
   line-height: 1.7;
   text-wrap: pretty;
@@ -406,10 +397,6 @@ html[data-mode="max"] .mode-switch-btn[data-mode="max"] {
 }
 
 /* ---------- 关键帧 ---------- */
-@keyframes blockIn {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 @keyframes logoIn {
   from { opacity: 0; transform: scale(0.92) translateY(8px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }

@@ -9,12 +9,17 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border-bottom: 0;
   transition: background-color 240ms var(--ease-out), border-color 240ms var(--ease-out);
 }
+/* 玻璃挂上前 / 低配 / 无 JS:保持实底,导航可读 */
+.site-nav:not(.glass-live) {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
 .nav-inner {
-  max-width: 1240px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 28px;
   height: 56px;
@@ -27,15 +32,31 @@
 /* ---------- 贴顶栏 ---------- */
 .site-nav--float {
   padding: 0;
-  border-bottom: 1px solid var(--border);
 }
 .site-nav--float .nav-glass {
   max-width: none;
   margin: 0;
   border-radius: 0;
+  position: relative;
+}
+.site-nav .nav-glass > .nav-inner {
+  position: relative;
+  z-index: 1;
+}
+/* 顶栏是通栏,玻璃不要圆角 */
+.site-nav .lg-layer,
+.site-nav .lg-effect {
+  border-radius: 0;
+}
+/* 通栏导航压在滚动内容上,比卡片多一层薄纱保证可读 */
+.site-nav .lg-effect {
+  --lg-tint: rgba(18, 18, 24, 0.32) !important;
+}
+:root[data-theme="latte"] .site-nav .lg-effect {
+  --lg-tint: rgba(255, 255, 255, 0.42) !important;
 }
 .site-nav--float .nav-inner {
-  max-width: 1240px;
+  max-width: 1360px;
   padding: 0 28px;
 }
 
@@ -138,6 +159,10 @@ $nav-hues: (
 }
 .nav-item:hover {
   color: var(--text);
+  background: var(--nc-dim);
+}
+.nav-item[aria-current="page"] {
+  background: var(--nc-dim);
 }
 .nav-item:active {
   transform: scale(0.96);
@@ -198,6 +223,7 @@ html.motion-js .nav-indicator {
   }
   .nav-item {
     padding: 0 6px;
+    /* 390px 下五项 + 拨钮已贴满胶囊,字号维持 12.5px,不再加宽 */
     font-size: 0.78rem;
   }
   .toggle-scale {

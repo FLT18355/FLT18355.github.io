@@ -4,6 +4,7 @@
 // 一条贴顶的窄栏,没有胶囊、没有玻璃:导航是去找内容的地图,不是内容本身。
 // reader 页与其余页面使用同一套结构(float 参数保留给页面调用方)。
 import NavInner from './NavInner.astro';
+import GlassLayer from './GlassLayer';
 import type { PageKey } from '../data/content';
 
 interface Props {
@@ -16,6 +17,7 @@ const { current } = Astro.props;
 
 <header class="site-nav site-nav--float">
   <div class="nav-glass">
+    <GlassLayer client:load radius={0} />
     <NavInner current={current} />
   </div>
 </header>

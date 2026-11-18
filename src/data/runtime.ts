@@ -1,6 +1,6 @@
 // runtime.ts - 浏览器侧组件(client:load)读的 TOML:曲目表与天气设置
 //
-// 与 content.ts 分开,是因为 Vue 岛会把数据打进前端 bundle:
+// 与 content.ts 分开,是因为 React 岛会把数据打进前端 bundle:
 // 音乐播放器只需要 music.toml,天气卡只需要 weather.toml,
 // 站点文案与项目列表只在构建时用,不该被拖进访客下载的 JS 里。
 //
