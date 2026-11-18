@@ -22,14 +22,14 @@
 }
 
 /* 正文卡片自己的 CSS 玻璃让位;玻璃根已经提供表面 */
-.lg-effect .lg__content > .block,
-.lg-effect .lg__content > .profile,
-.lg-effect .lg__content > .font-picker-card,
-.lg-effect .lg__content > .err404-card,
-.lg-effect .lg__content > astro-slot > .block,
-.lg-effect .lg__content > astro-slot > .profile,
-.lg-effect .lg__content > astro-slot > .font-picker-card,
-.lg-effect .lg__content > astro-slot > .err404-card {
+.lg-effect:not(.lg--identity) .lg__content > .block,
+.lg-effect:not(.lg--identity) .lg__content > .profile,
+.lg-effect:not(.lg--identity) .lg__content > .font-picker-card,
+.lg-effect:not(.lg--identity) .lg__content > .err404-card,
+.lg-effect:not(.lg--identity) .lg__content > astro-slot > .block,
+.lg-effect:not(.lg--identity) .lg__content > astro-slot > .profile,
+.lg-effect:not(.lg--identity) .lg__content > astro-slot > .font-picker-card,
+.lg-effect:not(.lg--identity) .lg__content > astro-slot > .err404-card {
   background: transparent !important;
   background-image: none !important;
   -webkit-backdrop-filter: none !important;
@@ -39,8 +39,8 @@
 }
 
 /* macOS 标题栏原本是实色条:在玻璃卡里也透明,整张卡才是一块玻璃 */
-.lg-effect .lg__content .card-fold > .block-header,
-.lg-effect .lg__content > astro-slot > .block > .block-header {
+.lg-effect:not(.lg--identity) .lg__content .card-fold > .block-header,
+.lg-effect:not(.lg--identity) .lg__content > astro-slot > .block > .block-header {
   background: transparent !important;
   box-shadow: none !important;
 }
@@ -66,25 +66,6 @@
 }
 .lg-effect {
   border-radius: var(--radius);
-}
-
-/* 低配:不显示折射/高光,内层卡片回到自己的 CSS 玻璃 */
-html[data-mode="low"] .lg-effect {
-  --lg-backdrop-override: none;
-  --lg-tint: transparent;
-}
-html[data-mode="low"] .lg-effect .lg__content > .block,
-html[data-mode="low"] .lg-effect .lg__content > .profile,
-html[data-mode="low"] .lg-effect .lg__content > .font-picker-card,
-html[data-mode="low"] .lg-effect .lg__content > .err404-card,
-html[data-mode="low"] .lg-effect .lg__content > astro-slot > .block,
-html[data-mode="low"] .lg-effect .lg__content > astro-slot > .profile,
-html[data-mode="low"] .lg-effect .lg__content > astro-slot > .font-picker-card,
-html[data-mode="low"] .lg-effect .lg__content > astro-slot > .err404-card {
-  background: var(--glass) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(1.3) !important;
-  backdrop-filter: blur(14px) saturate(1.3) !important;
-  border: 1px solid var(--glass-border) !important;
 }
 
 /* ============================================================

@@ -73,12 +73,7 @@
   transition-duration: 0.08s;
 }
 
-/* 3.4 导航:当前页的胶囊补一圈同色内描边与柔光,不用加粗文字也能读出「你在这一页」 */
-.nav-item[aria-current="page"] {
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--nc) 38%, transparent),
-    0 6px 16px -8px color-mix(in srgb, var(--nc) 55%, transparent);
-}
+/* 3.4 导航:当前页由滑动玻璃胶囊表示,条目本身不描边 */
 .nav-item:focus-visible {
   outline-offset: 2px;
 }

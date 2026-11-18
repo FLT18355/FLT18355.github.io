@@ -16,7 +16,7 @@
 /* 玻璃挂上前 / 低配 / 无 JS:保持实底,导航可读 */
 .site-nav:not(.glass-live) {
   background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 0;
 }
 .nav-inner {
   max-width: 1360px;
@@ -159,10 +159,6 @@ $nav-hues: (
 }
 .nav-item:hover {
   color: var(--text);
-  background: var(--nc-dim);
-}
-.nav-item[aria-current="page"] {
-  background: var(--nc-dim);
 }
 .nav-item:active {
   transform: scale(0.96);
@@ -179,21 +175,77 @@ $nav-hues: (
 .nav-indicator {
   position: absolute;
   left: 0;
-  bottom: 10px;
-  height: 2px;
+  top: 50%;
+  height: 36px;
   width: var(--w, 0);
-  transform: translateX(var(--x, 0));
-  border-radius: 2px;
-  /* --ni 由 nav.ts 按当前页色相令牌写入;未写入时回退到主色 */
-  background: var(--ni, var(--primary));
+  transform: translate(var(--x, 0), -50%);
+  border-radius: 999px;
+  /* 当前页的色相 + 液态玻璃球材质:整枚按钮在导航项之间滑动 */
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--ni, var(--primary)) 26%, transparent), transparent 64%),
+    linear-gradient(
+      158deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.07) 46%,
+      rgba(255, 255, 255, 0.12) 74%,
+      rgba(255, 255, 255, 0.2) 100%
+    );
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.6),
+    inset 0 -16px 30px rgba(255, 255, 255, 0.12);
   opacity: 0;
   pointer-events: none;
+  z-index: 0;
+}
+/* demo 的 45° 镜面扫光 */
+.nav-indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    transparent calc(25% - var(--tr, 25%)),
+    rgba(255, 255, 255, 0.16) 25%,
+    transparent calc(25% + var(--tr, 25%)),
+    transparent 100%
+  );
+  filter: blur(3px);
+  pointer-events: none;
+  z-index: 2;
 }
 html.motion-js .nav-indicator {
-  transition: transform 0.42s var(--ease-out), width 0.42s var(--ease-out), opacity 0.3s;
+  transition: transform 0.42s cubic-bezier(0.2, 1.35, 0.35, 1),
+    width 0.42s cubic-bezier(0.2, 1.35, 0.35, 1), opacity 0.3s,
+    box-shadow 0.3s;
 }
 .nav-indicator.ready {
   opacity: 1;
+  animation: navIn 0.5s var(--ease-out) both;
+}
+@keyframes navIn {
+  from { opacity: 0; transform: translate(var(--x, 0), -50%) scale(0.6); }
+  to { opacity: 1; transform: translate(var(--x, 0), -50%) scale(1); }
+}
+
+html.lite .nav-indicator {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+html.lite .nav-indicator::after {
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-indicator,
+  .nav-indicator.ready,
+  .nav-indicator.is-switching {
+    animation: none;
+    transition: none;
+  }
 }
 
 .toggle-scale {

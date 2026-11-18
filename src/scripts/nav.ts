@@ -50,10 +50,21 @@
   const items = list.querySelectorAll('.nav-item');
   Array.prototype.forEach.call(items, (a: HTMLElement) => {
     if (a === current) return;
-    a.addEventListener('click', () => {
+    a.addEventListener('click', (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target) return;
+      let reduce = false;
+      try {
+        reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      } catch (err) {
+        reduce = false;
+      }
+      if (!reduce) e.preventDefault();
+
       bar.style.setProperty('--x', a.offsetLeft.toFixed(1) + 'px');
       bar.style.setProperty('--w', a.offsetWidth.toFixed(1) + 'px');
       tint(a);
+      /* MPA:让胶囊先滑到目标,再离开当前页 */
+      if (!reduce) window.setTimeout(() => location.assign(a.href), 360);
     });
   });
 })();

@@ -1,0 +1,110 @@
+/* _fx-buttons.scss - 完整参照 demo/1.css 的 .box 玻璃按钮
+   原始结构:双线边框 + 五层 inset 高光/暗边 + 外投影 + 模糊内环(::before)
+   + 45° 镜面扫光(::after) + 内圈白线(.circle-overlay)。
+   这里不改按钮尺寸/排版,只套同一套材质。 */
+
+$fx-buttons: ':is(.mode-switch-btn, .search-go, .search-engine, .clock-toggle, .search-clear, .quicklink, .music-nav, .music-toggle, .weather-refresh, .reader-btn, .reader-font-close, .err404-search-go, .err404-back)';
+
+#{$fx-buttons} {
+  --tr: 25%;
+  position: relative;
+  isolation: isolate;
+
+  /* 液态玻璃球同款白色 tint:顶部受光,中段薄,底部再反光 */
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.18), transparent 62%),
+    linear-gradient(
+      158deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.07) 46%,
+      rgba(255, 255, 255, 0.12) 74%,
+      rgba(255, 255, 255, 0.2) 100%
+    );
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  transition: 0.25s;
+}
+
+/* 45° 镜面扫光 */
+#{$fx-buttons}::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  filter: blur(3px);
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    transparent var(--tr),
+    transparent calc(100% - var(--tr)),
+    rgba(255, 255, 255, 0.8) 100%
+  );
+}
+
+/* demo 的 .circle-overlay:内缩 4.5px 的 1px 白线 */
+#{$fx-buttons} {
+  box-shadow:
+    inset 2px -2px 1px -1px rgba(255, 255, 255, 0.9),
+    inset -2px 2px 1px -1px rgba(255, 255, 255, 0.9),
+    inset 6px -6px 1px -6px rgba(255, 255, 255, 0.55),
+    inset -6px 6px 1px -6px rgba(255, 255, 255, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6),
+    inset 0 -16px 30px rgba(255, 255, 255, 0.12),
+    0 12px 28px -16px rgba(0, 0, 0, 0.06);
+}
+
+/* demo 的 .circle-overlay:内缩 4.5px 的 1px 白线,blur(1px) */
+#{$fx-buttons} > .circle-overlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 9px);
+  height: calc(100% - 9px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: inherit;
+  filter: blur(1px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* demo 没有 hover 位移;保持原版亮度,只让原有 focus / active 继续工作 */
+#{$fx-buttons}:hover {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.22), transparent 62%),
+    linear-gradient(
+      158deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.08) 46%,
+      rgba(255, 255, 255, 0.14) 74%,
+      rgba(255, 255, 255, 0.22) 100%
+    );
+}
+
+/* 实底主操作也落到同一套玻璃材质;文字改用正文色保证深色主题可读 */
+.search-go,
+.music-toggle,
+.reader-btn--primary {
+  color: var(--text);
+}
+
+/* 低配:去掉昂贵的模糊与两层滤镜,保留边框和 inset 高光 */
+html.lite #{$fx-buttons} {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+html.lite #{$fx-buttons}::after {
+  filter: none;
+}
+html.lite #{$fx-buttons} > .circle-overlay {
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #{$fx-buttons} {
+    transition: none;
+  }
+}

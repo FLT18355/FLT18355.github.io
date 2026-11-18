@@ -21,12 +21,22 @@ function themeNow(): 'latte' | 'mocha' {
 export default function GlassCard({ className = '', radius = RADIUS, children }: Props) {
   const [theme, setTheme] = useState<'latte' | 'mocha'>('mocha');
   const [mode, setMode] = useState('high');
+  const [live, setLive] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
     const sync = () => setTheme(themeNow());
     sync();
-    setMode(root.getAttribute('data-mode') || 'high');
+    const current = root.getAttribute('data-mode') || 'high';
+    setMode(current);
+    let enabled = current !== 'low';
+    try {
+      if (window.matchMedia('(prefers-reduced-transparency: reduce)').matches) enabled = false;
+    } catch (e) {
+      /* 查询不支持 */
+    }
+    if (!(window.CSS && CSS.supports && CSS.supports('backdrop-filter', 'blur(6px)'))) enabled = false;
+    setLive(enabled);
     const observer = new MutationObserver(sync);
     observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
     return () => observer.disconnect();
@@ -34,12 +44,15 @@ export default function GlassCard({ className = '', radius = RADIUS, children }:
 
   const max = mode === 'max';
   const latte = theme === 'latte';
+  /* low / 减弱透明度:identity 不生成位移图、不挂 backdrop-filter,但保留同一个
+     根元素,children 不会因模式变化而重挂 */
+  const variant = live ? 'clear' : 'identity';
 
   return (
     <LiquidGlass
       className={`glass-card${className ? ' ' + className : ''}`}
       radius={radius}
-      variant="clear"
+      variant={variant}
       tint={latte ? 'rgba(255, 255, 255, 0.10)' : 'rgba(18, 18, 24, 0.05)'}
       bezel={max ? 28 : 20}
       thickness={max ? 18 : 12}
